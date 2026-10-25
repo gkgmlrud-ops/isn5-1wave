@@ -534,6 +534,27 @@ border-radius:10px;
 margin-bottom:15px;
 background:#dbeafe;
 color:#1e40af;
+display:flex;
+justify-content:space-between;
+align-items:center;
+}
+
+/* 📈 누적 데이터 버튼 스타일 */
+.trend-btn {
+  background:#2563eb;
+  color:white;
+  border:none;
+  padding:6px 12px;
+  border-radius:8px;
+  font-size:13px;
+  font-weight:bold;
+  cursor:pointer;
+  transition:0.2s;
+  box-shadow:0 2px 4px rgba(37,99,235,0.2);
+}
+
+.trend-btn:hover {
+  background:#1d4ed8;
 }
 
 .misplace-layout{
@@ -882,10 +903,12 @@ background:#1d4ed8;
   background-color: #0369a1;
 }
 
+/* 📱 모바일 전용 반응형 미디어 쿼리 */
 @media (max-width: 768px) {
   .mobile-menu-toggle { display: block; }
 
-  #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section { display: none !important; }
+  /* 📱 모바일 숨김 항목 (누적 버튼 숨김 추가) */
+  #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section, .trend-btn { display: none !important; }
 
   .sidebar {
     position: fixed;
@@ -1037,6 +1060,9 @@ background:#1d4ed8;
     </div>
 
     <div class="sub-menu-level2" id="resultSubMenu">
+      <div class="menu-item" id="menuTrend" onclick="showTab('trend')">
+        <span>📈 누적 데이터 (트렌드)</span>
+      </div>
       <div class="menu-item" id="menuInvoiceSH" onclick="showTab('invoiceSH')">
         <span>📋 SH_ISN5 Invoice</span>
       </div>
@@ -1165,7 +1191,8 @@ background:#1d4ed8;
 <div class="result-panel">
 
 <div class="result-panel-title">
-📦 S-일산5 미도착
+  <span>📦 S-일산5 미도착</span>
+  <button class="trend-btn" onclick="showTab('trend')">📈 누적 데이터 보기</button>
 </div>
 
 <div class="result-grid">
@@ -1217,7 +1244,7 @@ background:#1d4ed8;
 <div class="result-panel">
 
 <div class="result-panel-title">
-🚚 S-일산5 타캠프 오도착 Check
+<span>🚚 S-일산5 타캠프 오도착 Check</span>
 </div>
 
 <div class="misplace-layout">
@@ -1270,7 +1297,20 @@ background:#1d4ed8;
 
 </div>
 
-<!-- 3. SH_ISN5 미도착 Invoice 페이지 -->
+<!-- 📈 3. 누적 데이터 (트렌드) 페이지 -->
+<div id="trendPage" class="hidden">
+  <div class="result-panel">
+    <div class="result-panel-title">
+      <span>📈 일별/차수별 누적 트렌드 분석</span>
+    </div>
+    <div style="padding: 20px; text-align: center; color: #64748b;">
+      <p style="font-size:16px; font-weight:bold; margin-bottom:8px;">⏳ 누적 데이터 트렌드 세팅 영역입니다.</p>
+      <p style="font-size:13px;">추후 수집할 누적 데이터 및 그래프 구성 요구사항을 알려주시면 바로 반영해 드립니다!</p>
+    </div>
+  </div>
+</div>
+
+<!-- 4. SH_ISN5 미도착 Invoice 페이지 -->
 <div id="invoiceSHPage" class="hidden">
   <div class="invoice-container">
     <div class="invoice-left-panel">
@@ -1309,7 +1349,7 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 4. ISN_5 미도착 Invoice 페이지 -->
+<!-- 5. ISN_5 미도착 Invoice 페이지 -->
 <div id="invoiceISNPage" class="hidden">
   <div class="invoice-container">
     <div class="invoice-left-panel">
@@ -1348,7 +1388,7 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 5. YAJ_3 미도착 Invoice 페이지 -->
+<!-- 6. YAJ_3 미도착 Invoice 페이지 -->
 <div id="invoiceYAJPage" class="hidden">
   <div class="invoice-container">
     <div class="invoice-left-panel">
@@ -1387,7 +1427,7 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 6. 📜 호출 Log PC 전용 화면 -->
+<!-- 7. 📜 호출 Log PC 전용 화면 -->
 <div id="callLogPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title" style="display:flex;justify-content:space-between;align-items:center;">
@@ -1509,6 +1549,7 @@ function toggleMobileCard(prefix) {
 function showTab(page){
   document.getElementById("uploadPage").classList.toggle("hidden", page !== "upload");
   document.getElementById("resultPage").classList.toggle("hidden", page !== "result");
+  document.getElementById("trendPage").classList.toggle("hidden", page !== "trend");
   document.getElementById("invoiceSHPage").classList.toggle("hidden", page !== "invoiceSH");
   document.getElementById("invoiceISNPage").classList.toggle("hidden", page !== "invoiceISN");
   document.getElementById("invoiceYAJPage").classList.toggle("hidden", page !== "invoiceYAJ");
@@ -1516,6 +1557,7 @@ function showTab(page){
 
   document.getElementById("menuUpload").classList.toggle("active", page === "upload");
   document.getElementById("menuResult").classList.toggle("active", page === "result");
+  document.getElementById("menuTrend").classList.toggle("active", page === "trend");
   document.getElementById("menuInvoiceSH").classList.toggle("active", page === "invoiceSH");
   document.getElementById("menuInvoiceISN").classList.toggle("active", page === "invoiceISN");
   document.getElementById("menuInvoiceYAJ").classList.toggle("active", page === "invoiceYAJ");
@@ -1850,7 +1892,6 @@ function renderTable(tableId, totalId, countMap){
   });
 }
 
-// 📄 Invoice 화면 렌더링 및 클릭한 허브의 라우트별 수량 동적 집계 연동
 function renderInvoiceSection(prefix, list=[], countMap={}, titleName=""){
   const countBadge = document.getElementById(`${prefix}InvoiceCount`);
   const invoiceTbody = document.getElementById(`${prefix}InvoiceTable`).querySelector("tbody");
@@ -1914,12 +1955,9 @@ function renderInvoiceSection(prefix, list=[], countMap={}, titleName=""){
   });
 
   invoiceTbody.innerHTML = invoiceHtml;
-
-  // 초기 상태는 전체 데이터 집계
   renderRouteTable(prefix, list, titleName);
 }
 
-// 라우트별 수량 표 렌더링 함수
 function renderRouteTable(prefix, targetList=[], titleName="", selectedHub=""){
   const routeTbody = document.getElementById(`${prefix}RouteTable`).querySelector("tbody");
   const routeTitleEl = document.getElementById(`${prefix}RoutePanelTitle`);
@@ -1958,7 +1996,6 @@ function renderRouteTable(prefix, targetList=[], titleName="", selectedHub=""){
   routeTbody.innerHTML = routeHtml || '<tr><td colspan="2">라우트 정보가 없습니다.</td></tr>';
 }
 
-// 📦 허브 그룹 접기/펼치기 및 해당 허브의 라우트 수량만 오른쪽 표에 즉시 연동
 function toggleHubGroup(prefix, groupId, hubName, titleName){
   const rows = document.querySelectorAll(`.${groupId}_row`);
   const arrow = document.getElementById(`${groupId}_arrow`);
@@ -1967,7 +2004,6 @@ function toggleHubGroup(prefix, groupId, hubName, titleName){
 
   const willBeOpen = rows[0].classList.contains("hidden");
 
-  // 다른 허브 행들 일단 숨기기 (1개 허브에 집중 집계)
   const allRows = document.querySelectorAll(`[class*="${prefix}_hub_group_"][class*="_row"]`);
   allRows.forEach(r => r.classList.add("hidden"));
 
@@ -1978,14 +2014,12 @@ function toggleHubGroup(prefix, groupId, hubName, titleName){
     rows.forEach(row => row.classList.remove("hidden"));
     if(arrow) arrow.innerText = "▲";
 
-    // 클릭한 허브의 데이터만 추출하여 오른쪽 라우트 표 업데이트
     const listKey = `${prefix}List`;
     const fullList = remoteData ? (remoteData[listKey] || []) : [];
     const filteredByHub = fullList.filter(item => item.hub === hubName);
 
     renderRouteTable(prefix, filteredByHub, titleName, hubName);
   } else {
-    // 다시 닫았을 때는 전체 라우트 수량으로 원복
     const listKey = `${prefix}List`;
     const fullList = remoteData ? (remoteData[listKey] || []) : [];
 
