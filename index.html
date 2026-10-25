@@ -1,0 +1,2125 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>ISN_5 1Wave CL (실시간 모바일 연동)</title>
+
+<!-- XLSX 라이브러리 -->
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<!-- Firebase SDK (v8 콤팻 버전) -->
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+font-family:'맑은 고딕',sans-serif;
+}
+
+body{
+background:#f3f4f6;
+overflow-x:hidden;
+}
+
+#fileList{
+color:#111827;
+}
+
+.wrapper{
+width:100%;
+max-width:1800px;
+margin:auto;
+}
+
+.header{
+display:flex;
+flex-direction:column;
+align-items:center;
+margin-bottom:20px;
+}
+
+.title{
+font-size:36px;
+font-weight:bold;
+text-align:center;
+}
+
+.badge{
+display:inline-block;
+margin-top:10px;
+padding:8px 16px;
+border-radius:25px;
+
+background:#ecfdf3;
+border:1px solid #86efac;
+color:#15803d;
+
+font-weight:bold;
+animation:pulse 1.5s infinite;
+
+box-shadow:0 2px 6px rgba(34,197,94,.15);
+}
+
+.reset-btn{
+margin-top:8px;
+padding:6px 14px;
+border:none;
+border-radius:8px;
+background:#ef4444;
+color:white;
+font-weight:bold;
+font-size:13px;
+cursor:pointer;
+transition:0.2s;
+box-shadow:0 2px 6px rgba(239, 68, 68, 0.2);
+}
+
+.reset-btn:hover{
+background:#dc2626;
+}
+
+.hidden{
+display:none !important;
+}
+
+#dropZone{
+margin-top:15px;
+height:140px;
+border:2px dashed #93c5fd;
+border-radius:20px;
+display:flex;
+justify-content:center;
+align-items:center;
+cursor:pointer;
+transition:.2s;
+
+background:#ffffff;
+box-shadow:0 1px 3px rgba(0,0,0,0.08);
+}
+
+#dropZone:hover{
+background:#f8fafc;
+border-color:#60a5fa;
+}
+
+.drop-content{
+text-align:center;
+}
+
+.folder{
+font-size:50px;
+}
+
+.main-text{
+font-size:22px;
+font-weight:bold;
+color:#111827;
+}
+
+.sub-text{
+margin-top:10px;
+color:#6b7280;
+}
+
+.status-box{
+margin-top:6px;
+background:#ffffff;
+border:1px solid #dbe5ef;
+border-radius:12px;
+padding:8px 12px;
+box-shadow:none;
+}
+
+.status-title{
+font-size:14px;
+color:#2563eb;
+margin-bottom:4px;
+font-weight:700;
+}
+
+.result-grid{
+display:flex;
+gap:12px;
+justify-content:flex-start;
+align-items:flex-start;
+width:100%;
+}
+
+.summary-table{
+width:220px;
+flex:none;
+display:flex;
+flex-direction:column;
+gap:12px;
+}
+
+.summary-card-item{
+background:#f8fafc;
+border:1px solid #cbd5e1;
+border-radius:16px;
+padding:20px 10px;
+text-align:center;
+box-shadow:0 2px 8px rgba(0,0,0,0.02);
+}
+
+.summary-card-label{
+font-size:16px;
+font-weight:700;
+color:#475569;
+margin-bottom:8px;
+}
+
+.summary-card-val{
+font-size:28px;
+font-weight:800;
+}
+
+.summary-card-val.fresh{ color:#15803d; }
+.summary-card-val.dawn{ color:#1d4ed8; }
+
+.hub-table{
+flex:1;
+min-width:140px;
+background:#f8fafc;
+border:1px solid #93c5fd;
+border-radius:18px;
+overflow:hidden;
+box-shadow:0 4px 12px rgba(37, 99, 235, 0.06);
+transition:transform 0.2s;
+}
+
+.hub-table:hover{
+transform:translateY(-3px);
+box-shadow:0 8px 20px rgba(37, 99, 235, 0.12);
+}
+
+.hub-name{
+background: linear-gradient(135deg, #dbeafe 0%, #eff6ff 100%);
+color:#1e40af;
+padding:10px;
+font-size:18px;
+font-weight:800;
+text-align:center;
+border-bottom:1px solid #bfdbfe;
+letter-spacing:0.5px;
+display:flex;
+justify-content:center;
+align-items:center;
+gap:6px;
+}
+
+.toggle-arrow {
+display:none;
+font-size:12px;
+color:#2563eb;
+}
+
+.total-title{
+background:#e2e8f0;
+padding:6px;
+text-align:center;
+font-size:12px;
+font-weight:700;
+color:#475569;
+letter-spacing:1px;
+}
+
+.total-value{
+background:#edf2f7;
+color:#2563eb;
+font-size:30px;
+font-weight:800;
+padding:8px;
+text-align:center;
+border-top:1px solid #cbd5e1;
+border-bottom:1px solid #cbd5e1;
+}
+
+.hub-table table{
+width:100%;
+border-collapse:collapse;
+}
+
+.hub-table th{
+background:#e2e8f0;
+color:#334155;
+padding:8px 4px;
+font-size:13px;
+border-bottom:1px solid #cbd5e1;
+text-align:center;
+}
+
+.hub-table td{
+background:#f8fafc;
+color:#334155;
+border-bottom:1px solid #e2e8f0;
+padding:7px 4px;
+font-size:13px;
+text-align:center;
+}
+
+.hub-table tr:hover td{
+background:#eff6ff;
+}
+
+.setting-card{
+background:#f8fafc;
+border:1px solid #dbeafe;
+border-radius:16px;
+padding:20px;
+color:#111827;
+}
+
+.setting-table-wrap{
+height:320px;
+overflow-y:auto;
+margin-top:15px;
+}
+
+.selected-info{
+margin-top:10px;
+margin-bottom:12px;
+padding:10px;
+background:#f8fafc;
+border:1px solid #cbd5e1;
+border-radius:10px;
+font-size:13px;
+line-height:1.4;
+color:#334155;
+}
+
+.selected-count{
+font-weight:bold;
+color:#2563eb;
+margin-bottom:4px;
+}
+
+@keyframes pulse{
+0%{transform:scale(1);}
+50%{transform:scale(1.05);}
+100%{transform:scale(1);}
+}
+
+.app-layout{
+display:flex;
+min-height:100vh;
+position:relative;
+}
+
+.sidebar{
+width:240px;
+flex:none;
+background:#111827;
+border-right:1px solid #1f2937;
+padding:20px 15px;
+overflow-y:auto;
+transition: transform 0.3s ease;
+z-index: 1000;
+display:flex;
+flex-direction:column;
+justify-content:space-between;
+}
+
+.mobile-menu-toggle{
+display:none;
+position:fixed;
+top:12px;
+left:12px;
+z-index:1001;
+background:#111827;
+color:white;
+border:none;
+padding:8px 12px;
+border-radius:8px;
+font-size:18px;
+cursor:pointer;
+box-shadow:0 2px 8px rgba(0,0,0,0.2);
+}
+
+.sidebar-logo{
+font-size:20px;
+font-weight:bold;
+color:#fff;
+margin-bottom:20px;
+text-align:center;
+padding-bottom:15px;
+border-bottom:1px solid #374151;
+}
+
+.menu-section{
+margin-bottom:20px;
+flex:1;
+}
+
+.menu-title{
+font-size:12px;
+color:#94a3b8;
+margin-bottom:12px;
+text-transform:uppercase;
+letter-spacing:0.5px;
+}
+
+.folder-title{
+padding:10px 12px;
+border-radius:8px;
+cursor:pointer;
+color:#f3f4f6;
+font-size:14px;
+font-weight:bold;
+display:flex;
+align-items:center;
+gap:8px;
+transition:.2s;
+user-select:none;
+}
+
+.folder-title:hover{
+background:#1e293b;
+}
+
+.sub-menu{
+margin-left:12px;
+margin-top:4px;
+margin-bottom:8px;
+}
+
+.sub-menu-level2{
+margin-left:18px;
+margin-top:4px;
+margin-bottom:8px;
+}
+
+.menu-item{
+padding:10px 14px;
+border-radius:8px;
+cursor:pointer;
+margin-bottom:4px;
+transition:.2s;
+color:#cbd5e1;
+font-size:13px;
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:8px;
+}
+
+.menu-item:hover{
+background:#1e293b;
+color:#ffffff;
+}
+
+.menu-item.active{
+background:#2563eb;
+color:#ffffff;
+font-weight:bold;
+}
+
+.sidebar-bottom-section {
+  padding-top: 15px;
+  border-top: 1px solid #374151;
+  margin-top: auto;
+}
+
+.main-area{
+flex:1;
+min-width:0;
+overflow:auto;
+padding:20px;
+background:#f3f4f6;
+}
+
+.raw-section{
+background:#ecfdf5;
+border:1px solid #bbf7d0;
+border-radius:20px;
+padding:20px;
+margin-bottom:20px;
+}
+
+.raw-section-title-wrap{
+display:flex;
+justify-content:space-between;
+align-items:center;
+background:#dcfce7;
+padding:10px 16px;
+border-radius:12px;
+margin-bottom:15px;
+flex-wrap:wrap;
+gap:10px;
+}
+
+.raw-section-title{
+font-size:18px;
+font-weight:bold;
+color:#15803d;
+}
+
+.pdd-time-group{
+display:flex;
+align-items:center;
+gap:12px;
+background:#ffffff;
+padding:6px 14px;
+border-radius:20px;
+border:1px solid #86efac;
+box-shadow:0 1px 3px rgba(0,0,0,0.05);
+}
+
+.pdd-time-label{
+font-size:13px;
+font-weight:bold;
+color:#166534;
+}
+
+.pdd-option{
+display:flex;
+align-items:center;
+gap:4px;
+font-size:13px;
+font-weight:bold;
+color:#15803d;
+cursor:pointer;
+}
+
+.pdd-option input[type="radio"]{
+cursor:pointer;
+accent-color:#16a34a;
+}
+
+.hub-section{
+background:#eff6ff;
+border:1px solid #bfdbfe;
+border-radius:20px;
+padding:20px;
+margin-top:20px;
+}
+
+.hub-section-title{
+font-size:18px;
+font-weight:bold;
+color:#2563eb;
+background:#dbeafe;
+padding:10px;
+border-radius:12px;
+margin-bottom:15px;
+}
+
+.result-layout{
+display:flex;
+gap:15px;
+align-items:stretch;
+width:100%;
+}
+
+.result-panel{
+flex:1;
+min-width:0;
+background:#ffffff;
+border:1px solid #dbeafe;
+border-radius:18px;
+padding:16px;
+}
+
+.result-panel-title{
+font-size:18px;
+font-weight:bold;
+padding:10px;
+border-radius:10px;
+margin-bottom:15px;
+background:#dbeafe;
+color:#1e40af;
+}
+
+.misplace-layout{
+display:flex;
+gap:10px;
+height:650px;
+width:100%;
+}
+
+.exclude-box{
+width:120px;
+flex:none;
+background:#f8fafc;
+border:1px solid #dbeafe;
+border-radius:10px;
+padding:8px;
+overflow-y:auto;
+}
+
+.exclude-title{
+font-size:14px;
+font-weight:bold;
+margin-bottom:8px;
+color:#dc2626;
+cursor:default;
+}
+
+.camp-box{
+width:220px;
+flex:none;
+background:#f8fafc;
+border:1px solid #dbeafe;
+border-radius:10px;
+padding:8px;
+overflow-y:auto;
+}
+
+.camp-title{
+font-size:14px;
+font-weight:bold;
+margin-bottom:8px;
+color:#2563eb;
+}
+
+#uniqueTable{
+width:100%;
+border-collapse:collapse;
+}
+
+#uniqueTable th{
+background:#dbeafe;
+padding:6px 2px;
+font-size:12px;
+border:1px solid #cbd5e1;
+}
+
+#uniqueTable td{
+padding:6px 2px;
+border:1px solid #e2e8f0;
+text-align:center;
+font-size:12px;
+}
+
+.detail-title{
+margin-top:5px;
+margin-bottom:8px;
+font-size:14px;
+font-weight:bold;
+color:#1e40af;
+}
+
+#detailTable{
+width:100%;
+margin-top:5px;
+border-collapse:collapse;
+}
+
+#detailTable th{
+background:#bfdbfe;
+padding:8px 4px;
+border:1px solid #cbd5e1;
+font-size:12px;
+white-space:nowrap;
+}
+
+#detailTable td{
+padding:6px 4px;
+border:1px solid #e2e8f0;
+font-size:12px;
+text-align:center;
+white-space:nowrap;
+}
+
+#detailTableWrap{
+max-height:520px;
+overflow-y:auto;
+border:1px solid #cbd5e1;
+border-radius:8px;
+}
+
+#detailTable th{
+position:sticky;
+top:0;
+z-index:5;
+background:#bfdbfe;
+}
+
+.camp-click{
+cursor:pointer;
+font-weight:bold;
+color:#2563eb;
+}
+
+.camp-click:hover{
+background:#eff6ff;
+}
+
+.exclude-row{
+display:flex;
+justify-content:space-between;
+align-items:center;
+padding:4px 6px;
+margin-bottom:4px;
+background:white;
+border:1px solid #e2e8f0;
+border-radius:6px;
+font-size:12px;
+}
+
+.exclude-delete{
+cursor:pointer;
+color:#dc2626;
+font-weight:bold;
+}
+
+.detail-box{
+flex:1;
+min-width:0;
+background:#f8fafc;
+border:1px solid #dbeafe;
+border-radius:10px;
+padding:10px;
+overflow-x:auto;
+}
+
+.call-box{
+margin-top:20px;
+background:#fff;
+border:2px solid #3b82f6;
+border-radius:16px;
+padding:16px;
+box-shadow:0 4px 12px rgba(59, 130, 246, 0.1);
+}
+
+.call-title{
+font-size:16px;
+font-weight:bold;
+color:#1d4ed8;
+margin-bottom:10px;
+display:flex;
+align-items:center;
+gap:6px;
+}
+
+.call-input-group{
+display:flex;
+gap:8px;
+}
+
+.call-input{
+flex:1;
+padding:10px;
+border:1px solid #cbd5e1;
+border-radius:8px;
+font-size:14px;
+outline:none;
+}
+
+.call-btn{
+padding:10px 16px;
+background:#2563eb;
+color:white;
+font-weight:bold;
+border:none;
+border-radius:8px;
+cursor:pointer;
+transition:0.2s;
+white-space:nowrap;
+}
+
+.call-btn:hover{
+background:#1d4ed8;
+}
+
+.call-box-footer {
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.last-call-info {
+  font-size: 12px;
+  color: #475569;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.call-log-link-wrap {
+  font-size: 12px;
+  margin-left: auto;
+}
+
+.call-log-link {
+  color: #2563eb;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.call-log-link:hover {
+  text-decoration: underline;
+  color: #1d4ed8;
+}
+
+.invoice-container {
+  display: flex;
+  gap: 20px;
+  align-items: flex-start;
+  width: 100%;
+}
+
+.invoice-left-panel {
+  flex: 2;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.invoice-right-panel {
+  flex: 1;
+  min-width: 0;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+}
+
+.invoice-panel-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1e293b;
+  padding-bottom: 10px;
+  margin-bottom: 12px;
+  border-bottom: 2px solid #3b82f6;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.invoice-table-wrap {
+  max-height: 650px;
+  overflow-y: auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
+.invoice-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.invoice-table th {
+  position: sticky;
+  top: 0;
+  background: #f1f5f9;
+  color: #334155;
+  padding: 10px 8px;
+  font-size: 13px;
+  border-bottom: 2px solid #cbd5e1;
+  text-align: center;
+  z-index: 5;
+}
+
+.invoice-table td {
+  padding: 8px 6px;
+  font-size: 13px;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: center;
+  color: #1e293b;
+}
+
+.hub-group-header {
+  background-color: #e0f2fe !important;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+  border-top: 2px solid #93c5fd;
+}
+
+.hub-group-header:hover {
+  background-color: #bae6fd !important;
+}
+
+.hub-group-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 12px;
+  color: #0369a1;
+  font-size: 14px;
+}
+
+.hub-count-badge {
+  background-color: #0284c7;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 2px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+  display: inline-block;
+}
+
+.copy-hub-btn {
+  background-color: #0284c7;
+  color: white;
+  border: none;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.2s;
+}
+
+.copy-hub-btn:hover {
+  background-color: #0369a1;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle { display: block; }
+
+  #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section { display: none !important; }
+
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    transform: translateX(-100%);
+    box-shadow: 4px 0 12px rgba(0,0,0,0.3);
+  }
+
+  .sidebar.mobile-open {
+    transform: translateX(0);
+  }
+
+  .main-area {
+    padding: 10px;
+    padding-top: 50px;
+  }
+
+  .title { font-size: 22px; }
+  
+  .result-layout { flex-direction: column; }
+  
+  .result-grid {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+  
+  .summary-table {
+    width: 100%;
+    flex-direction: row;
+  }
+  
+  .summary-card-item { flex: 1; padding: 12px 6px; }
+
+  .hub-table { width: 100%; min-width: 100%; }
+
+  .hub-name.collapsible {
+    cursor: pointer;
+  }
+  
+  .toggle-arrow {
+    display: inline-block;
+  }
+
+  .mobile-collapsed {
+    display: none !important;
+  }
+
+  .misplace-layout {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .exclude-box {
+    width: 100%;
+    max-height: none;
+    padding: 6px 10px;
+  }
+
+  .exclude-title {
+    cursor: pointer;
+    font-size: 13px;
+    padding: 4px 0;
+    user-select: none;
+  }
+
+  #excludeList {
+    display: none;
+    margin-top: 6px;
+    max-height: 200px;
+    overflow-y: auto;
+  }
+
+  #excludeList.mobile-show {
+    display: block;
+  }
+
+  .camp-box, .detail-box {
+    width: 100%;
+    max-height: 280px;
+  }
+
+  .invoice-container {
+    flex-direction: column-reverse;
+    gap: 15px;
+  }
+
+  .invoice-left-panel, .invoice-right-panel {
+    width: 100%;
+    padding: 12px;
+    border-radius: 12px;
+  }
+
+  .invoice-panel-title {
+    font-size: 16px;
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+
+  .invoice-table-wrap {
+    max-height: 480px;
+  }
+
+  .hub-group-title {
+    padding: 6px 8px;
+    font-size: 13px;
+  }
+
+  .copy-hub-btn {
+    padding: 3px 8px;
+    font-size: 11px;
+  }
+}
+
+</style>
+</head>
+
+<body>
+
+<button class="mobile-menu-toggle" onclick="toggleMobileSidebar()">☰ 메뉴</button>
+
+<div class="app-layout">
+
+<div class="sidebar" id="mainSidebar">
+
+<div>
+  <div class="sidebar-logo">
+  ISN_5 1Wave CL
+  </div>
+
+  <div class="menu-section">
+
+  <div class="menu-title">업무 도구</div>
+
+  <!-- 📦 HUB 미스캔 확인 그룹 -->
+  <div class="folder-title" onclick="toggleMenu('hubMenu')">
+    <span id="hubArrow">▼</span> 📦 HUB 미스캔 확인
+  </div>
+
+  <div class="sub-menu" id="hubMenu">
+    <div class="menu-item" id="menuUpload" onclick="showTab('upload')">
+      <span>📁 Raw & Setting ⚙️</span>
+    </div>
+    
+    <div class="menu-item active" id="menuResult" onclick="clickResultMenu(event)">
+      <span>📊 결과 (실시간)</span>
+      <span id="resultSubArrow" style="font-size:11px;color:#94a3b8;">▼</span>
+    </div>
+
+    <div class="sub-menu-level2" id="resultSubMenu">
+      <div class="menu-item" id="menuInvoiceSH" onclick="showTab('invoiceSH')">
+        <span>📋 SH_ISN5 Invoice</span>
+      </div>
+      <div class="menu-item" id="menuInvoiceISN" onclick="showTab('invoiceISN')">
+        <span>📋 ISN_5 Invoice</span>
+      </div>
+      <div class="menu-item" id="menuInvoiceYAJ" onclick="showTab('invoiceYAJ')">
+        <span>📋 YAJ_3 Invoice</span>
+      </div>
+    </div>
+  </div>
+
+  </div>
+</div>
+
+<!-- 📜 호출 Log (사이드바 최하단) -->
+<div class="sidebar-bottom-section">
+  <div class="menu-item" id="menuCallLog" onclick="showTab('callLog')">
+    <span>📜 호출 Log</span>
+  </div>
+</div>
+
+</div>
+
+<div class="main-area">
+
+<div class="wrapper">
+
+<div class="header">
+
+<div class="title">
+📦 HUB 미스캔 실시간 현황
+</div>
+
+<div class="badge" id="badge">
+🟢 실시간 연동 완료
+</div>
+
+<div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
+  <div id="lastUpdate" style="color:#6b7280;font-size:15px;text-align:center;">
+  업데이트 확인 중...
+  </div>
+  <button class="reset-btn" onclick="resetData()">🗑️ 데이터 초기화</button>
+</div>
+
+</div>
+
+<!-- 1. 업로드 / 설정 페이지 -->
+<div id="uploadPage" class="hidden">
+
+<div class="raw-section">
+
+<div class="raw-section-title-wrap">
+  <div class="raw-section-title">
+  📂 1. Raw 업로드 (PC 전용)
+  </div>
+
+  <div class="pdd-time-group">
+    <span class="pdd-time-label">⏰ PDD 시간 기준:</span>
+    <label class="pdd-option">
+      <input type="radio" name="pddTimeOption" value="07" checked> PDD 07시
+    </label>
+    <label class="pdd-option">
+      <input type="radio" name="pddTimeOption" value="08"> PDD 08시
+    </label>
+    <label class="pdd-option">
+      <input type="radio" name="pddTimeOption" value="09"> PDD 09시
+    </label>
+  </div>
+</div>
+
+<input type="file" id="fileInput" multiple accept=".xlsx,.xls" style="display:none;">
+
+<div id="dropZone">
+<div class="drop-content">
+<div class="folder">📁</div>
+<div class="main-text">엑셀 파일 2개를 드래그하거나 클릭하세요</div>
+<div class="sub-text">delivery-list-by-PDD(ISN_5).xlsx / delivery-list-by-PDD(YAJ_3).xlsx</div>
+</div>
+</div>
+
+<div class="status-box">
+<div class="status-title">업로드 상태</div>
+<div id="fileList">⏳ 파일을 업로드 해주세요</div>
+</div>
+
+</div>
+
+<div class="hub-section">
+
+<div class="hub-section-title">⚙️ 2. Hub 설정 (공통 기준)</div>
+
+<div style="display:flex;gap:15px;align-items:flex-start;flex-wrap:wrap;">
+
+<div class="setting-card" style="flex:1;min-width:220px;">
+<h2>🥬 신선 설정</h2>
+<div id="freshSelectedInfo"></div>
+<div class="setting-table-wrap">
+<table id="hubMasterTable" style="width:100%;border-collapse:collapse;">
+<tr><th style="background:#e2e8f0;color:#334155;padding:8px;border:1px solid #cbd5e1;">허브명</th></tr>
+</table>
+</div>
+</div>
+
+<div class="setting-card" style="flex:1;min-width:220px;">
+<h2>🌙 던 설정</h2>
+<div id="dawnSelectedInfo"></div>
+<div class="setting-table-wrap">
+<table id="dawnHubTable" style="width:100%;border-collapse:collapse;">
+<tr><th style="background:#e2e8f0;color:#334155;padding:8px;border:1px solid #cbd5e1;">허브명</th></tr>
+</table>
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<!-- 2. 결과 실시간 모니터링 페이지 -->
+<div id="resultPage">
+
+<div class="result-layout">
+
+<div class="result-panel">
+
+<div class="result-panel-title">
+📦 S-일산5 미도착
+</div>
+
+<div class="result-grid">
+
+<div class="summary-table">
+<div class="summary-card-item">
+<div class="summary-card-label">🥬 신선</div>
+<div class="summary-card-val fresh" id="freshTotal">0</div>
+</div>
+<div class="summary-card-item">
+<div class="summary-card-label">🌙 던</div>
+<div class="summary-card-val dawn" id="dawnTotal">0</div>
+</div>
+</div>
+
+<div class="hub-table">
+<div class="hub-name">
+  <span>SH_ISN5</span>
+</div>
+<div class="total-title">TOTAL</div>
+<div class="total-value" id="shTotal">0</div>
+<table id="shTable"><tr><th>허브</th><th>수량</th></tr></table>
+</div>
+
+<div class="hub-table">
+<div class="hub-name collapsible" onclick="toggleMobileCard('isn')">
+  <span>ISN_5</span>
+  <span class="toggle-arrow" id="isnCardArrow">▼</span>
+</div>
+<div class="total-title">TOTAL</div>
+<div class="total-value" id="isnTotal">0</div>
+<table id="isnTable" class="mobile-collapsed"><tr><th>허브</th><th>수량</th></tr></table>
+</div>
+
+<div class="hub-table">
+<div class="hub-name collapsible" onclick="toggleMobileCard('yaj')">
+  <span>YAJ_3</span>
+  <span class="toggle-arrow" id="yajCardArrow">▼</span>
+</div>
+<div class="total-title">TOTAL</div>
+<div class="total-value" id="yajTotal">0</div>
+<table id="yajTable" class="mobile-collapsed"><tr><th>허브</th><th>수량</th></tr></table>
+</div>
+
+</div>
+
+</div>
+
+<div class="result-panel">
+
+<div class="result-panel-title">
+🚚 S-일산5 타캠프 오도착 Check
+</div>
+
+<div class="misplace-layout">
+
+    <div class="exclude-box">
+        <div class="exclude-title" onclick="toggleExcludeList()">🚫 제외 ID 목록 <span id="excludeToggleIcon">▼</span></div>
+        <div id="excludeList"></div>
+    </div>
+
+    <div class="camp-box">
+        <div class="camp-title">📋 오도착 캠프 (<span id="uniqueCount">0</span>)</div>
+        <table id="uniqueTable">
+            <tr><th>오도착 캠프</th><th>개수</th><th>제외</th></tr>
+        </table>
+    </div>
+
+<div class="detail-box">
+    <div class="detail-title">선택 ID : <span id="selectedCamp">없음</span></div>
+    <button id="copyWaybillBtn" onclick="copyWaybills()" style="margin-bottom:8px;padding:8px 12px;border:none;border-radius:8px;background:#2563eb;color:white;font-weight:bold;cursor:pointer;font-size:12px;">📋 운송장 전체 복사</button>
+    <div id="detailTableWrap">
+        <table id="detailTable">
+            <tr><th>운송장번호</th><th>캠프</th><th>도착시간</th><th>배송완료여부</th></tr>
+        </table>
+    </div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="call-box">
+  <div class="call-title">📢 PC 관리자 음성/팝업 호출 전송</div>
+  <div class="call-input-group">
+    <input type="text" id="callMsgInput" class="call-input" placeholder="PC 스피커 및 팝업으로 전달할 메시지를 입력하세요 (예: 1Wave 확인 바람)">
+    <button class="call-btn" onclick="sendCallSignal()">🔔 호출 전송</button>
+  </div>
+  
+  <div class="call-box-footer">
+    <div class="last-call-info" id="lastCallInfo">
+      🔔 최근 호출: <span style="color:#94a3b8;">호출 내역 없음</span>
+    </div>
+    
+    <div class="call-log-link-wrap">
+      <a class="call-log-link" onclick="showTab('callLog')">👉 [호출 기록(Log) 확인하기]</a>
+    </div>
+  </div>
+</div>
+
+</div>
+
+<!-- 3. SH_ISN5 미도착 Invoice 페이지 -->
+<div id="invoiceSHPage" class="hidden">
+  <div class="invoice-container">
+    <div class="invoice-left-panel">
+      <div class="invoice-panel-title">
+        <span>📄 SH_ISN5 미도착 Invoice 상세</span>
+        <span style="font-size:14px;color:#2563eb;" id="shInvoiceCount">총 0건</span>
+      </div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="shInvoiceTable">
+          <thead>
+            <tr>
+              <th>Hub</th>
+              <th>주문번호</th>
+              <th>운송장번호</th>
+              <th>라우트</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="4">데이터가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="invoice-right-panel">
+      <div class="invoice-panel-title" id="shRoutePanelTitle">📊 SH_ISN5 라우트별 수량</div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="shRouteTable">
+          <thead>
+            <tr>
+              <th>라우트 (Group)</th>
+              <th>수량</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. ISN_5 미도착 Invoice 페이지 -->
+<div id="invoiceISNPage" class="hidden">
+  <div class="invoice-container">
+    <div class="invoice-left-panel">
+      <div class="invoice-panel-title">
+        <span>📄 ISN_5 미도착 Invoice 상세</span>
+        <span style="font-size:14px;color:#2563eb;" id="isnInvoiceCount">총 0건</span>
+      </div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="isnInvoiceTable">
+          <thead>
+            <tr>
+              <th>Hub</th>
+              <th>주문번호</th>
+              <th>운송장번호</th>
+              <th>라우트</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="4">데이터가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="invoice-right-panel">
+      <div class="invoice-panel-title" id="isnRoutePanelTitle">📊 ISN_5 라우트별 수량</div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="isnRouteTable">
+          <thead>
+            <tr>
+              <th>라우트 (Group)</th>
+              <th>수량</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. YAJ_3 미도착 Invoice 페이지 -->
+<div id="invoiceYAJPage" class="hidden">
+  <div class="invoice-container">
+    <div class="invoice-left-panel">
+      <div class="invoice-panel-title">
+        <span>📄 YAJ_3 미도착 Invoice 상세</span>
+        <span style="font-size:14px;color:#2563eb;" id="yajInvoiceCount">총 0건</span>
+      </div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="yajInvoiceTable">
+          <thead>
+            <tr>
+              <th>Hub</th>
+              <th>주문번호</th>
+              <th>운송장번호</th>
+              <th>라우트</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="4">데이터가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="invoice-right-panel">
+      <div class="invoice-panel-title" id="yajRoutePanelTitle">📊 YAJ_3 라우트별 수량</div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="yajRouteTable">
+          <thead>
+            <tr>
+              <th>라우트 (Group)</th>
+              <th>수량</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 6. 📜 호출 Log PC 전용 화면 -->
+<div id="callLogPage" class="hidden">
+  <div class="result-panel">
+    <div class="result-panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>📜 PC 관리자 호출 기록 (Log)</span>
+      <button class="reset-btn" onclick="clearCallLogs()" style="margin:0;">🗑️ 로그 전체 삭제</button>
+    </div>
+    <div style="font-size:13px;color:#64748b;margin-bottom:12px;">현장 및 PC에서 전송된 실시간 음성/팝업 호출 이력입니다.</div>
+    <div class="invoice-table-wrap" style="max-height:700px;">
+      <table class="invoice-table" id="callLogTable">
+        <thead>
+          <tr>
+            <th style="width:180px;">호출 일시</th>
+            <th>호출 메시지 내용</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="2">기록된 호출 로그가 없습니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+</div>
+</div>
+</div>
+
+<script>
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA9r5um2weaQiyc3Hq4foMZLdDRAfnLgJM",
+  authDomain: "isn5-1wave.firebaseapp.com",
+  databaseURL: "https://isn5-1wave-default-rtdb.firebaseio.com",
+  projectId: "isn5-1wave",
+  storageBucket: "isn5-1wave.firebasestorage.app",
+  messagingSenderId: "1050837403107",
+  appId: "1:1050837403107:web:94419d02a7351d95a3ccd6",
+  measurementId: "G-H0YTZ68F9P"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
+const defaultSelectedHubs = ["BUC2", "INC11", "INC15", "INC48"];
+let selectedHubs = [...defaultSelectedHubs];
+
+const defaultDawnHubs = ["DON1", "GOY1", "GOY1CFC", "INC14", "INC28", "INC32", "SFISN5", "INC4"];
+let selectedDawnHubs = [...defaultDawnHubs];
+
+let excludedIds = ["xisn5_au_sorter", "xisn5_scan1", "xisn5_scan2", "xisn5_scan3", "xisn5_scan4", "wopark140", "leeusk92", "savor1206", "jasong51", "mipark156"];
+
+let remoteData = null;
+let selectedMisplaceId = "";
+let currentSelectedWaybills = [];
+let lastSpokenTime = Date.now();
+
+const hubWaybillsStore = {};
+
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+
+function requestNotificationPermission() {
+  if (!isMobile && "Notification" in window && Notification.permission !== "granted") {
+    Notification.requestPermission();
+  }
+}
+
+function showDesktopNotification(msg) {
+  if (!isMobile && "Notification" in window && Notification.permission === "granted") {
+    const notification = new Notification("📢 [ISN_5 대시보드] 호출 알림", {
+      body: msg,
+      icon: "https://cdn-icons-png.flaticon.com/512/3602/3602145.png"
+    });
+
+    notification.onclick = function() {
+      window.focus();
+    };
+  }
+}
+
+function speakText(text) {
+  if (!isMobile && 'speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.lang = 'ko-KR';
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+    window.speechSynthesis.speak(utterance);
+  }
+}
+
+function toggleMobileSidebar(){
+  document.getElementById("mainSidebar").classList.toggle("mobile-open");
+}
+
+function toggleExcludeList(){
+  if(window.innerWidth <= 768){
+    const list = document.getElementById("excludeList");
+    const icon = document.getElementById("excludeToggleIcon");
+    list.classList.toggle("mobile-show");
+    icon.innerText = list.classList.contains("mobile-show") ? "▲" : "▼";
+  }
+}
+
+function toggleMobileCard(prefix) {
+  if (window.innerWidth <= 768) {
+    const table = document.getElementById(`${prefix}Table`);
+    const arrow = document.getElementById(`${prefix}CardArrow`);
+    
+    if (table) {
+      table.classList.toggle("mobile-collapsed");
+      const isCollapsed = table.classList.contains("mobile-collapsed");
+      if (arrow) arrow.innerText = isCollapsed ? "▼" : "▲";
+    }
+  }
+}
+
+function showTab(page){
+  document.getElementById("uploadPage").classList.toggle("hidden", page !== "upload");
+  document.getElementById("resultPage").classList.toggle("hidden", page !== "result");
+  document.getElementById("invoiceSHPage").classList.toggle("hidden", page !== "invoiceSH");
+  document.getElementById("invoiceISNPage").classList.toggle("hidden", page !== "invoiceISN");
+  document.getElementById("invoiceYAJPage").classList.toggle("hidden", page !== "invoiceYAJ");
+  document.getElementById("callLogPage").classList.toggle("hidden", page !== "callLog");
+
+  document.getElementById("menuUpload").classList.toggle("active", page === "upload");
+  document.getElementById("menuResult").classList.toggle("active", page === "result");
+  document.getElementById("menuInvoiceSH").classList.toggle("active", page === "invoiceSH");
+  document.getElementById("menuInvoiceISN").classList.toggle("active", page === "invoiceISN");
+  document.getElementById("menuInvoiceYAJ").classList.toggle("active", page === "invoiceYAJ");
+  document.getElementById("menuCallLog").classList.toggle("active", page === "callLog");
+
+  document.getElementById("mainSidebar").classList.remove("mobile-open");
+}
+
+function toggleMenu(menuId){
+  const menu = document.getElementById(menuId);
+  menu.classList.toggle("hidden");
+  const arrow = document.getElementById(menuId.replace("Menu","Arrow"));
+  if(arrow){
+    arrow.innerText = menu.classList.contains("hidden") ? "▶" : "▼";
+  }
+}
+
+function clickResultMenu(e){
+  showTab('result');
+  const subMenu = document.getElementById("resultSubMenu");
+  const arrow = document.getElementById("resultSubArrow");
+  subMenu.classList.toggle("hidden");
+  if(arrow){
+    arrow.innerText = subMenu.classList.contains("hidden") ? "▶" : "▼";
+  }
+}
+
+const fileInput = document.getElementById("fileInput");
+const dropZone = document.getElementById("dropZone");
+
+dropZone.onclick = () => fileInput.click();
+dropZone.ondragover = (e) => e.preventDefault();
+dropZone.ondrop = (e) => { e.preventDefault(); processFiles(e.dataTransfer.files); };
+fileInput.onchange = (e) => processFiles(e.target.files);
+
+async function processFiles(files){
+  try{
+    if(files.length < 2){
+      alert("엑셀 파일 2개를 업로드하세요.");
+      return;
+    }
+    document.getElementById("badge").innerHTML = "🟡 분석 및 서버 전송 중";
+
+    const selectedPddTime = document.querySelector('input[name="pddTimeOption"]:checked')?.value || "07";
+
+    const data1 = await readExcel(files[0]);
+    const data2 = await readExcel(files[1]);
+
+    document.getElementById("fileList").innerHTML = `✅ ${files[0].name}<br>✅ ${files[1].name}`;
+
+    const rows = [...data1, ...data2.slice(1)];
+
+    const now = new Date();
+    let targetDate = new Date();
+    const currentHour = now.getHours();
+
+    if (currentHour >= 19) {
+      targetDate.setDate(targetDate.getDate() + 1);
+    }
+
+    const targetDateStr = targetDate.getFullYear() + "-" +
+      String(targetDate.getMonth()+1).padStart(2,"0") + "-" +
+      String(targetDate.getDate()).padStart(2,"0");
+
+    const filteredUnarrived = rows.filter(r => {
+      const m = String(r[12]||"").trim();
+      const n = String(r[13]||"").trim();
+      const q = String(r[16]||"").trim();
+      const rt = String(r[17]||"").trim();
+      return (m === "" && n === "" && q === "N" && rt.startsWith(targetDateStr + " " + selectedPddTime));
+    });
+
+    const shCounts = {}, isnCounts = {}, yajCounts = {};
+    const shList = [], isnList = [], yajList = [];
+
+    filteredUnarrived.forEach(r => {
+      const hub = String(r[3]||"").trim();
+      const camp = String(r[6]||"").trim();
+      const orderNo = String(r[2]||"").trim();
+      const waybill = String(r[8]||"").trim();
+      const route = String(r[1]||"").trim();
+
+      if(!hub) return;
+
+      const itemData = { hub, orderNo, waybill, route };
+
+      shCounts[hub] = (shCounts[hub] || 0) + 1;
+      shList.push(itemData);
+
+      if(camp === "ISN_5") {
+        isnCounts[hub] = (isnCounts[hub] || 0) + 1;
+        isnList.push(itemData);
+      }
+
+      if(camp === "YAJ_3") {
+        yajCounts[hub] = (yajCounts[hub] || 0) + 1;
+        yajList.push(itemData);
+      }
+    });
+
+    const allHubs = [...new Set(rows.map(r=>String(r[3]||"").trim()).filter(x=>x!==""))].sort();
+
+    const misplaceMap = {};
+    rows.forEach(r => {
+      const id = String(r[12]||"").trim();
+      if(id !== ""){
+        if(!misplaceMap[id]) misplaceMap[id] = [];
+        if(misplaceMap[id].length < 100){
+          misplaceMap[id].push({
+            wb: String(r[8]||""),
+            camp: String(r[6]||""),
+            arr: String(r[11]||""),
+            deliv: String(r[16]||"")
+          });
+        }
+      }
+    });
+
+    const updateText = now.getFullYear() + "-" +
+      String(now.getMonth()+1).padStart(2,"0") + "-" +
+      String(now.getDate()).padStart(2,"0") + " " +
+      String(now.getHours()).padStart(2,"0") + ":" +
+      String(now.getMinutes()).padStart(2,"0") + ":" +
+      String(now.getSeconds()).padStart(2,"0");
+
+    const payload = {
+      lastUpdate: updateText + ` (${targetDateStr} / PDD ${selectedPddTime}시)`,
+      shCounts, isnCounts, yajCounts,
+      shList, isnList, yajList,
+      unassignedTotal: filteredUnarrived.length,
+      allHubs,
+      misplaceMap
+    };
+
+    db.ref("dashboardSummary").set(payload).then(() => {
+      document.getElementById("badge").innerHTML = `🟢 서버 업데이트 완료 (${targetDateStr} ${selectedPddTime}시)`;
+      showTab('result');
+    }).catch(err => {
+      console.error(err);
+      alert("전송 오류: " + err.message);
+    });
+
+  } catch(error){
+    console.error(error);
+    alert("오류 발생\n\n" + error.message);
+    document.getElementById("badge").innerHTML = "🔴 오류 발생";
+  }
+}
+
+function readExcel(file){
+  return new Promise((resolve)=>{
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const workbook = XLSX.read(e.target.result, { type: "binary" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      resolve(XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" }));
+    };
+    reader.readAsBinaryString(file);
+  });
+}
+
+function resetData(){
+  if(confirm("정말로 모든 실시간 데이터를 초기화하시겠습니까?\n초기화 시 연결된 모바일 화면의 데이터도 비워집니다.")){
+    db.ref("dashboardSummary").remove().then(()=>{
+      alert("데이터가 성공적으로 초기화되었습니다.");
+    }).catch(err=>{
+      alert("초기화 실패: " + err.message);
+    });
+  }
+}
+
+function formatTimeString(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const seconds = String(d.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+function sendCallSignal(){
+  const input = document.getElementById("callMsgInput");
+  const msg = input.value.trim() || "모바일에서 현장 호출이 들어왔습니다.";
+  const now = new Date();
+  const timeStr = formatTimeString(now);
+  const timestamp = now.getTime();
+
+  db.ref("callSignal").set({
+    message: msg,
+    timeStr: timeStr,
+    timestamp: timestamp
+  });
+
+  db.ref("callLogs").push({
+    timeStr: timeStr,
+    message: msg,
+    timestamp: timestamp
+  }).then(()=>{
+    alert("PC로 호출 메시지가 전송되었으며, 호출 Log에 기록되었습니다.");
+    input.value = "";
+  }).catch(err=>{
+    alert("호출 전송 실패: " + err.message);
+  });
+}
+
+db.ref("callLogs").on("value", (snapshot) => {
+  const tbody = document.getElementById("callLogTable").querySelector("tbody");
+  if (snapshot.exists() && snapshot.val() !== null) {
+    const logsObj = snapshot.val();
+    const logList = Object.values(logsObj);
+    logList.sort((a,b) => b.timestamp - a.timestamp);
+
+    let html = "";
+    logList.forEach(log => {
+      const timeDisplay = log.timeStr || (log.timestamp ? formatTimeString(new Date(log.timestamp)) : '-');
+      html += `
+        <tr>
+          <td style="color:#64748b;font-weight:bold;">${timeDisplay}</td>
+          <td style="text-align:left;padding-left:15px;font-weight:600;color:#1e293b;">${log.message}</td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+  } else {
+    tbody.innerHTML = '<tr><td colspan="2">기록된 호출 로그가 없습니다.</td></tr>';
+  }
+});
+
+function clearCallLogs(){
+  if(confirm("모든 호출 기록(Log)을 삭제하시겠습니까?")){
+    db.ref("callLogs").remove().then(()=>{
+      alert("호출 로그가 삭제되었습니다.");
+    });
+  }
+}
+
+db.ref("callSignal").on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    const displayTime = data.timeStr || (data.timestamp ? formatTimeString(new Date(data.timestamp)) : '');
+    const lastCallInfoEl = document.getElementById("lastCallInfo");
+    if (lastCallInfoEl) {
+      lastCallInfoEl.innerHTML = `🔔 최근 호출: <span style="color:#1d4ed8;font-weight:bold;">[${displayTime}]</span> <span style="color:#1e293b;font-weight:bold;">${data.message}</span>`;
+    }
+
+    if (data.timestamp > lastSpokenTime) {
+      lastSpokenTime = data.timestamp;
+      
+      if (!isMobile && (Date.now() - data.timestamp < 10000)) {
+        speakText("알림. " + data.message);
+        showDesktopNotification(data.message);
+      }
+    }
+  }
+});
+
+db.ref("dashboardSummary").on("value", (snapshot) => {
+  if (snapshot.exists() && snapshot.val() !== null) {
+    const data = snapshot.val();
+    remoteData = data;
+    document.getElementById("lastUpdate").innerText = "마지막 업데이트 : " + data.lastUpdate;
+    renderData();
+    document.getElementById("badge").innerHTML = "🟢 실시간 동기화 완료";
+  } else if (!snapshot.exists()) {
+    remoteData = null;
+    document.getElementById("lastUpdate").innerText = "업데이트된 데이터가 없습니다";
+    document.getElementById("freshTotal").innerText = "0";
+    document.getElementById("dawnTotal").innerText = "0";
+    document.getElementById("shTotal").innerText = "0";
+    document.getElementById("isnTotal").innerText = "0";
+    document.getElementById("yajTotal").innerText = "0";
+    document.getElementById("badge").innerHTML = "⚪ 데이터 없음";
+    
+    resetInvoiceTables();
+  }
+});
+
+function resetInvoiceTables(){
+  ["sh", "isn", "yaj"].forEach(prefix => {
+    document.getElementById(`${prefix}InvoiceTable`).querySelector("tbody").innerHTML = '<tr><td colspan="4">데이터가 없습니다.</td></tr>';
+    document.getElementById(`${prefix}RouteTable`).querySelector("tbody").innerHTML = '<tr><td colspan="2">데이터가 없습니다.</td></tr>';
+    document.getElementById(`${prefix}InvoiceCount`).innerText = "총 0건";
+  });
+}
+
+function renderData(){
+  if(!remoteData) return;
+
+  const { shCounts={}, isnCounts={}, yajCounts={}, allHubs=[], misplaceMap={}, shList=[], isnList=[], yajList=[] } = remoteData;
+
+  let freshTot = 0, dawnTot = 0;
+
+  Object.entries(shCounts).forEach(([hub, qty]) => {
+    if(selectedHubs.includes(hub)) freshTot += qty;
+    else dawnTot += qty;
+  });
+
+  document.getElementById("freshTotal").innerText = freshTot.toLocaleString();
+  document.getElementById("dawnTotal").innerText = dawnTot.toLocaleString();
+
+  renderTable("shTable", "shTotal", shCounts);
+  renderTable("isnTable", "isnTotal", isnCounts);
+  renderTable("yajTable", "yajTotal", yajCounts);
+
+  renderHubMaster(allHubs);
+  renderMisplace(misplaceMap);
+
+  renderInvoiceSection("sh", shList, shCounts, "SH_ISN5");
+  renderInvoiceSection("isn", isnList, isnCounts, "ISN_5");
+  renderInvoiceSection("yaj", yajList, yajCounts, "YAJ_3");
+}
+
+function renderTable(tableId, totalId, countMap){
+  let sum = 0;
+  Object.values(countMap).forEach(v => sum += v);
+  document.getElementById(totalId).innerText = sum.toLocaleString();
+
+  const table = document.getElementById(tableId);
+  
+  const isCollapsed = table.classList.contains("mobile-collapsed");
+  
+  table.innerHTML = "<tr><th>허브</th><th>수량</th></tr>";
+
+  if (isCollapsed) {
+    table.classList.add("mobile-collapsed");
+  }
+
+  Object.entries(countMap).sort((a,b)=>b[1]-a[1]).forEach(([hub,qty])=>{
+    let rowStyle = (tableId === "shTable" && selectedDawnHubs.includes(hub)) ? "background:#dbeafe;color:#1e40af;font-weight:bold;border-left:4px solid #3b82f6;" : "";
+    table.innerHTML += `<tr><td style="${rowStyle}">${hub}</td><td style="${rowStyle}">${qty.toLocaleString()}</td></tr>`;
+  });
+}
+
+// 📄 Invoice 화면 렌더링 및 클릭한 허브의 라우트별 수량 동적 집계 연동
+function renderInvoiceSection(prefix, list=[], countMap={}, titleName=""){
+  const countBadge = document.getElementById(`${prefix}InvoiceCount`);
+  const invoiceTbody = document.getElementById(`${prefix}InvoiceTable`).querySelector("tbody");
+
+  if (!list || list.length === 0) {
+    countBadge.innerText = "총 0건";
+    invoiceTbody.innerHTML = '<tr><td colspan="4">데이터가 없습니다.</td></tr>';
+    renderRouteTable(prefix, list, titleName);
+    return;
+  }
+
+  countBadge.innerText = `총 ${list.length.toLocaleString()}건`;
+
+  const groupedByHub = {};
+  list.forEach(item => {
+    if(!groupedByHub[item.hub]) groupedByHub[item.hub] = [];
+    groupedByHub[item.hub].push(item);
+  });
+
+  const sortedHubs = Object.keys(groupedByHub).sort((a, b) => {
+    const countA = countMap[a] || groupedByHub[a].length;
+    const countB = countMap[b] || groupedByHub[b].length;
+    return countB - countA;
+  });
+
+  let invoiceHtml = "";
+
+  sortedHubs.forEach((hub, index) => {
+    const items = groupedByHub[hub];
+    const groupId = `${prefix}_hub_group_${index}`;
+    const waybills = items.map(x => x.waybill).filter(x => x !== "");
+    
+    const storeKey = `${prefix}_${hub}`;
+    hubWaybillsStore[storeKey] = waybills;
+
+    invoiceHtml += `
+      <tr class="hub-group-header" onclick="toggleHubGroup('${prefix}', '${groupId}', '${hub}', '${titleName}')">
+        <td colspan="4">
+          <div class="hub-group-title">
+            <div style="display:flex;align-items:center;">
+              <span>📦 <b>${hub}</b></span>
+              <span class="hub-count-badge">${items.length.toLocaleString()}건</span>
+              <span id="${groupId}_arrow" style="margin-left:8px;font-size:12px;color:#0284c7;">▼</span>
+            </div>
+            <button class="copy-hub-btn" onclick="copyHubWaybills(event, '${storeKey}')">📋 ${items.length.toLocaleString()}건 운송장 복사</button>
+          </div>
+        </td>
+      </tr>
+    `;
+
+    items.forEach(item => {
+      invoiceHtml += `
+        <tr class="${groupId}_row hidden" style="background:#f8fafc;">
+          <td><span style="color:#64748b;">${item.hub}</span></td>
+          <td>${item.orderNo}</td>
+          <td><b>${item.waybill}</b></td>
+          <td>${item.route}</td>
+        </tr>
+      `;
+    });
+  });
+
+  invoiceTbody.innerHTML = invoiceHtml;
+
+  // 초기 상태는 전체 데이터 집계
+  renderRouteTable(prefix, list, titleName);
+}
+
+// 라우트별 수량 표 렌더링 함수
+function renderRouteTable(prefix, targetList=[], titleName="", selectedHub=""){
+  const routeTbody = document.getElementById(`${prefix}RouteTable`).querySelector("tbody");
+  const routeTitleEl = document.getElementById(`${prefix}RoutePanelTitle`);
+
+  if (routeTitleEl) {
+    if (selectedHub) {
+      routeTitleEl.innerText = `📊 ${titleName} 라우트별 수량 (${selectedHub})`;
+    } else {
+      routeTitleEl.innerText = `📊 ${titleName} 라우트별 수량 (전체)`;
+    }
+  }
+
+  const routeGroupMap = {};
+  targetList.forEach(item => {
+    const rawRoute = item.route;
+    if (!rawRoute) return;
+
+    const match = rawRoute.match(/^([A-Za-z0-9]+?)\d{1,2}$/i);
+    const groupKey = match ? match[1] : rawRoute;
+
+    routeGroupMap[groupKey] = (routeGroupMap[groupKey] || 0) + 1;
+  });
+
+  let routeHtml = "";
+  Object.entries(routeGroupMap)
+    .sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true, sensitivity: 'base' }))
+    .forEach(([routeGroup, count]) => {
+      routeHtml += `
+        <tr>
+          <td><b>${routeGroup}</b></td>
+          <td><span style="color:#2563eb;font-weight:bold;">${count.toLocaleString()}</span> 개</td>
+        </tr>
+      `;
+    });
+
+  routeTbody.innerHTML = routeHtml || '<tr><td colspan="2">라우트 정보가 없습니다.</td></tr>';
+}
+
+// 📦 허브 그룹 접기/펼치기 및 해당 허브의 라우트 수량만 오른쪽 표에 즉시 연동
+function toggleHubGroup(prefix, groupId, hubName, titleName){
+  const rows = document.querySelectorAll(`.${groupId}_row`);
+  const arrow = document.getElementById(`${groupId}_arrow`);
+  
+  if(!rows.length) return;
+
+  const willBeOpen = rows[0].classList.contains("hidden");
+
+  // 다른 허브 행들 일단 숨기기 (1개 허브에 집중 집계)
+  const allRows = document.querySelectorAll(`[class*="${prefix}_hub_group_"][class*="_row"]`);
+  allRows.forEach(r => r.classList.add("hidden"));
+
+  const allArrows = document.querySelectorAll(`[id*="${prefix}_hub_group_"][id*="_arrow"]`);
+  allArrows.forEach(a => a.innerText = "▼");
+
+  if(willBeOpen) {
+    rows.forEach(row => row.classList.remove("hidden"));
+    if(arrow) arrow.innerText = "▲";
+
+    // 클릭한 허브의 데이터만 추출하여 오른쪽 라우트 표 업데이트
+    const listKey = `${prefix}List`;
+    const fullList = remoteData ? (remoteData[listKey] || []) : [];
+    const filteredByHub = fullList.filter(item => item.hub === hubName);
+
+    renderRouteTable(prefix, filteredByHub, titleName, hubName);
+  } else {
+    // 다시 닫았을 때는 전체 라우트 수량으로 원복
+    const listKey = `${prefix}List`;
+    const fullList = remoteData ? (remoteData[listKey] || []) : [];
+
+    renderRouteTable(prefix, fullList, titleName, "");
+  }
+}
+
+function copyHubWaybills(event, storeKey){
+  event.stopPropagation();
+  const waybills = hubWaybillsStore[storeKey] || [];
+  if(waybills.length === 0){
+    alert("복사할 운송장이 없습니다.");
+    return;
+  }
+  navigator.clipboard.writeText(waybills.join("\n"));
+  alert(`[${storeKey.split('_')[1]}] 운송장 ${waybills.length.toLocaleString()}건 복사 완료`);
+}
+
+function renderHubMaster(hubs){
+  const table = document.getElementById("hubMasterTable");
+  const dawnTable = document.getElementById("dawnHubTable");
+  const freshInfo = document.getElementById("freshSelectedInfo");
+  const dawnInfo = document.getElementById("dawnSelectedInfo");
+
+  table.innerHTML = `<tr><th style="background:#e2e8f0;color:#334155;padding:8px;border:1px solid #cbd5e1;">허브명</th></tr>`;
+  dawnTable.innerHTML = `<tr><th style="background:#e2e8f0;color:#334155;padding:8px;border:1px solid #cbd5e1;">허브명</th></tr>`;
+
+  freshInfo.innerHTML = `<div class="selected-info"><div class="selected-count">선택됨 (${selectedHubs.length})</div>${selectedHubs.join(" · ")}</div>`;
+  dawnInfo.innerHTML = `<div class="selected-info"><div class="selected-count">선택됨 (${selectedDawnHubs.length})</div>${selectedDawnHubs.join(" · ")}</div>`;
+
+  hubs.forEach(hub => {
+    const selected = selectedHubs.includes(hub);
+    const disabledInFresh = selectedDawnHubs.includes(hub);
+
+    table.innerHTML += `<tr><td ${disabledInFresh ? '' : `onclick="toggleHub('${hub}')"`} style="cursor:${disabledInFresh ? 'not-allowed' : 'pointer'};padding:8px;border:1px solid #edf2f7;background:${disabledInFresh ? '#f1f5f9' : selected ? '#bbf7d0' : '#ffffff'};color:${disabledInFresh ? '#94a3b8' : '#1e293b'};font-weight:${selected ? 'bold' : 'normal'};">${disabledInFresh ? '🚫' : selected ? '✅' : '⬜'} ${hub}</td></tr>`;
+
+    const dawnSelected = selectedDawnHubs.includes(hub);
+    const disabledInDawn = selectedHubs.includes(hub);
+
+    dawnTable.innerHTML += `<tr><td ${disabledInDawn ? '' : `onclick="toggleDawnHub('${hub}')"`} style="cursor:${disabledInDawn ? 'not-allowed' : 'pointer'};padding:8px;border:1px solid #edf2f7;background:${disabledInDawn ? '#f1f5f9' : dawnSelected ? '#bfdbfe' : '#ffffff'};color:${disabledInDawn ? '#94a3b8' : '#1e293b'};font-weight:${dawnSelected ? 'bold' : 'normal'};">${disabledInDawn ? '🚫' : dawnSelected ? '🔳' : '⬜'} ${hub}</td></tr>`;
+  });
+}
+
+function toggleHub(hub){
+  if(selectedDawnHubs.includes(hub)) return;
+  selectedHubs = selectedHubs.includes(hub) ? selectedHubs.filter(x=>x!==hub) : [...selectedHubs, hub];
+  renderData();
+}
+
+function toggleDawnHub(hub){
+  if(selectedHubs.includes(hub)) return;
+  selectedDawnHubs = selectedDawnHubs.includes(hub) ? selectedDawnHubs.filter(x=>x!==hub) : [...selectedDawnHubs, hub];
+  renderData();
+}
+
+function buildExcludeList(){
+  const excludeList = document.getElementById("excludeList");
+  excludeList.innerHTML = "";
+  excludedIds.forEach(id => {
+    excludeList.innerHTML += `<div class="exclude-row"><span>${id}</span><span class="exclude-delete" onclick="removeExcludeId('${id}')">❌</span></div>`;
+  });
+}
+
+function renderMisplace(misplaceMap){
+  const table = document.getElementById("uniqueTable");
+  const countBox = document.getElementById("uniqueCount");
+  if(!table) return;
+
+  const validEntries = Object.entries(misplaceMap).filter(([id]) => !excludedIds.includes(id));
+  validEntries.sort((a,b) => b[1].length - a[1].length);
+
+  countBox.innerText = validEntries.length.toLocaleString();
+
+  table.innerHTML = `<tr><th>오도착 캠프</th><th>개수</th><th>제외</th></tr>`;
+
+  validEntries.forEach(([id, list]) => {
+    const selectedStyle = selectedMisplaceId === id ? "background:#dbeafe;font-weight:bold;color:#1d4ed8;" : "";
+    table.innerHTML += `<tr><td class="camp-click" style="${selectedStyle}" onclick="showCampDetail('${id}')">${id}</td><td style="${selectedStyle}">${list.length.toLocaleString()}</td><td><button onclick="quickExclude('${id}')" style="padding:2px 6px;border:none;border-radius:4px;background:#ef4444;color:white;cursor:pointer;">➕</button></td></tr>`;
+  });
+
+  if(selectedMisplaceId && misplaceMap[selectedMisplaceId]){
+    showCampDetail(selectedMisplaceId);
+  }
+}
+
+function quickExclude(id){
+  if(excludedIds.includes(id)) return;
+  excludedIds.push(id);
+  buildExcludeList();
+  renderData();
+}
+
+function removeExcludeId(id){
+  excludedIds = excludedIds.filter(x=>x!==id);
+  buildExcludeList();
+  renderData();
+}
+
+function showCampDetail(targetId){
+  selectedMisplaceId = targetId;
+  if(!remoteData || !remoteData.misplaceMap || !remoteData.misplaceMap[targetId]) return;
+
+  const list = remoteData.misplaceMap[targetId];
+  currentSelectedWaybills = list.map(item => item.wb);
+
+  document.getElementById("selectedCamp").innerText = `${targetId} (${list.length.toLocaleString()}건)`;
+
+  const table = document.getElementById("detailTable");
+  table.innerHTML = `<tr><th>운송장번호</th><th>캠프</th><th>도착시간</th><th>배송완료여부</th></tr>`;
+
+  list.forEach(item => {
+    table.innerHTML += `<tr><td>${item.wb}</td><td>${item.camp}</td><td>${item.arr}</td><td>${item.deliv}</td></tr>`;
+  });
+}
+
+function copyWaybills(){
+  if(currentSelectedWaybills.length === 0){
+    alert("먼저 오도착 캠프를 선택하세요.");
+    return;
+  }
+  navigator.clipboard.writeText(currentSelectedWaybills.join("\n"));
+  alert(`${currentSelectedWaybills.length.toLocaleString()}건 복사 완료`);
+}
+
+window.addEventListener("load",()=>{
+  buildExcludeList();
+  requestNotificationPermission();
+});
+
+</script>
+
+</div>
+</div>
+</div>
+
+</body>
+</html>
