@@ -539,22 +539,25 @@ justify-content:space-between;
 align-items:center;
 }
 
-/* 📈 누적 데이터 버튼 스타일 */
+/* 📥 데이터 누적하기 버튼 스타일 */
 .trend-btn {
-  background:#2563eb;
+  background:#10b981;
   color:white;
   border:none;
-  padding:6px 12px;
+  padding:6px 14px;
   border-radius:8px;
   font-size:13px;
   font-weight:bold;
   cursor:pointer;
   transition:0.2s;
-  box-shadow:0 2px 4px rgba(37,99,235,0.2);
+  box-shadow:0 2px 4px rgba(16,185,129,0.2);
+  display:flex;
+  align-items:center;
+  gap:4px;
 }
 
 .trend-btn:hover {
-  background:#1d4ed8;
+  background:#059669;
 }
 
 .misplace-layout{
@@ -907,7 +910,7 @@ background:#1d4ed8;
 @media (max-width: 768px) {
   .mobile-menu-toggle { display: block; }
 
-  /* 📱 모바일 숨김 항목 (누적 버튼 숨김 추가) */
+  /* 📱 모바일 숨김 항목 (데이터 누적 버튼 모바일 숨김) */
   #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section, .trend-btn { display: none !important; }
 
   .sidebar {
@@ -1192,7 +1195,7 @@ background:#1d4ed8;
 
 <div class="result-panel-title">
   <span>📦 S-일산5 미도착</span>
-  <button class="trend-btn" onclick="showTab('trend')">📈 누적 데이터 보기</button>
+  <button class="trend-btn" onclick="saveAccumulatedData()">📥 데이터 누적하기</button>
 </div>
 
 <div class="result-grid">
@@ -1300,12 +1303,29 @@ background:#1d4ed8;
 <!-- 📈 3. 누적 데이터 (트렌드) 페이지 -->
 <div id="trendPage" class="hidden">
   <div class="result-panel">
-    <div class="result-panel-title">
-      <span>📈 일별/차수별 누적 트렌드 분석</span>
+    <div class="result-panel-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>📈 누적 데이터 기록 (트렌드)</span>
+      <button class="reset-btn" onclick="clearTrendLogs()" style="margin:0;">🗑️ 전체 누적 삭제</button>
     </div>
-    <div style="padding: 20px; text-align: center; color: #64748b;">
-      <p style="font-size:16px; font-weight:bold; margin-bottom:8px;">⏳ 누적 데이터 트렌드 세팅 영역입니다.</p>
-      <p style="font-size:13px;">추후 수집할 누적 데이터 및 그래프 구성 요구사항을 알려주시면 바로 반영해 드립니다!</p>
+    <div style="font-size:13px; color:#64748b; margin-bottom:12px; margin-top:6px;">
+      '데이터 누적하기' 버튼을 눌렀을 당시 기록된 <b>신선 수량</b>, <b>던 수량</b>, <b>SH_ISN5 수량</b> 이력입니다.
+    </div>
+    <div class="invoice-table-wrap" style="max-height:700px;">
+      <table class="invoice-table" id="trendTable">
+        <thead>
+          <tr>
+            <th style="width:170px;">누적 저장 일시</th>
+            <th>기준 업데이트 정보</th>
+            <th>🥬 신선 수량</th>
+            <th>🌙 던 수량</th>
+            <th>📦 SH_ISN5 Total</th>
+            <th style="width:70px;">관리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="6">누적된 데이터가 없습니다.</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </div>
@@ -1582,6 +1602,84 @@ function clickResultMenu(e){
   subMenu.classList.toggle("hidden");
   if(arrow){
     arrow.innerText = subMenu.classList.contains("hidden") ? "▶" : "▼";
+  }
+}
+
+/* 📥 [핵심 추가] 현재 결과 데이터 누적 함수 */
+function saveAccumulatedData() {
+  const freshVal = document.getElementById("freshTotal").innerText;
+  const dawnVal = document.getElementById("dawnTotal").innerText;
+  const shVal = document.getElementById("shTotal").innerText;
+
+  if (freshVal === "0" && dawnVal === "0" && shVal === "0") {
+    if (!confirm("현재 수량이 모두 0입니다. 이대로 누적하시겠습니까?")) {
+      return;
+    }
+  }
+
+  const now = new Date();
+  const timeStr = formatTimeString(now);
+  const timestamp = now.getTime();
+  const lastUpdateInfo = remoteData ? (remoteData.lastUpdate || "정보 없음") : "정보 없음";
+
+  const payload = {
+    saveTime: timeStr,
+    timestamp: timestamp,
+    lastUpdateInfo: lastUpdateInfo,
+    freshQty: freshVal,
+    dawnQty: dawnVal,
+    shQty: shVal
+  };
+
+  db.ref("accumulatedLogs").push(payload).then(() => {
+    alert(`[${timeStr}] 현재 결과 데이터가 성공적으로 누적되었습니다!\n\n🥬 신선: ${freshVal}\n🌙 던: ${dawnVal}\n📦 SH_ISN5: ${shVal}`);
+  }).catch((err) => {
+    alert("누적 저장 중 오류 발생: " + err.message);
+  });
+}
+
+/* 📈 누적 데이터 실시간 불러오기 & 화면 표시 */
+db.ref("accumulatedLogs").on("value", (snapshot) => {
+  const tbody = document.getElementById("trendTable").querySelector("tbody");
+  if (snapshot.exists() && snapshot.val() !== null) {
+    const logsObj = snapshot.val();
+    const entries = Object.entries(logsObj);
+    
+    // 시간 역순 정렬 (최신이 상단)
+    entries.sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+    let html = "";
+    entries.forEach(([key, item]) => {
+      html += `
+        <tr>
+          <td style="color:#1d4ed8; font-weight:bold;">${item.saveTime}</td>
+          <td style="color:#64748b; font-size:12px;">${item.lastUpdateInfo}</td>
+          <td><b style="color:#15803d;">${item.freshQty}</b></td>
+          <td><b style="color:#1d4ed8;">${item.dawnQty}</b></td>
+          <td><b style="color:#2563eb;">${item.shQty}</b></td>
+          <td>
+            <button onclick="deleteTrendLog('${key}')" style="padding:2px 6px; border:none; border-radius:4px; background:#ef4444; color:white; cursor:pointer; font-size:11px;">삭제</button>
+          </td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+  } else {
+    tbody.innerHTML = '<tr><td colspan="6">누적된 데이터가 없습니다. \'데이터 누적하기\' 버튼을 눌러보세요!</td></tr>';
+  }
+});
+
+function deleteTrendLog(key) {
+  if (confirm("이 누적 기록을 삭제하시겠습니까?")) {
+    db.ref("accumulatedLogs/" + key).remove();
+  }
+}
+
+function clearTrendLogs() {
+  if (confirm("모든 누적 데이터를 삭제하시겠습니까? (복구할 수 없습니다)")) {
+    db.ref("accumulatedLogs").remove().then(() => {
+      alert("누적 데이터가 전체 삭제되었습니다.");
+    });
   }
 }
 
