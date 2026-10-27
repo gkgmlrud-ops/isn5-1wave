@@ -1062,8 +1062,8 @@ background:#1d4ed8;
 
 <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
   <div id="lastUpdate" style="color:#6b7280;font-size:15px;text-align:center;">업데이트 확인 중...</div>
-  <!-- Mac/PC 음성 차단 해제 버튼 (모바일 자동 숨김) -->
-  <button class="audio-btn" id="audioEnableBtn" onclick="enableAudio()">🔊 Mac/PC 음성 활성화</button>
+  <!-- Mac/PC 오디오 알림 활성화 버튼 (모바일 자동 숨김) -->
+  <button class="audio-btn" id="audioEnableBtn" onclick="enableAudio()">🔔 Mac/PC 알림음 활성화</button>
   <button class="reset-btn" onclick="resetData()">🗑️ 데이터 초기화</button>
 </div>
 </div>
@@ -1450,52 +1450,28 @@ let lastSpokenTime = Date.now();
 
 const hubWaybillsStore = {};
 
-// 모바일 접속 여부 감지 (핸드폰에서는 소리 완전 차단)
+// 모바일 접속 여부 감지 (핸드폰 접속 시 소리 완전 차단)
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
-/* 🔊 macOS/Safari 보이스 로딩 사전 설정 */
-let availableVoices = [];
-function loadVoices() {
-  if ('speechSynthesis' in window) {
-    availableVoices = window.speechSynthesis.getVoices();
-  }
-}
+/* 🔔 Mac / Windows 100% 호환 효과음 알림 엔진 */
+const alertSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
 
-if ('speechSynthesis' in window) {
-  loadVoices();
-  window.speechSynthesis.onvoiceschanged = loadVoices;
-}
-
-/* 🔊 Mac 및 PC 음성 재생 제한 해제 함수 (Mac Stuck 현상 강제 해제 적용) */
+/* 🔊 Mac 브라우저 오디오 차단 해제 함수 */
 function enableAudio() {
   if (isMobile) return;
 
-  if ('speechSynthesis' in window) {
-    // Mac 브라우저 음성 엔진 멈춤 현상 해제
-    window.speechSynthesis.cancel();
-    if (window.speechSynthesis.paused) {
-      window.speechSynthesis.resume();
-    }
-
-    loadVoices();
-
-    const dummy = new SpeechSynthesisUtterance("음성 알림이 연결되었습니다.");
-    dummy.lang = 'ko-KR';
-    dummy.rate = 1.0;
-    dummy.volume = 1.0;
-
-    // 한국어 전용 음성 엔진 선택
-    const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
-    if (korVoice) dummy.voice = korVoice;
-
-    window.speechSynthesis.speak(dummy);
-
+  alertSound.play().then(() => {
+    alertSound.pause();
+    alertSound.currentTime = 0;
+    
     const btn = document.getElementById("audioEnableBtn");
     if(btn) {
-      btn.innerText = "🟢 음성 알림 작동중";
+      btn.innerText = "🟢 알림음 활성화 완료";
       btn.style.background = "#16a34a";
     }
-  }
+  }).catch(e => {
+    console.log("Audio play error:", e);
+  });
 }
 
 function requestNotificationPermission() {
@@ -1517,25 +1493,34 @@ function showDesktopNotification(msg) {
   }
 }
 
-/* 🔊 음성 출력 함수 (Mac 멈춤 방지 및 한국어 보이스 지정) */
+/* 🔊 알림음 재생 및 TTS 통합 출력 함수 (모바일 완전 차단) */
 function speakText(text) {
-  if (isMobile) return; // 핸드폰 접속 시 소리 출력 안 함
+  if (isMobile) return; // 핸드폰 접속 시 소리 안 남
 
+  // 1. 효과음(Beep) 2회 재생 (Mac/PC 공통 100% 호환)
+  try {
+    alertSound.currentTime = 0;
+    alertSound.play().then(() => {
+      setTimeout(() => {
+        alertSound.currentTime = 0;
+        alertSound.play().catch(e => console.log(e));
+      }, 400);
+    }).catch(e => console.log("Sound error:", e));
+  } catch (e) {
+    console.log(e);
+  }
+
+  // 2. TTS 음성 읽기 시도 (Mac 보조)
   if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel(); // 기존 음성 취소로 Mac 음성 엔진 초기화
-    if (window.speechSynthesis.paused) {
-      window.speechSynthesis.resume();
+    try {
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ko-KR';
+      utterance.rate = 1.0;
+      window.speechSynthesis.speak(utterance);
+    } catch(e) {
+      console.log(e);
     }
-    
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'ko-KR';
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-
-    const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
-    if (korVoice) utterance.voice = korVoice;
-
-    window.speechSynthesis.speak(utterance);
   }
 }
 
@@ -1927,7 +1912,7 @@ db.ref("callSignal").on("value", (snapshot) => {
     if (data.timestamp > lastSpokenTime) {
       lastSpokenTime = data.timestamp;
       
-      // 최근 10초 이내 호출 시 PC/Mac에서만 알림
+      // 최근 10초 이내 호출 시 PC/Mac에서만 알림음 실행
       if (Date.now() - data.timestamp < 10000) {
         if (!isMobile) {
           speakText("알림. " + data.message);
