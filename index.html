@@ -1200,7 +1200,7 @@ background:#1d4ed8;
 </div>
 </div>
 
-<!-- ↺ 최근 업로드 백업 이력 5회 복구 섹션 (기본 접힘 형태) -->
+<!-- ↺ 최근 업로드 백업 이력 5회 복구 섹션 (기본 접힘) -->
 <div class="restore-section">
   <div class="restore-title" onclick="toggleRestoreTable()">
     <span>↺ 최근 업로드 이력 백업 (최신 5회 보관)</span>
@@ -1581,7 +1581,19 @@ const hubWaybillsStore = {};
 /* 📱 순수 스마트폰(모바일) 감지 */
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-/* 🔊 Web Audio API 신시사이저 비프음 생성기 (Mac 오디오 채널 활성화용) */
+/* 🔊 Mac 브라우저 음성 목록 사전 로딩 및 캐싱 */
+let availableVoices = [];
+function loadVoices() {
+  if ('speechSynthesis' in window) {
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+}
+if ('speechSynthesis' in window) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+/* 🔊 Web Audio API 비프음 (Mac 스피커 깨우기용) */
 function playBeepSound() {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -1604,12 +1616,14 @@ function playBeepSound() {
   }
 }
 
-/* 🔊 비프음(0.15초) 1회 출력 후 0.5초 뒤 텍스트 순차 재생 */
+/* 🔊 Mac 전용 강화 음성 출력 함수 (보이스 지정 + 0.4초 비동기 지연 실행) */
 function speakText(text) {
   if (isMobile) return;
 
+  // 1단계: 비프음 발생
   playBeepSound();
 
+  // 2단계: 0.4초 지연 후 TTS 실행
   setTimeout(() => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -1617,14 +1631,22 @@ function speakText(text) {
         window.speechSynthesis.resume();
       }
 
+      loadVoices();
+
       const utterance = new SpeechSynthesisUtterance(text);
       utterance.lang = 'ko-KR';
       utterance.rate = 1.0;
-      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+
+      // macOS 한국어 보이스 객체 강제 매핑
+      const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
+      if (korVoice) {
+        utterance.voice = korVoice;
+      }
 
       window.speechSynthesis.speak(utterance);
     }
-  }, 500);
+  }, 400);
 }
 
 /* 🔊 Mac 및 PC 음성 권한 해제 버튼 함수 */
@@ -1639,11 +1661,16 @@ function enableAudio() {
       window.speechSynthesis.resume();
     }
 
+    loadVoices();
+
     setTimeout(() => {
       const dummy = new SpeechSynthesisUtterance("음성 알림이 연결되었습니다.");
       dummy.lang = 'ko-KR';
       dummy.rate = 1.0;
       dummy.volume = 1.0;
+
+      const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
+      if (korVoice) dummy.voice = korVoice;
 
       window.speechSynthesis.speak(dummy);
     }, 300);
@@ -1805,7 +1832,7 @@ function updateTrendCustomTime(key, val) {
   });
 }
 
-/* 📈 누적 데이터 실시간 불러오기 (F3 소분 종료 선택 시 수기 시간 입력칸 노출) */
+/* 📈 누적 데이터 실시간 불러오기 (F3 소분 종료 수기 입력 연동) */
 db.ref("accumulatedLogs").on("value", (snapshot) => {
   const tbody = document.getElementById("trendTable").querySelector("tbody");
   if (snapshot.exists() && snapshot.val() !== null) {
@@ -2148,7 +2175,7 @@ db.ref("callLogs").on("value", (snapshot) => {
   }
 });
 
-/* 🔔 호출 수신 리스너 */
+/* 🔔 호출 수신 리스너 (Mac 지원 보완 적용) */
 db.ref("callSignal").on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -2504,6 +2531,7 @@ function copyWaybills(){
 window.addEventListener("load",()=>{
   buildExcludeList();
   requestNotificationPermission();
+  loadVoices();
 });
 
 </script>
