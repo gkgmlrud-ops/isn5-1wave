@@ -1063,7 +1063,7 @@ background:#1d4ed8;
 <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
   <div id="lastUpdate" style="color:#6b7280;font-size:15px;text-align:center;">업데이트 확인 중...</div>
   <!-- Mac/PC 오디오 알림 활성화 버튼 (모바일 자동 숨김) -->
-  <button class="audio-btn" id="audioEnableBtn" onclick="enableAudio()">🔔 Mac/PC 알림음 활성화</button>
+  <button class="audio-btn" id="audioEnableBtn" onclick="enableAudio()">🔊 Mac/PC 음성 활성화</button>
   <button class="reset-btn" onclick="resetData()">🗑️ 데이터 초기화</button>
 </div>
 </div>
@@ -1453,29 +1453,47 @@ const hubWaybillsStore = {};
 // 모바일 접속 여부 감지 (핸드폰 접속 시 소리 차단)
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
-/* 🔔 Mac / Windows 호환 효과음 알림 엔진 */
-const alertSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+/* 🔊 macOS/Safari 보이스 로딩 사전 설정 */
+let availableVoices = [];
+function loadVoices() {
+  if ('speechSynthesis' in window) {
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+}
 
-/* 🔊 Mac 브라우저 오디오 차단 해제 */
+if ('speechSynthesis' in window) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+/* 🔊 Mac 및 PC 음성 재생 제한 해제 함수 (이틀 전 단독 TTS 원상복구) */
 function enableAudio() {
   if (isMobile) return;
 
-  alertSound.play().then(() => {
-    alertSound.pause();
-    alertSound.currentTime = 0;
-    
-    // tts 보이스 초기화
-    if ('speechSynthesis' in window) {
-      window.speechSynthesis.cancel();
-      if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
     }
+
+    loadVoices();
+
+    const dummy = new SpeechSynthesisUtterance("음성 알림이 연결되었습니다.");
+    dummy.lang = 'ko-KR';
+    dummy.rate = 1.0;
+    dummy.volume = 1.0;
+
+    const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
+    if (korVoice) dummy.voice = korVoice;
+
+    window.speechSynthesis.speak(dummy);
 
     const btn = document.getElementById("audioEnableBtn");
     if(btn) {
-      btn.innerText = "🟢 알림음 활성화 완료";
+      btn.innerText = "🟢 음성 알림 작동중";
       btn.style.background = "#16a34a";
     }
-  }).catch(e => console.log("Audio enable error:", e));
+  }
 }
 
 function requestNotificationPermission() {
@@ -1497,45 +1515,25 @@ function showDesktopNotification(msg) {
   }
 }
 
-/* 🔊 알림음(Beep) 후 텍스트 음성 순차 읽기 (Mac/PC 완벽 보완) */
+/* 🔊 이틀 전 정상 작동 방식으로 원상복구: TTS 단독 음성 재생 (효과음 오디오 제거) */
 function speakText(text) {
   if (isMobile) return; // 핸드폰 접속 시 소리 안 남
 
-  try {
-    // 1단계: 효과음 재생
-    alertSound.currentTime = 0;
-    alertSound.play().then(() => {
-      // 2단계: 효과음 종료 후 0.8초 뒤 텍스트 음성 읽기 진행 (오디오 충돌 방지)
-      setTimeout(() => {
-        if ('speechSynthesis' in window) {
-          window.speechSynthesis.cancel();
-          if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
 
-          const utterance = new SpeechSynthesisUtterance("알림. " + text);
-          utterance.lang = 'ko-KR';
-          utterance.rate = 1.0;
-          utterance.pitch = 1.0;
+    const utterance = new SpeechSynthesisUtterance("알림. " + text);
+    utterance.lang = 'ko-KR';
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
 
-          // 한국어 목소리 매핑
-          const voices = window.speechSynthesis.getVoices();
-          const korVoice = voices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
-          if (korVoice) utterance.voice = korVoice;
+    const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
+    if (korVoice) utterance.voice = korVoice;
 
-          window.speechSynthesis.speak(utterance);
-        }
-      }, 800);
-    }).catch(e => {
-      console.log("Sound play error:", e);
-      // 효과음 실패 시 직발 텍스트 실행
-      if ('speechSynthesis' in window) {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance("알림. " + text);
-        utterance.lang = 'ko-KR';
-        window.speechSynthesis.speak(utterance);
-      }
-    });
-  } catch (e) {
-    console.log(e);
+    window.speechSynthesis.speak(utterance);
   }
 }
 
@@ -1914,7 +1912,7 @@ function clearCallLogs(){
   }
 }
 
-/* 🔔 호출 수신 리스너 (모바일/PC 분기 및 텍스트 음성 순차 출력) */
+/* 🔔 호출 수신 리스너 (모바일/PC 분기 처리) */
 db.ref("callSignal").on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -1927,7 +1925,7 @@ db.ref("callSignal").on("value", (snapshot) => {
     if (data.timestamp > lastSpokenTime) {
       lastSpokenTime = data.timestamp;
       
-      // 최근 10초 이내 호출 시 PC/Mac에서만 알림음 및 음성 실행
+      // 최근 10초 이내 호출 시 PC/Mac에서만 음성 읽기 및 데스크톱 알림 실행
       if (Date.now() - data.timestamp < 10000) {
         if (!isMobile) {
           speakText(data.message);
