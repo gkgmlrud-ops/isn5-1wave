@@ -2906,20 +2906,38 @@ async function processFiles(files){
       String(targetDate.getMonth()+1).padStart(2,"0") + "-" +
       String(targetDate.getDate()).padStart(2,"0");
 
-    // 1. R열(인덱스 17) PDD 날짜+시간 기준 필터 및 F열(인덱스 6) 출고센터 필터
+    const targetDigitsOnly = targetDateStr.replace(/\D/g, ''); // "20261028"
+
+    // 1. R열(인덱스 17) PDD 날짜+시간 및 F열(인덱스 6) 출고센터 유연 매칭
     const pddAllRows = rows.filter(r => {
-      const rt = String(r[17]||"").trim();
-      const camp = String(r[6]||"").trim();
-      return rt.startsWith(targetDateStr + " " + selectedPddTime) && (camp === "YAJ_3" || camp === "ISN_5");
+      const rawR = String(r[17] || "").trim();
+      const rawCamp = String(r[6] || "").trim().toUpperCase();
+
+      const digitsR = rawR.replace(/\D/g, '');
+      const isDateMatch = digitsR.includes(targetDigitsOnly);
+      const isTimeMatch = rawR.includes(selectedPddTime) || rawR.includes(selectedPddTime + ":00");
+
+      const isCampMatch = rawCamp.includes("YAJ") || rawCamp.includes("양주") || rawCamp.includes("ISN") || rawCamp.includes("일산");
+
+      return (isDateMatch && isTimeMatch && isCampMatch) || (rawR.includes(targetDateStr) && rawR.includes(selectedPddTime));
     });
 
+    // 전체 라우트 목록 추출
     const allRouteList = pddAllRows.map(r => ({
       route: String(r[1]||"").trim(),
       camp: String(r[6]||"").trim()
     }));
 
-    const totalYajShipment = pddAllRows.filter(r => String(r[6]||"").trim() === "YAJ_3").length;
-    const totalIsnShipment = pddAllRows.filter(r => String(r[6]||"").trim() === "ISN_5").length;
+    const totalYajShipment = pddAllRows.filter(r => {
+      const c = String(r[6]||"").trim().toUpperCase();
+      return c.includes("YAJ") || c.includes("양주");
+    }).length;
+
+    const totalIsnShipment = pddAllRows.filter(r => {
+      const c = String(r[6]||"").trim().toUpperCase();
+      return c.includes("ISN") || c.includes("일산");
+    }).length;
+
     const totalShShipment = pddAllRows.length;
 
     // 2. M열(인덱스 12) 및 N열(인덱스 13) 도착 필터링
@@ -2954,7 +2972,7 @@ async function processFiles(files){
 
     filteredUnarrived.forEach(r => {
       const hub = String(r[3]||"").trim();
-      const camp = String(r[6]||"").trim();
+      const camp = String(r[6]||"").trim().toUpperCase();
       const orderNo = String(r[2]||"").trim();
       const waybill = String(r[8]||"").trim();
       const route = String(r[1]||"").trim();
@@ -2966,12 +2984,12 @@ async function processFiles(files){
       shCounts[hub] = (shCounts[hub] || 0) + 1;
       shList.push(itemData);
 
-      if(camp === "ISN_5") {
+      if(camp.includes("ISN") || camp.includes("일산")) {
         isnCounts[hub] = (isnCounts[hub] || 0) + 1;
         isnList.push(itemData);
       }
 
-      if(camp === "YAJ_3") {
+      if(camp.includes("YAJ") || camp.includes("양주")) {
         yajCounts[hub] = (yajCounts[hub] || 0) + 1;
         yajList.push(itemData);
       }
