@@ -9,6 +9,9 @@
 <!-- XLSX 라이브러리 -->
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
 
+<!-- Chart.js 그래프 라이브러리 -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <!-- Firebase SDK (v8 콤팻 버전) -->
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
 <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
@@ -102,7 +105,6 @@ box-shadow:0 2px 6px rgba(37, 99, 235, 0.2);
 background:#1d4ed8;
 }
 
-/* ⚡ 모바일/PC 겸용 원클릭 최근 데이터 복구 버튼 */
 .quick-restore-btn{
 margin-top:8px;
 padding:6px 14px;
@@ -968,6 +970,13 @@ background:#1d4ed8;
   border-radius: 8px;
 }
 
+.trend-table-scroll-wrap {
+  max-height: 280px;
+  overflow-y: auto;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+}
+
 .invoice-table {
   width: 100%;
   border-collapse: collapse;
@@ -1041,11 +1050,100 @@ background:#1d4ed8;
   background-color: #0369a1;
 }
 
+.trend-summary-card {
+  margin-top: 20px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+}
+
+.trend-summary-title {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1e40af;
+  margin-bottom: 15px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.trend-dashboard-layout {
+  display: flex;
+  gap: 20px;
+  align-items: stretch;
+  flex-wrap: wrap;
+}
+
+.trend-summary-table-box {
+  flex: 1;
+  min-width: 320px;
+  overflow-x: auto;
+}
+
+.trend-chart-box {
+  flex: 1.2;
+  min-width: 340px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+/* 👥 데이터 누적 모달 팝업 스타일 */
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.4);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 2000;
+}
+
+.modal-card {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  width: 90%; max-width: 400px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-title {
+  font-size: 18px; font-weight: bold; color: #1e40af;
+  margin-bottom: 12px; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;
+}
+
+.modal-field {
+  margin-bottom: 12px;
+}
+
+.modal-field label {
+  display: block; font-size: 13px; font-weight: bold; color: #334155; margin-bottom: 4px;
+}
+
+.modal-field input {
+  width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 14px; outline: none;
+}
+
+.modal-btn-group {
+  display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;
+}
+
+.modal-btn {
+  padding: 8px 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer;
+}
+
+.modal-btn.confirm { background: #10b981; color: white; }
+.modal-btn.cancel { background: #94a3b8; color: white; }
+
 /* 📱 모바일 전용 반응형 스타일 */
 @media (max-width: 768px) {
   .mobile-menu-toggle { display: block; }
   
-  /* 🚫 모바일 숨김 처리 항목 */
   #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section, .trend-btn, .mobile-hide-del, #audioEnableBtn { 
     display: none !important; 
   }
@@ -1094,6 +1192,7 @@ background:#1d4ed8;
   .invoice-table-wrap { max-height: 480px; }
   .hub-group-title { padding: 6px 8px; font-size: 13px; }
   .copy-hub-btn { padding: 3px 8px; font-size: 11px; }
+  .trend-dashboard-layout { flex-direction: column; }
 }
 
 </style>
@@ -1200,7 +1299,6 @@ background:#1d4ed8;
 </div>
 </div>
 
-<!-- ↺ 최근 업로드 백업 이력 5회 복구 섹션 (기본 접힘) -->
 <div class="restore-section">
   <div class="restore-title" onclick="toggleRestoreTable()">
     <span>↺ 최근 업로드 이력 백업 (최신 5회 보관)</span>
@@ -1262,7 +1360,7 @@ background:#1d4ed8;
 
 <div class="result-panel-title">
   <span>📦 S-일산5 미도착</span>
-  <button class="trend-btn" onclick="saveAccumulatedData()">📥 데이터 누적하기</button>
+  <button class="trend-btn" onclick="openSaveModal()">📥 데이터 누적하기</button>
 </div>
 
 <div class="result-grid">
@@ -1375,15 +1473,17 @@ background:#1d4ed8;
       <button class="reset-btn mobile-hide-del" onclick="clearTrendLogs()" style="margin:0;">🗑️ 전체 누적 삭제</button>
     </div>
     <div style="font-size:13px; color:#64748b; margin-bottom:12px; margin-top:6px;">
-      '데이터 누적하기' 버튼을 눌렀을 당시 기록된 <b>신선 수량</b>, <b>던 수량</b>, <b>SH_ISN5 수량</b> 이력입니다.
+      '데이터 누적하기' 버튼을 눌렀을 당시 기록된 <b>투입 인원</b>, <b>신선 수량</b>, <b>던 수량</b>, <b>SH_ISN5 수량</b> 이력입니다.
     </div>
-    <div class="invoice-table-wrap" style="max-height:700px;">
+    
+    <div class="trend-table-scroll-wrap">
       <table class="invoice-table" id="trendTable">
         <thead>
           <tr>
-            <th style="width:200px;">소분/시간 구분</th>
-            <th style="width:160px;">누적 저장 일시</th>
+            <th style="width:180px;">소분/시간 구분</th>
+            <th style="width:150px;">누적 저장 일시</th>
             <th>기준 업데이트 정보</th>
+            <th style="background:#e0f2fe; color:#0369a1;">👥 투입 인원 (고정/신규)</th>
             <th>🥬 신선 수량</th>
             <th>🌙 던 수량</th>
             <th>📦 SH_ISN5 Total</th>
@@ -1391,10 +1491,41 @@ background:#1d4ed8;
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="7">누적된 데이터가 없습니다.</td></tr>
+          <tr><td colspan="8">누적된 데이터가 없습니다.</td></tr>
         </tbody>
       </table>
     </div>
+
+    <!-- 📊 날짜 기준 PDD 소분 완료 트렌드 대시보드 카드 -->
+    <div class="trend-summary-card">
+      <div class="trend-summary-title">
+        <span>📊 날짜별 PDD 물동량 및 소분 완료 트렌드 요약</span>
+      </div>
+      <div class="trend-dashboard-layout">
+        <div class="trend-summary-table-box">
+          <table class="invoice-table" id="dailyTrendSummaryTable">
+            <thead>
+              <tr>
+                <th style="background:#e0f2fe; color:#0369a1;">대상 PDD 날짜</th>
+                <th>D2 소분 종료 (잔여)</th>
+                <th>01:30 (잔여)</th>
+                <th>F3 소분 종료 (시간 / 잔여)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="4">분석할 트렌드 데이터가 충분하지 않습니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="trend-chart-box">
+          <div style="width:100%; height:260px;">
+            <canvas id="trendLineChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -1543,6 +1674,32 @@ background:#1d4ed8;
 </div>
 </div>
 
+<!-- 👥 데이터 누적 시 헬퍼 인원 입력 모달 팝업 -->
+<div id="saveModal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-title">👥 누적 시점 헬퍼 인원 입력</div>
+    <div style="font-size:12px; color:#64748b; margin-bottom:12px;">
+      현재 시점에 작업에 투입 중인 헬퍼 인원을 입력해주세요. (미입력 시 0명 저장)
+    </div>
+    <div class="modal-field">
+      <label>총 투입 인원 (명)</label>
+      <input type="number" id="modalTotalWorkers" placeholder="예: 15" oninput="autoCalcWorkers()">
+    </div>
+    <div class="modal-field">
+      <label>고정 헬퍼 인원 (명)</label>
+      <input type="number" id="modalFixedWorkers" placeholder="예: 10" oninput="autoCalcWorkers()">
+    </div>
+    <div class="modal-field">
+      <label>신규 헬퍼 인원 (명)</label>
+      <input type="number" id="modalNewWorkers" placeholder="예: 5">
+    </div>
+    <div class="modal-btn-group">
+      <button class="modal-btn cancel" onclick="closeSaveModal()">취소</button>
+      <button class="modal-btn confirm" onclick="confirmSaveAccumulatedData()">📥 저장 및 누적</button>
+    </div>
+  </div>
+</div>
+
 <script>
 
 const firebaseConfig = {
@@ -1577,11 +1734,10 @@ let recentHistoryData = {};
 let latestBackupKey = null;
 
 const hubWaybillsStore = {};
+let trendChartInstance = null;
 
-/* 📱 순수 스마트폰(모바일) 감지 */
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-/* 🔊 Mac 브라우저 음성 목록 사전 로딩 및 캐싱 */
 let availableVoices = [];
 function loadVoices() {
   if ('speechSynthesis' in window) {
@@ -1593,7 +1749,6 @@ if ('speechSynthesis' in window) {
   window.speechSynthesis.onvoiceschanged = loadVoices;
 }
 
-/* 🔊 Web Audio API 비프음 (Mac 스피커 깨우기용) */
 function playBeepSound() {
   try {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
@@ -1616,14 +1771,11 @@ function playBeepSound() {
   }
 }
 
-/* 🔊 Mac 전용 강화 음성 출력 함수 (보이스 지정 + 0.4초 비동기 지연 실행) */
 function speakText(text) {
   if (isMobile) return;
 
-  // 1단계: 비프음 발생
   playBeepSound();
 
-  // 2단계: 0.4초 지연 후 TTS 실행
   setTimeout(() => {
     if ('speechSynthesis' in window) {
       window.speechSynthesis.cancel();
@@ -1638,18 +1790,14 @@ function speakText(text) {
       utterance.rate = 1.0;
       utterance.volume = 1.0;
 
-      // macOS 한국어 보이스 객체 강제 매핑
       const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
-      if (korVoice) {
-        utterance.voice = korVoice;
-      }
+      if (korVoice) utterance.voice = korVoice;
 
       window.speechSynthesis.speak(utterance);
     }
   }, 400);
 }
 
-/* 🔊 Mac 및 PC 음성 권한 해제 버튼 함수 */
 function enableAudio() {
   if (isMobile) return;
 
@@ -1728,7 +1876,6 @@ function toggleMobileCard(prefix) {
   }
 }
 
-/* ↺ 최근 업로드 이력 백업 접기/펼치기 토글 함수 */
 function toggleRestoreTable(){
   const wrap = document.getElementById("restoreTableWrap");
   const arrow = document.getElementById("restoreToggleArrow");
@@ -1757,7 +1904,7 @@ function showTab(page){
   document.getElementById("menuInvoiceSH").classList.toggle("active", page === "invoiceSH");
   document.getElementById("menuInvoiceISN").classList.toggle("active", page === "invoiceISN");
   document.getElementById("menuInvoiceYAJ").classList.toggle("active", page === "invoiceYAJ");
-  document.getElementById("menuCallLog").classList.toggle("active", page === "callLog");
+  document.getElementById("callLogPage").classList.toggle("active", page === "callLog");
 
   document.getElementById("mainSidebar").classList.remove("mobile-open");
 }
@@ -1781,21 +1928,36 @@ function clickResultMenu(e){
   }
 }
 
-/* 🔒 데이터 누적 함수 */
-function saveAccumulatedData() {
+/* 👥 데이터 누적 모달 팝업 제어 */
+function openSaveModal() {
   if (!remoteData) {
     alert("현재 누적할 서버 데이터가 없습니다. 먼저 엑셀 Raw 업로드를 진행해 주세요.");
     return;
   }
+  document.getElementById("saveModal").classList.remove("hidden");
+}
 
+function closeSaveModal() {
+  document.getElementById("saveModal").classList.add("hidden");
+}
+
+function autoCalcWorkers() {
+  const total = parseInt(document.getElementById("modalTotalWorkers").value) || 0;
+  const fixed = parseInt(document.getElementById("modalFixedWorkers").value) || 0;
+  if (total >= fixed) {
+    document.getElementById("modalNewWorkers").value = total - fixed;
+  }
+}
+
+/* 🔒 헬퍼 인원 포함 데이터 누적 저장 */
+function confirmSaveAccumulatedData() {
   const freshVal = document.getElementById("freshTotal").innerText;
   const dawnVal = document.getElementById("dawnTotal").innerText;
   const shVal = document.getElementById("shTotal").innerText;
 
-  if (freshVal === "0" && dawnVal === "0" && shVal === "0") {
-    alert("현재 결과 데이터 수량이 모두 0건이므로 누적 저장할 수 없습니다.");
-    return;
-  }
+  const totalW = document.getElementById("modalTotalWorkers").value || 0;
+  const fixedW = document.getElementById("modalFixedWorkers").value || 0;
+  const newW = document.getElementById("modalNewWorkers").value || 0;
 
   const now = new Date();
   const timeStr = formatTimeString(now);
@@ -1810,29 +1972,29 @@ function saveAccumulatedData() {
     dawnQty: dawnVal,
     shQty: shVal,
     category: "",
-    customTime: ""
+    customTime: "",
+    totalWorkers: parseInt(totalW),
+    fixedWorkers: parseInt(fixedW),
+    newWorkers: parseInt(newW)
   };
 
   db.ref("accumulatedLogs").push(payload).then(() => {
-    alert(`[${timeStr}] 현재 결과 데이터가 성공적으로 누적되었습니다!\n\n🥬 신선: ${freshVal}\n🌙 던: ${dawnVal}\n📦 SH_ISN5: ${shVal}`);
+    closeSaveModal();
+    alert(`[${timeStr}] 현재 데이터가 인원 정보와 함께 저장되었습니다!\n\n👥 총 투입: ${totalW}명 (고정: ${fixedW}명 / 신규: ${newW}명)\n📦 SH_ISN5 수량: ${shVal}`);
   }).catch((err) => {
     alert("누적 저장 중 오류 발생: " + err.message);
   });
 }
 
 function updateTrendCategory(key, val) {
-  db.ref("accumulatedLogs/" + key).update({
-    category: val
-  });
+  db.ref("accumulatedLogs/" + key).update({ category: val });
 }
 
 function updateTrendCustomTime(key, val) {
-  db.ref("accumulatedLogs/" + key).update({
-    customTime: val
-  });
+  db.ref("accumulatedLogs/" + key).update({ customTime: val });
 }
 
-/* 📈 누적 데이터 실시간 불러오기 (F3 소분 종료 수기 입력 연동) */
+/* 📈 누적 데이터 실시간 불러오기 & 헬퍼 인원 표시 */
 db.ref("accumulatedLogs").on("value", (snapshot) => {
   const tbody = document.getElementById("trendTable").querySelector("tbody");
   if (snapshot.exists() && snapshot.val() !== null) {
@@ -1846,6 +2008,11 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
       const customTimeVal = item.customTime || "";
       const disabledAttr = isMobile ? "disabled" : "";
 
+      const totalW = item.totalWorkers || 0;
+      const fixedW = item.fixedWorkers || 0;
+      const newW = item.newWorkers || 0;
+      const workerDisplay = totalW > 0 ? `<b>${totalW}명</b> <span style="font-size:11px;color:#64748b;">(고정:${fixedW} / 신규:${newW})</span>` : '-';
+
       html += `
         <tr>
           <td>
@@ -1857,12 +2024,13 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
                 <option value="F3 소분 종료" ${selectedCat === "F3 소분 종료" ? "selected" : ""}>F3 소분 종료</option>
               </select>
               ${selectedCat === "F3 소분 종료" ? `
-                <input type="text" class="trend-custom-time-input" ${disabledAttr} placeholder="03:45" value="${customTimeVal}" onchange="updateTrendCustomTime('${key}', this.value)" title="F3 소분종료 시간을 적으세요">
+                <input type="text" class="trend-custom-time-input" ${disabledAttr} placeholder="03:45" value="${customTimeVal}" onchange="updateTrendCustomTime('${key}', this.value)">
               ` : ''}
             </div>
           </td>
           <td style="color:#1d4ed8; font-weight:bold;">${item.saveTime}</td>
           <td style="color:#64748b; font-size:12px;">${item.lastUpdateInfo}</td>
+          <td style="background:#f0f9ff; color:#0369a1;">${workerDisplay}</td>
           <td><b style="color:#15803d;">${item.freshQty}</b></td>
           <td><b style="color:#1d4ed8;">${item.dawnQty}</b></td>
           <td><b style="color:#2563eb;">${item.shQty}</b></td>
@@ -1873,10 +2041,120 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
       `;
     });
     tbody.innerHTML = html;
+
+    renderDailyTrendSummary(entries.map(e => e[1]));
+
   } else {
-    tbody.innerHTML = '<tr><td colspan="7">누적된 데이터가 없습니다. \'데이터 누적하기\' 버튼을 눌러보세요!</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8">누적된 데이터가 없습니다. \'데이터 누적하기\' 버튼을 눌러보세요!</td></tr>';
+    renderDailyTrendSummary([]);
   }
 });
+
+function renderDailyTrendSummary(logList) {
+  const summaryTbody = document.getElementById("dailyTrendSummaryTable").querySelector("tbody");
+  if (!logList || logList.length === 0) {
+    summaryTbody.innerHTML = '<tr><td colspan="4">분석할 트렌드 데이터가 없습니다.</td></tr>';
+    if(trendChartInstance) trendChartInstance.destroy();
+    return;
+  }
+
+  const dailyMap = {};
+
+  logList.forEach(item => {
+    let pddDate = "기타 날짜";
+    if (item.lastUpdateInfo && item.lastUpdateInfo.includes('(')) {
+      const match = item.lastUpdateInfo.match(/\((\d{4}-\d{2}-\d{2})\s*\//);
+      if (match) pddDate = match[1];
+    } else if (item.saveTime) {
+      pddDate = item.saveTime.split(' ')[0];
+    }
+
+    if (!dailyMap[pddDate]) {
+      dailyMap[pddDate] = { d2Qty: null, t130Qty: null, f3Qty: null, f3Time: "" };
+    }
+
+    const cat = item.category || "";
+    const shVal = parseInt(String(item.shQty).replace(/,/g, '')) || 0;
+
+    if (cat === "D2 소분 종료") dailyMap[pddDate].d2Qty = shVal;
+    else if (cat === "01:30") dailyMap[pddDate].t130Qty = shVal;
+    else if (cat === "F3 소분 종료") {
+      dailyMap[pddDate].f3Qty = shVal;
+      dailyMap[pddDate].f3Time = item.customTime || "";
+    }
+  });
+
+  const sortedDates = Object.keys(dailyMap).sort((a, b) => b.localeCompare(a));
+
+  let summaryHtml = "";
+  const chartLabels = [];
+  const chartD2Data = [];
+  const chartT130Data = [];
+  const chartF3Data = [];
+
+  sortedDates.forEach(dateStr => {
+    const data = dailyMap[dateStr];
+    const d2Str = data.d2Qty !== null ? `${data.d2Qty.toLocaleString()} 건` : '-';
+    const t130Str = data.t130Qty !== null ? `${data.t130Qty.toLocaleString()} 건` : '-';
+    
+    let f3Str = '-';
+    if (data.f3Qty !== null) {
+      const timeDisplay = data.f3Time ? `[${data.f3Time}] ` : '';
+      f3Str = `<b>${timeDisplay}${data.f3Qty.toLocaleString()} 건</b>`;
+    }
+
+    summaryHtml += `
+      <tr>
+        <td style="font-weight:bold; color:#1d4ed8;">${dateStr}</td>
+        <td>${d2Str}</td>
+        <td>${t130Str}</td>
+        <td style="color:#15803d;">${f3Str}</td>
+      </tr>
+    `;
+
+    chartLabels.unshift(dateStr);
+    chartD2Data.unshift(data.d2Qty);
+    chartT130Data.unshift(data.t130Qty);
+    chartF3Data.unshift(data.f3Qty);
+  });
+
+  summaryTbody.innerHTML = summaryHtml || '<tr><td colspan="4">분석할 데이터가 없습니다.</td></tr>';
+
+  renderTrendLineChart(chartLabels, chartD2Data, chartT130Data, chartF3Data);
+}
+
+function renderTrendLineChart(labels, d2Data, t130Data, f3Data) {
+  const ctx = document.getElementById('trendLineChart');
+  if (!ctx) return;
+
+  if (trendChartInstance) {
+    trendChartInstance.destroy();
+  }
+
+  trendChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'D2 소분 종료 (건)', data: d2Data, borderColor: '#ef4444', backgroundColor: '#ef4444', tension: 0.2, spanGaps: true },
+        { label: '01:30 시점 (건)', data: t130Data, borderColor: '#f59e0b', backgroundColor: '#f59e0b', tension: 0.2, spanGaps: true },
+        { label: 'F3 소분 종료 (건)', data: f3Data, borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.2, spanGaps: true }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } },
+        title: { display: true, text: '📈 소분 단계별 잔여 수량 트렌드 변화', font: { size: 14, weight: 'bold' }, color: '#1e293b' }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { font: { size: 10 } } },
+        x: { ticks: { font: { size: 10, weight: 'bold' } } }
+      }
+    }
+  });
+}
 
 function deleteTrendLog(key) {
   if (confirm("이 누적 기록을 삭제하시겠습니까?")) {
@@ -2043,7 +2321,6 @@ function formatTimeString(d) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-/* ↺ 최근 5개 백업 히스토리 불러오기 */
 db.ref("uploadHistory").on("value", (snapshot) => {
   const tbody = document.getElementById("restoreHistoryTable").querySelector("tbody");
   if (snapshot.exists() && snapshot.val() !== null) {
@@ -2175,7 +2452,6 @@ db.ref("callLogs").on("value", (snapshot) => {
   }
 });
 
-/* 🔔 호출 수신 리스너 (Mac 지원 보완 적용) */
 db.ref("callSignal").on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -2198,7 +2474,6 @@ db.ref("callSignal").on("value", (snapshot) => {
   }
 });
 
-/* 💡 Firebase 수신 안정화 */
 db.ref("dashboardSummary").on("value", (snapshot) => {
   if (snapshot.exists() && snapshot.val() !== null) {
     const data = snapshot.val();
