@@ -1002,54 +1002,6 @@ background:#1d4ed8;
   color: #1e293b;
 }
 
-.hub-group-header {
-  background-color: #e0f2fe !important;
-  font-weight: bold;
-  cursor: pointer;
-  user-select: none;
-  border-top: 2px solid #93c5fd;
-}
-
-.hub-group-header:hover {
-  background-color: #bae6fd !important;
-}
-
-.hub-group-title {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 8px 12px;
-  color: #0369a1;
-  font-size: 14px;
-}
-
-.hub-count-badge {
-  background-color: #0284c7;
-  color: #ffffff;
-  font-size: 12px;
-  font-weight: bold;
-  padding: 2px 8px;
-  border-radius: 12px;
-  margin-left: 8px;
-  display: inline-block;
-}
-
-.copy-hub-btn {
-  background-color: #0284c7;
-  color: white;
-  border: none;
-  padding: 4px 10px;
-  border-radius: 6px;
-  font-size: 12px;
-  font-weight: bold;
-  cursor: pointer;
-  transition: 0.2s;
-}
-
-.copy-hub-btn:hover {
-  background-color: #0369a1;
-}
-
 .trend-summary-card {
   margin-top: 20px;
   background: #ffffff;
@@ -1369,8 +1321,6 @@ background:#1d4ed8;
   .invoice-left-panel, .invoice-right-panel { width: 100%; padding: 12px; border-radius: 12px; }
   .invoice-panel-title { font-size: 16px; padding-bottom: 8px; margin-bottom: 8px; }
   .invoice-table-wrap { max-height: 480px; }
-  .hub-group-title { padding: 6px 8px; font-size: 13px; }
-  .copy-hub-btn { padding: 3px 8px; font-size: 11px; }
   .trend-dashboard-layout { flex-direction: column; }
 }
 
@@ -1881,20 +1831,18 @@ background:#1d4ed8;
   <div class="invoice-container">
     <div class="invoice-left-panel">
       <div class="invoice-panel-title">
-        <span>📄 SH_ISN5 미도착 Invoice 상세</span>
+        <span>📄 SH_ISN5 미도착 Invoice 요약</span>
         <span style="font-size:14px;color:#2563eb;" id="shInvoiceCount">총 0건</span>
       </div>
       <div class="invoice-table-wrap">
         <table class="invoice-table" id="shInvoiceTable">
           <thead>
             <tr>
-              <th>Hub</th>
-              <th>주문번호</th>
-              <th>운송장번호</th>
-              <th>라우트</th>
+              <th>Hub (출고센터)</th>
+              <th>미도착 총 수량</th>
             </tr>
           </thead>
-          <tbody><tr><td colspan="4">데이터가 없습니다.</td></tr></tbody>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -1919,20 +1867,18 @@ background:#1d4ed8;
   <div class="invoice-container">
     <div class="invoice-left-panel">
       <div class="invoice-panel-title">
-        <span>📄 ISN_5 미도착 Invoice 상세</span>
+        <span>📄 ISN_5 미도착 Invoice 요약</span>
         <span style="font-size:14px;color:#2563eb;" id="isnInvoiceCount">총 0건</span>
       </div>
       <div class="invoice-table-wrap">
         <table class="invoice-table" id="isnInvoiceTable">
           <thead>
             <tr>
-              <th>Hub</th>
-              <th>주문번호</th>
-              <th>운송장번호</th>
-              <th>라우트</th>
+              <th>Hub (출고센터)</th>
+              <th>미도착 총 수량</th>
             </tr>
           </thead>
-          <tbody><tr><td colspan="4">데이터가 없습니다.</td></tr></tbody>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -1957,20 +1903,18 @@ background:#1d4ed8;
   <div class="invoice-container">
     <div class="invoice-left-panel">
       <div class="invoice-panel-title">
-        <span>📄 YAJ_3 미도착 Invoice 상세</span>
+        <span>📄 YAJ_3 미도착 Invoice 요약</span>
         <span style="font-size:14px;color:#2563eb;" id="yajInvoiceCount">총 0건</span>
       </div>
       <div class="invoice-table-wrap">
         <table class="invoice-table" id="yajInvoiceTable">
           <thead>
             <tr>
-              <th>Hub</th>
-              <th>주문번호</th>
-              <th>운송장번호</th>
-              <th>라우트</th>
+              <th>Hub (출고센터)</th>
+              <th>미도착 총 수량</th>
             </tr>
           </thead>
-          <tbody><tr><td colspan="4">데이터가 없습니다.</td></tr></tbody>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
         </table>
       </div>
     </div>
@@ -2078,7 +2022,6 @@ let latestBackupKey = null;
 
 let globalLogEntries = [];
 
-const hubWaybillsStore = {};
 let trendChartInstance = null;
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -2867,7 +2810,6 @@ async function processFiles(files){
 
     const targetDateStr = pddAllRows.length > 0 ? String(pddAllRows[0][17]).split(' ')[0] : formatTimeString(now).split(' ')[0];
 
-    // 🔥 용량 최적화: 라우트 히트맵 집계본만 생성
     const routeGroupMap = {};
     pddAllRows.forEach(r => {
       const rawRoute = String(r[1]||"").trim();
@@ -2913,42 +2855,39 @@ async function processFiles(files){
     });
 
     const shCounts = {}, isnCounts = {}, yajCounts = {};
-    const shList = [], isnList = [], yajList = [];
+    const shRouteCounts = {}, isnRouteCounts = {}, yajRouteCounts = {};
 
     filteredUnarrived.forEach(r => {
       const hub = String(r[3]||"").trim();
       const camp = String(r[6]||"").trim().toUpperCase();
-      const orderNo = String(r[2]||"").trim();
-      const waybill = String(r[8]||"").trim();
-      const route = String(r[1]||"").trim();
+      const rawRoute = String(r[1]||"").trim();
+      const match = rawRoute.match(/^([A-Za-z0-9]+?)\d{1,2}$/i);
+      const routeGroup = match ? match[1] : rawRoute;
 
       if(!hub) return;
 
-      const itemData = { hub, orderNo, waybill, route };
-
       shCounts[hub] = (shCounts[hub] || 0) + 1;
-      shList.push(itemData);
+      if (routeGroup) shRouteCounts[routeGroup] = (shRouteCounts[routeGroup] || 0) + 1;
 
       if(camp.includes("ISN") || camp.includes("일산")) {
         isnCounts[hub] = (isnCounts[hub] || 0) + 1;
-        isnList.push(itemData);
+        if (routeGroup) isnRouteCounts[routeGroup] = (isnRouteCounts[routeGroup] || 0) + 1;
       }
 
       if(camp.includes("YAJ") || camp.includes("양주")) {
         yajCounts[hub] = (yajCounts[hub] || 0) + 1;
-        yajList.push(itemData);
+        if (routeGroup) yajRouteCounts[routeGroup] = (yajRouteCounts[routeGroup] || 0) + 1;
       }
     });
 
     const allHubs = [...new Set(rows.map(r=>String(r[3]||"").trim()).filter(x=>x!==""))].sort();
 
-    // 🔥 용량 최적화: 오도착 건당 최대 30건 제한
     const misplaceMap = {};
     rows.forEach(r => {
       const id = String(r[12]||"").trim();
       if(id !== ""){
         if(!misplaceMap[id]) misplaceMap[id] = [];
-        if(misplaceMap[id].length < 30){
+        if(misplaceMap[id].length < 15){
           misplaceMap[id].push({
             wb: String(r[8]||""),
             camp: String(r[6]||""),
@@ -2966,7 +2905,7 @@ async function processFiles(files){
       uploadTimeOnly: formatTimeString(now),
       pddInfoFull: `${targetDateStr} / PDD ${selectedPddTime}시`,
       shCounts, isnCounts, yajCounts,
-      shList, isnList, yajList,
+      shRouteCounts, isnRouteCounts, yajRouteCounts,
       unassignedTotal: filteredUnarrived.length,
       allHubs,
       misplaceMap,
@@ -2980,22 +2919,18 @@ async function processFiles(files){
       misplaceTotal
     };
 
-    // Firebase 전송 용량 최적화 저장
     await db.ref("dashboardSummary").set(payload);
 
-    // 복구용 최소 데이터 저장
     const historyPayload = {
       lastUpdate: fullInfoStr,
       uploadTimeOnly: formatTimeString(now),
       pddInfoFull: `${targetDateStr} / PDD ${selectedPddTime}시`,
       shCounts, isnCounts, yajCounts,
-      shList, isnList, yajList,
+      shRouteCounts, isnRouteCounts, yajRouteCounts,
       unassignedTotal: filteredUnarrived.length,
       allHubs,
-      misplaceMap,
       pddTime: selectedPddTime,
       timestamp: now.getTime(),
-      routeGroupMap,
       totalYajShipment,
       totalIsnShipment,
       totalShShipment,
@@ -3232,7 +3167,7 @@ db.ref("dashboardSummary").on("value", (snapshot) => {
 
 function resetInvoiceTables(){
   ["sh", "isn", "yaj"].forEach(prefix => {
-    document.getElementById(`${prefix}InvoiceTable`).querySelector("tbody").innerHTML = '<tr><td colspan="4">데이터가 없습니다.</td></tr>';
+    document.getElementById(`${prefix}InvoiceTable`).querySelector("tbody").innerHTML = '<tr><td colspan="2">데이터가 없습니다.</td></tr>';
     document.getElementById(`${prefix}RouteTable`).querySelector("tbody").innerHTML = '<tr><td colspan="2">데이터가 없습니다.</td></tr>';
     document.getElementById(`${prefix}InvoiceCount`).innerText = "총 0건";
   });
@@ -3241,7 +3176,7 @@ function resetInvoiceTables(){
 function renderData(){
   if(!remoteData) return;
 
-  const { shCounts={}, isnCounts={}, yajCounts={}, allHubs=[], misplaceMap={}, shList=[], isnList=[], yajList=[] } = remoteData;
+  const { shCounts={}, isnCounts={}, yajCounts={}, allHubs=[], misplaceMap={}, shRouteCounts={}, isnRouteCounts={}, yajRouteCounts={} } = remoteData;
 
   let freshTot = 0, dawnTot = 0;
 
@@ -3260,9 +3195,9 @@ function renderData(){
   renderHubMaster(allHubs);
   renderMisplace(misplaceMap);
 
-  renderInvoiceSection("sh", shList, shCounts, "SH_ISN5");
-  renderInvoiceSection("isn", isnList, isnCounts, "ISN_5");
-  renderInvoiceSection("yaj", yajList, yajCounts, "YAJ_3");
+  renderInvoiceSummarySection("sh", shCounts, shRouteCounts, "SH_ISN5");
+  renderInvoiceSummarySection("isn", isnCounts, isnRouteCounts, "ISN_5");
+  renderInvoiceSummarySection("yaj", yajCounts, yajRouteCounts, "YAJ_3");
 }
 
 function renderTable(tableId, totalId, countMap){
@@ -3285,97 +3220,46 @@ function renderTable(tableId, totalId, countMap){
   });
 }
 
-function renderInvoiceSection(prefix, list=[], countMap={}, titleName=""){
+function renderInvoiceSummarySection(prefix, hubCountMap={}, routeCountMap={}, titleName=""){
   const countBadge = document.getElementById(`${prefix}InvoiceCount`);
   const invoiceTbody = document.getElementById(`${prefix}InvoiceTable`).querySelector("tbody");
 
-  if (!list || list.length === 0) {
+  let totalQty = 0;
+  Object.values(hubCountMap).forEach(v => totalQty += v);
+
+  if (totalQty === 0) {
     countBadge.innerText = "총 0건";
-    invoiceTbody.innerHTML = '<tr><td colspan="4">데이터가 없습니다.</td></tr>';
-    renderRouteTable(prefix, list, titleName);
+    invoiceTbody.innerHTML = '<tr><td colspan="2">데이터가 없습니다.</td></tr>';
+    renderRouteTableFromMap(prefix, {}, titleName);
     return;
   }
 
-  countBadge.innerText = `총 ${list.length.toLocaleString()}건`;
-
-  const groupedByHub = {};
-  list.forEach(item => {
-    if(!groupedByHub[item.hub]) groupedByHub[item.hub] = [];
-    groupedByHub[item.hub].push(item);
-  });
-
-  const sortedHubs = Object.keys(groupedByHub).sort((a, b) => {
-    const countA = countMap[a] || groupedByHub[a].length;
-    const countB = countMap[b] || groupedByHub[b].length;
-    return countB - countA;
-  });
+  countBadge.innerText = `총 ${totalQty.toLocaleString()}건`;
 
   let invoiceHtml = "";
-
-  sortedHubs.forEach((hub, index) => {
-    const items = groupedByHub[hub];
-    const groupId = `${prefix}_hub_group_${index}`;
-    const waybills = items.map(x => x.waybill).filter(x => x !== "");
-    
-    const storeKey = `${prefix}_${hub}`;
-    hubWaybillsStore[storeKey] = waybills;
-
+  Object.entries(hubCountMap).sort((a, b) => b[1] - a[1]).forEach(([hub, count]) => {
     invoiceHtml += `
-      <tr class="hub-group-header" onclick="toggleHubGroup('${prefix}', '${groupId}', '${hub}', '${titleName}')">
-        <td colspan="4">
-          <div class="hub-group-title">
-            <div style="display:flex;align-items:center;">
-              <span>📦 <b>${hub}</b></span>
-              <span class="hub-count-badge">${items.length.toLocaleString()}건</span>
-              <span id="${groupId}_arrow" style="margin-left:8px;font-size:12px;color:#0284c7;">▼</span>
-            </div>
-            <button class="copy-hub-btn" onclick="copyHubWaybills(event, '${storeKey}')">📋 ${items.length.toLocaleString()}건 운송장 복사</button>
-          </div>
-        </td>
+      <tr>
+        <td style="font-weight:bold; color:#1e40af;">📦 ${hub}</td>
+        <td><b style="color:#2563eb;">${count.toLocaleString()}</b> 건</td>
       </tr>
     `;
-
-    items.forEach(item => {
-      invoiceHtml += `
-        <tr class="${groupId}_row hidden" style="background:#f8fafc;">
-          <td><span style="color:#64748b;">${item.hub}</span></td>
-          <td>${item.orderNo}</td>
-          <td><b>${item.waybill}</b></td>
-          <td>${item.route}</td>
-        </tr>
-      `;
-    });
   });
 
   invoiceTbody.innerHTML = invoiceHtml;
-  renderRouteTable(prefix, list, titleName);
+  renderRouteTableFromMap(prefix, routeCountMap, titleName);
 }
 
-function renderRouteTable(prefix, targetList=[], titleName="", selectedHub=""){
+function renderRouteTableFromMap(prefix, routeCountMap={}, titleName=""){
   const routeTbody = document.getElementById(`${prefix}RouteTable`).querySelector("tbody");
   const routeTitleEl = document.getElementById(`${prefix}RoutePanelTitle`);
 
   if (routeTitleEl) {
-    if (selectedHub) {
-      routeTitleEl.innerText = `📊 ${titleName} 라우트별 수량 (${selectedHub})`;
-    } else {
-      routeTitleEl.innerText = `📊 ${titleName} 라우트별 수량 (전체)`;
-    }
+    routeTitleEl.innerText = `📊 ${titleName} 라우트별 수량`;
   }
 
-  const routeGroupMap = {};
-  targetList.forEach(item => {
-    const rawRoute = item.route;
-    if (!rawRoute) return;
-
-    const match = rawRoute.match(/^([A-Za-z0-9]+?)\d{1,2}$/i);
-    const groupKey = match ? match[1] : rawRoute;
-
-    routeGroupMap[groupKey] = (routeGroupMap[groupKey] || 0) + 1;
-  });
-
   let routeHtml = "";
-  Object.entries(routeGroupMap)
+  Object.entries(routeCountMap)
     .sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true, sensitivity: 'base' }))
     .forEach(([routeGroup, count]) => {
       routeHtml += `
@@ -3387,48 +3271,6 @@ function renderRouteTable(prefix, targetList=[], titleName="", selectedHub=""){
     });
 
   routeTbody.innerHTML = routeHtml || '<tr><td colspan="2">라우트 정보가 없습니다.</td></tr>';
-}
-
-function toggleHubGroup(prefix, groupId, hubName, titleName){
-  const rows = document.querySelectorAll(`.${groupId}_row`);
-  const arrow = document.getElementById(`${groupId}_arrow`);
-  
-  if(!rows.length) return;
-
-  const willBeOpen = rows[0].classList.contains("hidden");
-
-  const allRows = document.querySelectorAll(`[class*="${prefix}_hub_group_"][class*="_row"]`);
-  allRows.forEach(r => r.classList.add("hidden"));
-
-  const allArrows = document.querySelectorAll(`[id*="${prefix}_hub_group_"][id*="_arrow"]`);
-  allArrows.forEach(a => a.innerText = "▼");
-
-  if(willBeOpen) {
-    rows.forEach(row => row.classList.remove("hidden"));
-    if(arrow) arrow.innerText = "▲";
-
-    const listKey = `${prefix}List`;
-    const fullList = remoteData ? (remoteData[listKey] || []) : [];
-    const filteredByHub = fullList.filter(item => item.hub === hubName);
-
-    renderRouteTable(prefix, filteredByHub, titleName, hubName);
-  } else {
-    const listKey = `${prefix}List`;
-    const fullList = remoteData ? (remoteData[listKey] || []) : [];
-
-    renderRouteTable(prefix, fullList, titleName, "");
-  }
-}
-
-function copyHubWaybills(event, storeKey){
-  event.stopPropagation();
-  const waybills = hubWaybillsStore[storeKey] || [];
-  if(waybills.length === 0){
-    alert("복사할 운송장이 없습니다.");
-    return;
-  }
-  navigator.clipboard.writeText(waybills.join("\n"));
-  alert(`[${storeKey.split('_')[1]}] 운송장 ${waybills.length.toLocaleString()}건 복사 완료`);
 }
 
 function renderHubMaster(hubs){
