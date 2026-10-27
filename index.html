@@ -1288,12 +1288,6 @@ background:#1d4ed8;
     </div>
 
     <div class="sub-menu-level2" id="resultSubMenu">
-      <div class="menu-item pc-only-menu" id="menuPredict" onclick="showTab('predict')">
-        <span>⏱️ F3 소분종료 예측</span>
-      </div>
-      <div class="menu-item" id="menuTrend" onclick="showTab('trend')">
-        <span>📈 누적 데이터 (트렌드)</span>
-      </div>
       <div class="menu-item" id="menuInvoiceSH" onclick="showTab('invoiceSH')">
         <span>📋 SH_ISN5 Invoice</span>
       </div>
@@ -1304,6 +1298,21 @@ background:#1d4ed8;
         <span>📋 YAJ_3 Invoice</span>
       </div>
     </div>
+
+    <!-- 📈 신규 2번째 폴더: 누적 및 소분종료 예상 -->
+    <div class="folder-title" style="margin-top:8px; padding-left:4px;" onclick="toggleMenu('trendFolderMenu')">
+      <span id="trendFolderArrow">▼</span> 📈 누적 및 소분종료 예상
+    </div>
+
+    <div class="sub-menu-level2" id="trendFolderMenu">
+      <div class="menu-item" id="menuTrend" onclick="showTab('trend')">
+        <span>📈 누적 데이터 (트렌드)</span>
+      </div>
+      <div class="menu-item pc-only-menu" id="menuPredict" onclick="showTab('predict')">
+        <span>⏱️ F3 소분종료 예측</span>
+      </div>
+    </div>
+
   </div>
 
   </div>
@@ -2018,7 +2027,11 @@ function showTab(page){
 function toggleMenu(menuId){
   const menu = document.getElementById(menuId);
   menu.classList.toggle("hidden");
-  const arrow = document.getElementById(menuId.replace("Menu","Arrow"));
+  let arrowId = "hubArrow";
+  if(menuId === "resultSubMenu") arrowId = "resultSubArrow";
+  if(menuId === "trendFolderMenu") arrowId = "trendFolderArrow";
+  
+  const arrow = document.getElementById(arrowId);
   if(arrow){
     arrow.innerText = menu.classList.contains("hidden") ? "▶" : "▼";
   }
@@ -2026,12 +2039,7 @@ function toggleMenu(menuId){
 
 function clickResultMenu(e){
   showTab('result');
-  const subMenu = document.getElementById("resultSubMenu");
-  const arrow = document.getElementById("resultSubArrow");
-  subMenu.classList.toggle("hidden");
-  if(arrow){
-    arrow.innerText = subMenu.classList.contains("hidden") ? "▶" : "▼";
-  }
+  toggleMenu("resultSubMenu");
 }
 
 function openSaveModal() {
@@ -2177,7 +2185,6 @@ function calcAndRenderPrediction() {
 
   const currentSH = parseInt(document.getElementById("shTotal").innerText.replace(/,/g,'')) || 0;
 
-  // 과거 F3 소분 종료 시 평균 센터 미도착 물량 산출 (기본값 약 100건)
   const f3Items = globalLogEntries.filter(x => x.category === "F3 소분 종료");
   let avgF3Residual = 100;
   if (f3Items.length > 0) {
@@ -2185,7 +2192,6 @@ function calcAndRenderPrediction() {
     avgF3Residual = Math.round(sumResidual / f3Items.length);
   }
 
-  // 실 소분 대상 잔여 물량 (현재 잔여 - F3 평균 미도착 잔여)
   const netRemainingToProcess = Math.max(0, currentSH - avgF3Residual);
   remainEl.innerText = `${netRemainingToProcess.toLocaleString()} 건 (전체: ${currentSH}건)`;
 
