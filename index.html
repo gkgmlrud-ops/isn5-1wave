@@ -949,7 +949,7 @@ background:#1d4ed8;
   .mobile-menu-toggle { display: block; }
   
   /* 🚫 모바일 숨김 처리 */
-  #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section, .trend-btn, .mobile-hide-del { 
+  #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section, .trend-btn, .mobile-hide-del, #audioEnableBtn { 
     display: none !important; 
   }
 
@@ -1062,7 +1062,7 @@ background:#1d4ed8;
 
 <div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
   <div id="lastUpdate" style="color:#6b7280;font-size:15px;text-align:center;">업데이트 확인 중...</div>
-  <!-- Mac/브라우저 음성 잠금 해제 버튼 -->
+  <!-- Mac/PC 음성 차단 해제 버튼 (모바일 자동 숨김) -->
   <button class="audio-btn" id="audioEnableBtn" onclick="enableAudio()">🔊 Mac/PC 음성 활성화</button>
   <button class="reset-btn" onclick="resetData()">🗑️ 데이터 초기화</button>
 </div>
@@ -1447,22 +1447,41 @@ let remoteData = null;
 let selectedMisplaceId = "";
 let currentSelectedWaybills = [];
 let lastSpokenTime = Date.now();
-let audioEnabled = false;
 
 const hubWaybillsStore = {};
 
+// 모바일 접속 여부 감지 (핸드폰에서는 소리 완전 차단)
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
-/* 🔊 Mac 및 PC 음성 재생 제한 해제 함수 */
+/* 🔊 macOS/Safari 보이스 로딩 사전 설정 */
+let availableVoices = [];
+function loadVoices() {
+  if ('speechSynthesis' in window) {
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+}
+if ('speechSynthesis' in window) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
+}
+
+/* 🔊 Mac 및 PC 음성 재생 제한 해제 함수 (모바일 제외) */
 function enableAudio() {
+  if (isMobile) return;
+
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
+    loadVoices();
+
     const dummy = new SpeechSynthesisUtterance("음성 알림이 연결되었습니다.");
     dummy.lang = 'ko-KR';
     dummy.rate = 1.0;
-    dummy.volume = 0.8;
+    dummy.volume = 1.0;
+
+    const korVoice = availableVoices.find(v => v.lang.includes('ko'));
+    if (korVoice) dummy.voice = korVoice;
+
     window.speechSynthesis.speak(dummy);
-    audioEnabled = true;
 
     const btn = document.getElementById("audioEnableBtn");
     if(btn) {
@@ -1491,13 +1510,21 @@ function showDesktopNotification(msg) {
   }
 }
 
+/* 🔊 음성 출력 함수 (모바일 디바이스 완전 제외) */
 function speakText(text) {
+  if (isMobile) return; // 핸드폰 접속 시 소리 출력 안 함
+
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
+    
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'ko-KR';
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
+
+    const korVoice = availableVoices.find(v => v.lang.includes('ko'));
+    if (korVoice) utterance.voice = korVoice;
+
     window.speechSynthesis.speak(utterance);
   }
 }
@@ -1772,14 +1799,12 @@ async function processFiles(files){
       misplaceMap
     };
 
-    // 1. 현재 실시간 화면용 데이터 업데이트
+    // 1. 실시간 모니터링 데이터 보관
     await db.ref("dashboardSummary").set(payload);
 
-    // 2. 📁 하루치 Raw 데이터를 날짜/시간별 히스토리 DB에 자동 보관 (용량 효율화)
+    // 2. 날짜별/시간별 일일 엑셀 히스토리 DB 저장
     const historyKey = `${targetDateStr}_PDD${selectedPddTime}`;
-    db.ref("dailyExcelLogs/" + historyKey).set(payload).then(() => {
-      console.log("일일 엑셀 DB 저장 완료: " + historyKey);
-    });
+    db.ref("dailyExcelLogs/" + historyKey).set(payload);
 
     document.getElementById("badge").innerHTML = `🟢 서버 업데이트 완료 (${targetDateStr} ${selectedPddTime}시)`;
     showTab('result');
@@ -1879,6 +1904,7 @@ function clearCallLogs(){
   }
 }
 
+/* 🔔 호출 수신 리스너 (모바일/PC 분기 처리) */
 db.ref("callSignal").on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -1891,16 +1917,18 @@ db.ref("callSignal").on("value", (snapshot) => {
     if (data.timestamp > lastSpokenTime) {
       lastSpokenTime = data.timestamp;
       
-      // 최근 10초 이내 호출만 실행
+      // 최근 10초 이내 호출 시 PC/Mac에서만 알림
       if (Date.now() - data.timestamp < 10000) {
-        speakText("알림. " + data.message);
-        showDesktopNotification(data.message);
+        if (!isMobile) {
+          speakText("알림. " + data.message);
+          showDesktopNotification(data.message);
+        }
       }
     }
   }
 });
 
-/* 💡 접속자 다수 시 데이터가 0으로 튕기는 버그 수정 및 안정화 */
+/* 💡 Firebase 수신 안정화 */
 db.ref("dashboardSummary").on("value", (snapshot) => {
   if (snapshot.exists() && snapshot.val() !== null) {
     const data = snapshot.val();
@@ -1909,8 +1937,6 @@ db.ref("dashboardSummary").on("value", (snapshot) => {
     renderData();
     document.getElementById("badge").innerHTML = "🟢 실시간 동기화 완료";
   } else {
-    // DB의 'dashboardSummary' 노드가 실제로 아예 존재하지 않는 경우에만 초기화 진행
-    // (네트워크 순간 지연으로 인한 0건 튕김 예방)
     if (snapshot.key === "dashboardSummary" && !snapshot.exists()) {
       remoteData = null;
       document.getElementById("lastUpdate").innerText = "업데이트된 데이터가 없습니다";
@@ -2219,7 +2245,7 @@ function showCampDetail(targetId){
   table.innerHTML = `<tr><th>운송장번호</th><th>캠프</th><th>도착시간</th><th>배송완료여부</th></tr>`;
 
   list.forEach(item => {
-    table.innerHTML += `<tr><td><td>${item.wb}</td><td>${item.camp}</td><td>${item.arr}</td><td>${item.deliv}</td></tr>`;
+    table.innerHTML += `<tr><td>${item.wb}</td><td>${item.camp}</td><td>${item.arr}</td><td>${item.deliv}</td></tr>`;
   });
 }
 
