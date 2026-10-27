@@ -1100,8 +1100,7 @@ background:#1d4ed8;
   background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
   color: white;
   border-radius: 18px;
-  padding: 18px 24px;
-  margin-bottom: 20px;
+  padding: 24px;
   box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
   display: flex;
   align-items: center;
@@ -1127,7 +1126,7 @@ background:#1d4ed8;
 }
 
 .pred-main-time {
-  font-size: 34px;
+  font-size: 36px;
   font-weight: 900;
   letter-spacing: -0.5px;
   color: #fef08a;
@@ -1138,7 +1137,7 @@ background:#1d4ed8;
   display: flex;
   gap: 20px;
   background: rgba(255,255,255,0.1);
-  padding: 12px 18px;
+  padding: 14px 22px;
   border-radius: 12px;
   backdrop-filter: blur(5px);
 }
@@ -1206,7 +1205,7 @@ background:#1d4ed8;
 @media (max-width: 768px) {
   .mobile-menu-toggle { display: block; }
   
-  #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section, .trend-btn, .mobile-hide-del, #audioEnableBtn { 
+  #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section, .trend-btn, .mobile-hide-del, #audioEnableBtn, .pc-only-menu { 
     display: none !important; 
   }
 
@@ -1255,16 +1254,6 @@ background:#1d4ed8;
   .hub-group-title { padding: 6px 8px; font-size: 13px; }
   .copy-hub-btn { padding: 3px 8px; font-size: 11px; }
   .trend-dashboard-layout { flex-direction: column; }
-
-  .prediction-card {
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 14px;
-  }
-  .pred-grid-box {
-    width: 100%;
-    justify-content: space-between;
-  }
 }
 
 </style>
@@ -1299,6 +1288,9 @@ background:#1d4ed8;
     </div>
 
     <div class="sub-menu-level2" id="resultSubMenu">
+      <div class="menu-item pc-only-menu" id="menuPredict" onclick="showTab('predict')">
+        <span>⏱️ F3 소분종료 예측</span>
+      </div>
       <div class="menu-item" id="menuTrend" onclick="showTab('trend')">
         <span>📈 누적 데이터 (트렌드)</span>
       </div>
@@ -1426,29 +1418,6 @@ background:#1d4ed8;
 <!-- 2. 결과 실시간 모니터링 페이지 -->
 <div id="resultPage">
 
-<!-- ⏱️ 실시간 소분 속도 & F3 종료 예상시간 시각화 대시보드 카드 -->
-<div class="prediction-card" id="predCard">
-  <div class="pred-left-box">
-    <div class="pred-title-tag">⏱️ 실시간 F3 소분 종료 예상 시각</div>
-    <div class="pred-main-time" id="predF3Time">분석 데이터 대기 중...</div>
-    <div style="font-size:12px; color:#cbd5e1;" id="predStatusText">누적 트렌드 데이터가 축적되면 실시간 종료 시간을 계산합니다.</div>
-  </div>
-  <div class="pred-grid-box">
-    <div class="pred-item">
-      <div class="pred-item-label">⚡ 소분 처리 속도</div>
-      <div class="pred-item-val" id="predSpeedVal">- 건/분</div>
-    </div>
-    <div class="pred-item" style="border-left:1px solid rgba(255,255,255,0.2); padding-left:15px;">
-      <div class="pred-item-label">👥 실질 가중 인력</div>
-      <div class="pred-item-val" id="predWorkersVal">- 명</div>
-    </div>
-    <div class="pred-item" style="border-left:1px solid rgba(255,255,255,0.2); padding-left:15px;">
-      <div class="pred-item-label">📦 SH_ISN5 잔여</div>
-      <div class="pred-item-val" id="predRemainVal">- 건</div>
-    </div>
-  </div>
-</div>
-
 <div class="result-layout">
 
 <div class="result-panel">
@@ -1560,7 +1529,44 @@ background:#1d4ed8;
 
 </div>
 
-<!-- 📈 3. 누적 데이터 (트렌드) 페이지 -->
+<!-- 2-1. ⏱️ F3 소분종료 예측 독립 탭 (PC 전용) -->
+<div id="predictPage" class="hidden">
+  <div class="result-panel">
+    <div class="result-panel-title">
+      <span>⏱️ F3 소분 종료 예상 시각 분석 (PC 전용)</span>
+    </div>
+
+    <div class="prediction-card" id="predCard">
+      <div class="pred-left-box">
+        <div class="pred-title-tag">⏱️ 실시간 F3 소분 종료 예상 시각</div>
+        <div class="pred-main-time" id="predF3Time">분석 데이터 대기 중...</div>
+        <div style="font-size:13px; color:#cbd5e1;" id="predStatusText">누적 트렌드 데이터가 축적되면 실시간 종료 시간을 산출합니다.</div>
+      </div>
+      <div class="pred-grid-box">
+        <div class="pred-item">
+          <div class="pred-item-label">⚡ 구간 소분 속도</div>
+          <div class="pred-item-val" id="predSpeedVal">- 건/분</div>
+        </div>
+        <div class="pred-item" style="border-left:1px solid rgba(255,255,255,0.2); padding-left:15px;">
+          <div class="pred-item-label">👥 실질 가중 인력</div>
+          <div class="pred-item-val" id="predWorkersVal">- 명</div>
+        </div>
+        <div class="pred-item" style="border-left:1px solid rgba(255,255,255,0.2); padding-left:15px;">
+          <div class="pred-item-label">📦 실소분 대상 잔여량</div>
+          <div class="pred-item-val" id="predRemainVal">- 건</div>
+        </div>
+      </div>
+    </div>
+
+    <div style="margin-top:15px; padding:15px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; color:#334155; line-height:1.6;">
+      <b>💡 종료 예상시간 도출 안내:</b><br>
+      • 센터 미도착 물량(F3 종료 시점 최종 잔여분)을 고려하여 <b>실제 현장 소분 대상 물동량</b> 기준으로 산출합니다.<br>
+      • D2 소분종료 ~ 01:30 구간의 실제 소분 속도(CPH/UPH) 및 투입 헬퍼 가중치(고정 1.0 / 신규 0.6)가 적용됩니다.
+    </div>
+  </div>
+</div>
+
+<!-- 3. 누적 데이터 (트렌드) 페이지 -->
 <div id="trendPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title" style="display:flex; justify-content:space-between; align-items:center;">
@@ -1989,6 +1995,7 @@ function toggleRestoreTable(){
 function showTab(page){
   document.getElementById("uploadPage").classList.toggle("hidden", page !== "upload");
   document.getElementById("resultPage").classList.toggle("hidden", page !== "result");
+  document.getElementById("predictPage").classList.toggle("hidden", page !== "predict");
   document.getElementById("trendPage").classList.toggle("hidden", page !== "trend");
   document.getElementById("invoiceSHPage").classList.toggle("hidden", page !== "invoiceSH");
   document.getElementById("invoiceISNPage").classList.toggle("hidden", page !== "invoiceISN");
@@ -1997,6 +2004,8 @@ function showTab(page){
 
   document.getElementById("menuUpload").classList.toggle("active", page === "upload");
   document.getElementById("menuResult").classList.toggle("active", page === "result");
+  const menuPred = document.getElementById("menuPredict");
+  if (menuPred) menuPred.classList.toggle("active", page === "predict");
   document.getElementById("menuTrend").classList.toggle("active", page === "trend");
   document.getElementById("menuInvoiceSH").classList.toggle("active", page === "invoiceSH");
   document.getElementById("menuInvoiceISN").classList.toggle("active", page === "invoiceISN");
@@ -2089,7 +2098,7 @@ function updateTrendCustomTime(key, val) {
   db.ref("accumulatedLogs/" + key).update({ customTime: val });
 }
 
-/* 📈 누적 데이터 실시간 불러오기 & 실시간 예측 처리 연동 */
+/* 📈 누적 데이터 실시간 불러오기 */
 db.ref("accumulatedLogs").on("value", (snapshot) => {
   const tbody = document.getElementById("trendTable").querySelector("tbody");
   if (snapshot.exists() && snapshot.val() !== null) {
@@ -2150,7 +2159,7 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
   }
 });
 
-/* ⏱️ F3 소분 종료 예상시간 실시간 예측 계산 로직 */
+/* ⏱️ F3 소분 종료 예상시간 계산 (F3 종료시 센터 미도착 보정 반영) */
 function calcAndRenderPrediction() {
   const timeEl = document.getElementById("predF3Time");
   const statusEl = document.getElementById("predStatusText");
@@ -2158,28 +2167,40 @@ function calcAndRenderPrediction() {
   const workersEl = document.getElementById("predWorkersVal");
   const remainEl = document.getElementById("predRemainVal");
 
+  if (!timeEl) return;
+
   if (!remoteData || !remoteData.shCounts) {
-    timeEl.innerText = "데이터 업로드 대기 중";
+    timeEl.innerText = "분석 데이터 대기 중";
     statusEl.innerText = "상단 dropZone에 Raw 엑셀 파일 2개를 업로드하세요.";
     return;
   }
 
   const currentSH = parseInt(document.getElementById("shTotal").innerText.replace(/,/g,'')) || 0;
-  remainEl.innerText = `${currentSH.toLocaleString()} 건`;
 
-  if (currentSH === 0) {
-    timeEl.innerText = "🎉 소분 작업 완료";
-    statusEl.innerText = "현재 잔여 미스캔 수량이 0건입니다.";
+  // 과거 F3 소분 종료 시 평균 센터 미도착 물량 산출 (기본값 약 100건)
+  const f3Items = globalLogEntries.filter(x => x.category === "F3 소분 종료");
+  let avgF3Residual = 100;
+  if (f3Items.length > 0) {
+    const sumResidual = f3Items.reduce((acc, curr) => acc + (parseInt(String(curr.shQty).replace(/,/g,'')) || 0), 0);
+    avgF3Residual = Math.round(sumResidual / f3Items.length);
+  }
+
+  // 실 소분 대상 잔여 물량 (현재 잔여 - F3 평균 미도착 잔여)
+  const netRemainingToProcess = Math.max(0, currentSH - avgF3Residual);
+  remainEl.innerText = `${netRemainingToProcess.toLocaleString()} 건 (전체: ${currentSH}건)`;
+
+  if (netRemainingToProcess === 0) {
+    timeEl.innerText = "🎉 현장 소분 완료 (F3 종료 수준)";
+    statusEl.innerText = `현재 미스캔 잔여량(${currentSH}건)은 센터 미도착분 수준(${avgF3Residual}건) 이하로 소분이 완료되었습니다.`;
     speedEl.innerText = "0 건/분";
     workersEl.innerText = "0 명";
     return;
   }
 
-  // 최신 누적 로그 중 분류된 항목 탐색
   const d2Item = globalLogEntries.find(x => x.category === "D2 소분 종료");
   const t130Item = globalLogEntries.find(x => x.category === "01:30");
 
-  let cpm = 0; // 건/분
+  let cpm = 0;
   let effectiveWorkers = 0;
 
   if (d2Item && t130Item) {
@@ -2191,7 +2212,7 @@ function calcAndRenderPrediction() {
     const t1 = new Date(d2Item.timestamp);
     const t2 = new Date(t130Item.timestamp);
     let diffMinutes = (t2 - t1) / (1000 * 60);
-    if (diffMinutes <= 0) diffMinutes = 45; // 기본 45분 가정
+    if (diffMinutes <= 0) diffMinutes = 45;
 
     const fixed = t130Item.fixedWorkers || 0;
     const newW = t130Item.newWorkers || 0;
@@ -2202,10 +2223,8 @@ function calcAndRenderPrediction() {
     }
   }
 
-  // 기본 속도 예외 처리 (데이터 누적 부족시 인당 기본 2.5건/분 가정)
   if (cpm <= 0) {
     const latestItem = globalLogEntries[0];
-    const tot = latestItem ? (latestItem.totalWorkers || 10) : 10;
     const fixed = latestItem ? (latestItem.fixedWorkers || 8) : 8;
     const newW = latestItem ? (latestItem.newWorkers || 2) : 2;
     effectiveWorkers = (fixed * 1.0) + (newW * 0.6);
@@ -2215,8 +2234,7 @@ function calcAndRenderPrediction() {
   workersEl.innerText = `${effectiveWorkers.toFixed(1)} 명`;
   speedEl.innerText = `${Math.round(cpm)} 건/분`;
 
-  // 잔여분 및 예상 시간 도출
-  const remainingMinutes = Math.ceil(currentSH / cpm);
+  const remainingMinutes = Math.ceil(netRemainingToProcess / cpm);
   const now = new Date();
   const predDate = new Date(now.getTime() + remainingMinutes * 60 * 1000);
 
@@ -2225,7 +2243,7 @@ function calcAndRenderPrediction() {
   const displayTime = `${hours}:${mins}`;
 
   timeEl.innerText = `⏱️ ${displayTime} 소분 완료 예상`;
-  statusEl.innerText = `현재 속도(분당 ${Math.round(cpm)}건) 유지 시 약 ${remainingMinutes}분 소요 예정`;
+  statusEl.innerText = `현재 소분 속도(분당 ${Math.round(cpm)}건) 유지 시 약 ${remainingMinutes}분 후 F3 소분이 종료됩니다.`;
 }
 
 function renderDailyTrendSummary(logList) {
