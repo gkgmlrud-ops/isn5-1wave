@@ -1095,7 +1095,6 @@ background:#1d4ed8;
   align-items: center;
 }
 
-/* ⏱️ 실시간 소분 예측 카드 전용 디자인 */
 .prediction-card {
   background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
   color: white;
@@ -1157,7 +1156,6 @@ background:#1d4ed8;
   font-weight: bold;
 }
 
-/* 🧪 요약 카드 대시보드 스타일 */
 .lab-summary-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
@@ -1187,7 +1185,6 @@ background:#1d4ed8;
   color: #1e293b;
 }
 
-/* 🧪 히트맵 스타일 */
 .lab-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -1256,7 +1253,6 @@ background:#1d4ed8;
 .modal-btn.confirm { background: #10b981; color: white; }
 .modal-btn.cancel { background: #94a3b8; color: white; }
 
-/* 📱 모바일 전용 반응형 및 누적 데이터 카드 스타일 */
 .mobile-trend-card-list {
   display: none;
   flex-direction: column;
@@ -1421,7 +1417,6 @@ background:#1d4ed8;
       </div>
     </div>
 
-    <!-- 📈 2번째 폴더: 누적 및 소분종료 예상 -->
     <div class="folder-title" style="margin-top:8px; padding-left:4px;" onclick="toggleMenu('trendFolderMenu')">
       <span id="trendFolderArrow">▼</span> 📈 누적 및 소분종료 예상
     </div>
@@ -1435,7 +1430,6 @@ background:#1d4ed8;
       </div>
     </div>
 
-    <!-- 🧪 3번째 폴더: 고급 분석 (Lab) -->
     <div class="lab-menu-folder">
       <div class="folder-title" style="margin-top:8px; padding-left:4px; color:#f43f5e;" onclick="toggleMenu('labFolderMenu')">
         <span id="labFolderArrow">▼</span> 🧪 고급 분석 (Lab)
@@ -1483,7 +1477,6 @@ background:#1d4ed8;
 </div>
 </div>
 
-<!-- 1. 업로드 / 설정 / 최근 백업 복구 페이지 -->
 <div id="uploadPage" class="hidden">
 <div class="raw-section">
 <div class="raw-section-title-wrap">
@@ -1565,7 +1558,6 @@ background:#1d4ed8;
 </div>
 </div>
 
-<!-- 2. 결과 실시간 모니터링 페이지 -->
 <div id="resultPage">
 
 <div class="result-layout">
@@ -1679,7 +1671,6 @@ background:#1d4ed8;
 
 </div>
 
-<!-- 2-1. ⏱️ F3 소분종료 예측 독립 탭 (PC 전용) -->
 <div id="predictPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title">
@@ -1716,7 +1707,6 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 3. 누적 데이터 (트렌드) 페이지 -->
 <div id="trendPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title" style="display:flex; justify-content:space-between; align-items:center;">
@@ -1727,7 +1717,6 @@ background:#1d4ed8;
       '데이터 누적하기' 버튼을 눌렀을 당시 기록된 <b>투입 인원</b>, <b>신선 수량</b>, <b>던 수량</b>, <b>SH_ISN5 수량</b> 이력입니다.
     </div>
     
-    <!-- PC용 가로 테이블 -->
     <div class="trend-table-scroll-wrap">
       <table class="invoice-table" id="trendTable">
         <thead>
@@ -1748,12 +1737,10 @@ background:#1d4ed8;
       </table>
     </div>
 
-    <!-- 📱 모바일 전용 카드형 리스트 -->
     <div class="mobile-trend-card-list" id="mobileTrendCardList">
       <div style="text-align:center; padding:20px; color:#94a3b8; font-size:13px;">누적 데이터가 없습니다.</div>
     </div>
 
-    <!-- 📊 날짜 기준 PDD 소분 완료 트렌드 대시보드 카드 -->
     <div class="trend-summary-card">
       <div class="trend-summary-title">
         <span>📊 날짜별 PDD 물동량 및 소분 완료 트렌드 요약</span>
@@ -1786,7 +1773,6 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 🧪 [Lab 1] 🚚 F3 종료 시점 상습 지연 Hub 분석 -->
 <div id="labCenterPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title">
@@ -1815,7 +1801,6 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 🧪 [Lab 2] 🎯 선택 PDD 전체 출고 물동량 라우트 히트맵 -->
 <div id="labRoutePage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title">
@@ -1833,14 +1818,12 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 🧪 [Lab 3] 📊 요일별 전체 출고 물동량 & 최종 소분완료율 (완진율) -->
 <div id="labDayPatternPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title">
       <span>📊 요일별 PDD 전체 출고 물동량 & 최종 소분완료율(완진율) 분석</span>
     </div>
 
-    <!-- 금일 PDD 기준 핵심 지연/완료율 카드 요약 -->
     <div class="lab-summary-grid">
       <div class="lab-summary-card">
         <div class="lab-card-title">📦 YAJ_3 전체 출고</div>
@@ -1894,7 +1877,6 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 4. SH_ISN5 미도착 Invoice 페이지 -->
 <div id="invoiceSHPage" class="hidden">
   <div class="invoice-container">
     <div class="invoice-left-panel">
@@ -1933,7 +1915,6 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 5. ISN_5 미도착 Invoice 페이지 -->
 <div id="invoiceISNPage" class="hidden">
   <div class="invoice-container">
     <div class="invoice-left-panel">
@@ -1972,7 +1953,6 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 6. YAJ_3 미도착 Invoice 페이지 -->
 <div id="invoiceYAJPage" class="hidden">
   <div class="invoice-container">
     <div class="invoice-left-panel">
@@ -2011,7 +1991,6 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 7. 📜 호출 Log PC 전용 화면 -->
 <div id="callLogPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title" style="display:flex;justify-content:space-between;align-items:center;">
@@ -2039,7 +2018,6 @@ background:#1d4ed8;
 </div>
 </div>
 
-<!-- 👥 데이터 누적 시 헬퍼 인원 입력 모달 팝업 -->
 <div id="saveModal" class="modal-overlay hidden">
   <div class="modal-card">
     <div class="modal-title">👥 누적 시점 헬퍼 인원 입력</div>
@@ -2266,7 +2244,6 @@ function showTab(page){
   document.getElementById("invoiceYAJPage").classList.toggle("hidden", page !== "invoiceYAJ");
   document.getElementById("callLogPage").classList.toggle("hidden", page !== "callLog");
 
-  /* Lab 페이지 연결 */
   document.getElementById("labCenterPage").classList.toggle("hidden", page !== "labCenter");
   document.getElementById("labRoutePage").classList.toggle("hidden", page !== "labRoute");
   document.getElementById("labDayPatternPage").classList.toggle("hidden", page !== "labDayPattern");
@@ -2377,7 +2354,6 @@ function updateTrendCustomTime(key, val) {
   db.ref("accumulatedLogs/" + key).update({ customTime: val });
 }
 
-/* 📈 누적 데이터 실시간 불러오기 */
 db.ref("accumulatedLogs").on("value", (snapshot) => {
   const tbody = document.getElementById("trendTable").querySelector("tbody");
   const mobileCardList = document.getElementById("mobileTrendCardList");
@@ -2717,23 +2693,12 @@ function renderLabCenterData(logList) {
 
 function renderLabRouteData() {
   const grid = document.getElementById("labRouteGrid");
-  if (!remoteData || !remoteData.allRouteList) {
+  if (!remoteData || !remoteData.routeGroupMap) {
     grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;">원천 엑셀 파일이 업로드되지 않았습니다.</div>';
     return;
   }
 
-  const list = remoteData.allRouteList;
-  const routeGroupMap = {};
-
-  list.forEach(item => {
-    const rawRoute = item.route;
-    if (!rawRoute) return;
-    const match = rawRoute.match(/^([A-Za-z0-9]+?)\d{1,2}$/i);
-    const groupKey = match ? match[1] : rawRoute;
-    routeGroupMap[groupKey] = (routeGroupMap[groupKey] || 0) + 1;
-  });
-
-  const entries = Object.entries(routeGroupMap).sort((a, b) => b[1] - a[1]);
+  const entries = Object.entries(remoteData.routeGroupMap).sort((a, b) => b[1] - a[1]);
   if (entries.length === 0) {
     grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;">선택한 PDD 시간에 대한 라우트 물동량이 없습니다.</div>';
     return;
@@ -2890,7 +2855,6 @@ async function processFiles(files){
 
     const now = new Date();
     
-    // 1. R열(인덱스 17) PDD 시간 및 출고 센터 자동 감지 매칭
     const pddAllRows = rows.filter(r => {
       const rawR = String(r[17] || "").trim();
       const rawCamp = String(r[6] || "").trim().toUpperCase();
@@ -2903,10 +2867,15 @@ async function processFiles(files){
 
     const targetDateStr = pddAllRows.length > 0 ? String(pddAllRows[0][17]).split(' ')[0] : formatTimeString(now).split(' ')[0];
 
-    const allRouteList = pddAllRows.map(r => ({
-      route: String(r[1]||"").trim(),
-      camp: String(r[6]||"").trim()
-    }));
+    // 🔥 용량 최적화: 라우트 히트맵 집계본만 생성
+    const routeGroupMap = {};
+    pddAllRows.forEach(r => {
+      const rawRoute = String(r[1]||"").trim();
+      if (!rawRoute) return;
+      const match = rawRoute.match(/^([A-Za-z0-9]+?)\d{1,2}$/i);
+      const groupKey = match ? match[1] : rawRoute;
+      routeGroupMap[groupKey] = (routeGroupMap[groupKey] || 0) + 1;
+    });
 
     const totalYajShipment = pddAllRows.filter(r => {
       const c = String(r[6]||"").trim().toUpperCase();
@@ -2920,14 +2889,12 @@ async function processFiles(files){
 
     const totalShShipment = pddAllRows.length;
 
-    // 2. M열(인덱스 12) 및 N열(인덱스 13) 도착 필터링
     const rawArrivedRows = pddAllRows.filter(r => {
       const m = String(r[12]||"").trim();
       const n = String(r[13]||"").trim();
       return (m !== "" || n !== "");
     });
 
-    // 3. 타캠프 오도착 건수 산출
     let misplaceTotal = 0;
     pddAllRows.forEach(r => {
       const id = String(r[12]||"").trim();
@@ -2936,10 +2903,8 @@ async function processFiles(files){
       }
     });
 
-    // 4. 오도착 차감된 실제 도착 물량
     const arrivedTotal = Math.max(0, rawArrivedRows.length - misplaceTotal);
 
-    // 5. 미스캔 (미도착) 물동량 추출
     const filteredUnarrived = pddAllRows.filter(r => {
       const m = String(r[12]||"").trim();
       const n = String(r[13]||"").trim();
@@ -2977,12 +2942,13 @@ async function processFiles(files){
 
     const allHubs = [...new Set(rows.map(r=>String(r[3]||"").trim()).filter(x=>x!==""))].sort();
 
+    // 🔥 용량 최적화: 오도착 건당 최대 30건 제한
     const misplaceMap = {};
     rows.forEach(r => {
       const id = String(r[12]||"").trim();
       if(id !== ""){
         if(!misplaceMap[id]) misplaceMap[id] = [];
-        if(misplaceMap[id].length < 100){
+        if(misplaceMap[id].length < 30){
           misplaceMap[id].push({
             wb: String(r[8]||""),
             camp: String(r[6]||""),
@@ -3006,7 +2972,7 @@ async function processFiles(files){
       misplaceMap,
       pddTime: selectedPddTime,
       timestamp: now.getTime(),
-      allRouteList,
+      routeGroupMap,
       totalYajShipment,
       totalIsnShipment,
       totalShShipment,
@@ -3014,8 +2980,30 @@ async function processFiles(files){
       misplaceTotal
     };
 
+    // Firebase 전송 용량 최적화 저장
     await db.ref("dashboardSummary").set(payload);
-    await db.ref("uploadHistory").push(payload);
+
+    // 복구용 최소 데이터 저장
+    const historyPayload = {
+      lastUpdate: fullInfoStr,
+      uploadTimeOnly: formatTimeString(now),
+      pddInfoFull: `${targetDateStr} / PDD ${selectedPddTime}시`,
+      shCounts, isnCounts, yajCounts,
+      shList, isnList, yajList,
+      unassignedTotal: filteredUnarrived.length,
+      allHubs,
+      misplaceMap,
+      pddTime: selectedPddTime,
+      timestamp: now.getTime(),
+      routeGroupMap,
+      totalYajShipment,
+      totalIsnShipment,
+      totalShShipment,
+      arrivedTotal,
+      misplaceTotal
+    };
+
+    await db.ref("uploadHistory").push(historyPayload);
 
     document.getElementById("badge").innerHTML = `🟢 서버 업데이트 완료 (${targetDateStr} ${selectedPddTime}시)`;
     showTab('result');
