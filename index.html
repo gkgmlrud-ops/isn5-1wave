@@ -2377,7 +2377,7 @@ function updateTrendCustomTime(key, val) {
   db.ref("accumulatedLogs/" + key).update({ customTime: val });
 }
 
-/* 📈 누적 데이터 실시간 불러오기 (PC/모바일 분리 렌더링) */
+/* 📈 누적 데이터 실시간 불러오기 */
 db.ref("accumulatedLogs").on("value", (snapshot) => {
   const tbody = document.getElementById("trendTable").querySelector("tbody");
   const mobileCardList = document.getElementById("mobileTrendCardList");
@@ -2402,7 +2402,6 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
       const newW = item.newWorkers || 0;
       const workerDisplay = totalW > 0 ? `<b>${totalW}명</b> <span style="font-size:11px;color:#64748b;">(고정:${fixedW}/신규:${newW})</span>` : '-';
 
-      // PC 테이블용 HTML
       html += `
         <tr>
           <td>
@@ -2430,7 +2429,6 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
         </tr>
       `;
 
-      // 📱 모바일 카드용 HTML
       const catDisplay = selectedCat === "F3 소분 종료" && customTimeVal ? `F3 종료 [${customTimeVal}]` : selectedCat;
       mobileHtml += `
         <div class="mobile-trend-card">
@@ -2476,7 +2474,6 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
   }
 });
 
-/* ⏱️ F3 소분 종료 예상시간 계산 */
 function calcAndRenderPrediction() {
   const timeEl = document.getElementById("predF3Time");
   const statusEl = document.getElementById("predStatusText");
@@ -2667,7 +2664,6 @@ function renderTrendLineChart(labels, d2Data, t130Data, f3Data) {
   });
 }
 
-/* 🧪 [Lab 1] 누적 F3 종료 데이터 기반 상습 미도착 Hub 집계 */
 function renderLabCenterData(logList) {
   const tbody = document.getElementById("labCenterTable").querySelector("tbody");
   if (!logList || logList.length === 0) {
@@ -2719,7 +2715,6 @@ function renderLabCenterData(logList) {
   tbody.innerHTML = html;
 }
 
-/* 🧪 [Lab 2] 🎯 선택 PDD 전체 출고 물동량 라우트 히트맵 */
 function renderLabRouteData() {
   const grid = document.getElementById("labRouteGrid");
   if (!remoteData || !remoteData.allRouteList) {
@@ -2764,7 +2759,6 @@ function renderLabRouteData() {
   grid.innerHTML = html;
 }
 
-/* 🧪 [Lab 3] 📊 요일별 전체 출고/도착/오도착/완진율 패턴 분석 */
 function renderLabDayPattern(logList) {
   const tbody = document.getElementById("labDayPatternTable").querySelector("tbody");
 
@@ -2895,34 +2889,20 @@ async function processFiles(files){
     const rows = [...data1, ...data2.slice(1)];
 
     const now = new Date();
-    let targetDate = new Date();
-    const currentHour = now.getHours();
-
-    if (currentHour >= 19) {
-      targetDate.setDate(targetDate.getDate() + 1);
-    }
-
-    const targetDateStr = targetDate.getFullYear() + "-" +
-      String(targetDate.getMonth()+1).padStart(2,"0") + "-" +
-      String(targetDate.getDate()).padStart(2,"0");
-
-    const targetDigitsOnly = targetDateStr.replace(/\D/g, ''); // "20261028"
-
-    // 1. R열(인덱스 17) PDD 날짜+시간 및 F열(인덱스 6) 출고센터 유연 매칭
+    
+    // 1. R열(인덱스 17) PDD 시간 및 출고 센터 자동 감지 매칭
     const pddAllRows = rows.filter(r => {
       const rawR = String(r[17] || "").trim();
       const rawCamp = String(r[6] || "").trim().toUpperCase();
 
-      const digitsR = rawR.replace(/\D/g, '');
-      const isDateMatch = digitsR.includes(targetDigitsOnly);
       const isTimeMatch = rawR.includes(selectedPddTime) || rawR.includes(selectedPddTime + ":00");
-
       const isCampMatch = rawCamp.includes("YAJ") || rawCamp.includes("양주") || rawCamp.includes("ISN") || rawCamp.includes("일산");
 
-      return (isDateMatch && isTimeMatch && isCampMatch) || (rawR.includes(targetDateStr) && rawR.includes(selectedPddTime));
+      return isTimeMatch && isCampMatch;
     });
 
-    // 전체 라우트 목록 추출
+    const targetDateStr = pddAllRows.length > 0 ? String(pddAllRows[0][17]).split(' ')[0] : formatTimeString(now).split(' ')[0];
+
     const allRouteList = pddAllRows.map(r => ({
       route: String(r[1]||"").trim(),
       camp: String(r[6]||"").trim()
