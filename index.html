@@ -1450,13 +1450,13 @@ let lastSpokenTime = Date.now();
 
 const hubWaybillsStore = {};
 
-// 모바일 접속 여부 감지 (핸드폰 접속 시 소리 완전 차단)
+// 모바일 접속 여부 감지 (핸드폰 접속 시 소리 차단)
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
-/* 🔔 Mac / Windows 100% 호환 효과음 알림 엔진 */
+/* 🔔 Mac / Windows 호환 효과음 알림 엔진 */
 const alertSound = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
 
-/* 🔊 Mac 브라우저 오디오 차단 해제 함수 */
+/* 🔊 Mac 브라우저 오디오 차단 해제 */
 function enableAudio() {
   if (isMobile) return;
 
@@ -1464,14 +1464,18 @@ function enableAudio() {
     alertSound.pause();
     alertSound.currentTime = 0;
     
+    // tts 보이스 초기화
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+    }
+
     const btn = document.getElementById("audioEnableBtn");
     if(btn) {
       btn.innerText = "🟢 알림음 활성화 완료";
       btn.style.background = "#16a34a";
     }
-  }).catch(e => {
-    console.log("Audio play error:", e);
-  });
+  }).catch(e => console.log("Audio enable error:", e));
 }
 
 function requestNotificationPermission() {
@@ -1493,34 +1497,45 @@ function showDesktopNotification(msg) {
   }
 }
 
-/* 🔊 알림음 재생 및 TTS 통합 출력 함수 (모바일 완전 차단) */
+/* 🔊 알림음(Beep) 후 텍스트 음성 순차 읽기 (Mac/PC 완벽 보완) */
 function speakText(text) {
   if (isMobile) return; // 핸드폰 접속 시 소리 안 남
 
-  // 1. 효과음(Beep) 2회 재생 (Mac/PC 공통 100% 호환)
   try {
+    // 1단계: 효과음 재생
     alertSound.currentTime = 0;
     alertSound.play().then(() => {
+      // 2단계: 효과음 종료 후 0.8초 뒤 텍스트 음성 읽기 진행 (오디오 충돌 방지)
       setTimeout(() => {
-        alertSound.currentTime = 0;
-        alertSound.play().catch(e => console.log(e));
-      }, 400);
-    }).catch(e => console.log("Sound error:", e));
+        if ('speechSynthesis' in window) {
+          window.speechSynthesis.cancel();
+          if (window.speechSynthesis.paused) window.speechSynthesis.resume();
+
+          const utterance = new SpeechSynthesisUtterance("알림. " + text);
+          utterance.lang = 'ko-KR';
+          utterance.rate = 1.0;
+          utterance.pitch = 1.0;
+
+          // 한국어 목소리 매핑
+          const voices = window.speechSynthesis.getVoices();
+          const korVoice = voices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
+          if (korVoice) utterance.voice = korVoice;
+
+          window.speechSynthesis.speak(utterance);
+        }
+      }, 800);
+    }).catch(e => {
+      console.log("Sound play error:", e);
+      // 효과음 실패 시 직발 텍스트 실행
+      if ('speechSynthesis' in window) {
+        window.speechSynthesis.cancel();
+        const utterance = new SpeechSynthesisUtterance("알림. " + text);
+        utterance.lang = 'ko-KR';
+        window.speechSynthesis.speak(utterance);
+      }
+    });
   } catch (e) {
     console.log(e);
-  }
-
-  // 2. TTS 음성 읽기 시도 (Mac 보조)
-  if ('speechSynthesis' in window) {
-    try {
-      window.speechSynthesis.cancel();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = 'ko-KR';
-      utterance.rate = 1.0;
-      window.speechSynthesis.speak(utterance);
-    } catch(e) {
-      console.log(e);
-    }
   }
 }
 
@@ -1899,7 +1914,7 @@ function clearCallLogs(){
   }
 }
 
-/* 🔔 호출 수신 리스너 (모바일/PC 분기 처리) */
+/* 🔔 호출 수신 리스너 (모바일/PC 분기 및 텍스트 음성 순차 출력) */
 db.ref("callSignal").on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -1912,10 +1927,10 @@ db.ref("callSignal").on("value", (snapshot) => {
     if (data.timestamp > lastSpokenTime) {
       lastSpokenTime = data.timestamp;
       
-      // 최근 10초 이내 호출 시 PC/Mac에서만 알림음 실행
+      // 최근 10초 이내 호출 시 PC/Mac에서만 알림음 및 음성 실행
       if (Date.now() - data.timestamp < 10000) {
         if (!isMobile) {
-          speakText("알림. " + data.message);
+          speakText(data.message);
           showDesktopNotification(data.message);
         }
       }
