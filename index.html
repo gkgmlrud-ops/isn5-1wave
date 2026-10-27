@@ -102,6 +102,28 @@ box-shadow:0 2px 6px rgba(37, 99, 235, 0.2);
 background:#1d4ed8;
 }
 
+/* ⚡ 모바일/PC 겸용 원클릭 최근 데이터 복구 버튼 */
+.quick-restore-btn{
+margin-top:8px;
+padding:6px 14px;
+border:none;
+border-radius:8px;
+background:#d97706;
+color:white;
+font-weight:bold;
+font-size:13px;
+cursor:pointer;
+transition:0.2s;
+box-shadow:0 2px 6px rgba(217, 119, 6, 0.25);
+display:inline-flex;
+align-items:center;
+gap:4px;
+}
+
+.quick-restore-btn:hover{
+background:#b45309;
+}
+
 .hidden{
 display:none !important;
 }
@@ -1008,9 +1030,15 @@ background:#1d4ed8;
 @media (max-width: 768px) {
   .mobile-menu-toggle { display: block; }
   
-  /* 🚫 모바일 숨김 처리 */
+  /* 🚫 모바일 숨김 처리 항목 */
   #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section, .trend-btn, .mobile-hide-del, #audioEnableBtn { 
     display: none !important; 
+  }
+
+  /* 모바일 상단 원클릭 복구 버튼 표시 */
+  .quick-restore-btn {
+    font-size: 12px;
+    padding: 5px 12px;
   }
 
   .sidebar {
@@ -1120,9 +1148,10 @@ background:#1d4ed8;
 <div class="title">📦 HUB 미스캔 실시간 현황</div>
 <div class="badge" id="badge">🟢 실시간 연동 완료</div>
 
-<div style="display:flex; align-items:center; gap:10px; margin-top:8px;">
-  <div id="lastUpdate" style="color:#6b7280;font-size:15px;text-align:center;">업데이트 확인 중...</div>
-  <!-- Mac/PC 오디오 알림 활성화 버튼 (모바일 자동 숨김) -->
+<div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px; flex-wrap:wrap;">
+  <div id="lastUpdate" style="color:#6b7280;font-size:15px;text-align:center;width:100%;">업데이트 확인 중...</div>
+  <!-- ⚡ 모바일/PC 겸용 최근 데이터 원클릭 복구 버튼 (실시간 상태 바 바로 아래) -->
+  <button class="quick-restore-btn" onclick="restoreLatestBackup()">⚡ 최근 데이터로 복구</button>
   <button class="audio-btn" id="audioEnableBtn" onclick="enableAudio()">🔊 Mac/PC 음성 활성화</button>
   <button class="reset-btn" onclick="resetData()">🗑️ 데이터 초기화</button>
 </div>
@@ -1162,14 +1191,14 @@ background:#1d4ed8;
 <div class="restore-section">
   <div class="restore-title">
     <span>↺ 최근 업로드 이력 백업 (최신 5회 보관)</span>
-    <span style="font-size:12px;color:#d97706;font-weight:normal;">* 초기화 시 선택 체크 후 원클릭 재복사 가능</span>
+    <span style="font-size:12px;color:#d97706;font-weight:normal;">* 초기화 시 원클릭 재복구 가능</span>
   </div>
   <table class="restore-table" id="restoreHistoryTable">
     <thead>
       <tr>
         <th style="width:50px;">선택</th>
         <th>업로드 일시</th>
-        <th>대상 PDD</th>
+        <th style="background:#fef3c7; color:#b45309; font-weight:bold;">대상 PDD</th>
         <th>미도착 건수</th>
         <th>복구 진행</th>
       </tr>
@@ -1530,10 +1559,11 @@ let selectedMisplaceId = "";
 let currentSelectedWaybills = [];
 let lastSpokenTime = Date.now();
 let recentHistoryData = {};
+let latestBackupKey = null;
 
 const hubWaybillsStore = {};
 
-// 모바일 접속 여부 감지 (핸드폰 접속 시 소리 차단)
+// 모바일 접속 여부 감지
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
 
 /* 🔊 macOS/Safari 보이스 로딩 사전 설정 */
@@ -1661,7 +1691,7 @@ function showTab(page){
   document.getElementById("menuInvoiceSH").classList.toggle("active", page === "invoiceSH");
   document.getElementById("menuInvoiceISN").classList.toggle("active", page === "invoiceISN");
   document.getElementById("menuInvoiceYAJ").classList.toggle("active", page === "invoiceYAJ");
-  document.getElementById("menuCallLog").classList.toggle("active", page === "callLog");
+  document.getElementById("callLogPage").classList.toggle("active", page === "callLog");
 
   document.getElementById("mainSidebar").classList.remove("mobile-open");
 }
@@ -1874,15 +1904,16 @@ async function processFiles(files){
       }
     });
 
-    const updateText = now.getFullYear() + "-" +
-      String(now.getMonth()+1).padStart(2,"0") + "-" +
-      String(now.getDate()).padStart(2,"0") + " " +
-      String(now.getHours()).padStart(2,"0") + ":" +
+    const timeOnlyStr = String(now.getHours()).padStart(2,"0") + ":" +
       String(now.getMinutes()).padStart(2,"0") + ":" +
       String(now.getSeconds()).padStart(2,"0");
 
+    const fullInfoStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")} ${timeOnlyStr} (${targetDateStr} / PDD ${selectedPddTime}시)`;
+
     const payload = {
-      lastUpdate: updateText + ` (${targetDateStr} / PDD ${selectedPddTime}시)`,
+      lastUpdate: fullInfoStr,
+      uploadTimeOnly: timeOnlyStr,
+      pddInfoFull: `${targetDateStr} / PDD ${selectedPddTime}시`,
       shCounts, isnCounts, yajCounts,
       shList, isnList, yajList,
       unassignedTotal: filteredUnarrived.length,
@@ -1940,7 +1971,7 @@ function formatTimeString(d) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-/* ↺ 최근 5개 백업 히스토리 불러오기 및 정구 */
+/* ↺ 최근 5개 백업 히스토리 불러오기 및 정렬 */
 db.ref("uploadHistory").on("value", (snapshot) => {
   const tbody = document.getElementById("restoreHistoryTable").querySelector("tbody");
   if (snapshot.exists() && snapshot.val() !== null) {
@@ -1951,17 +1982,21 @@ db.ref("uploadHistory").on("value", (snapshot) => {
     // 최신 업로드순 정렬
     entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
 
-    // 최근 5개만 슬라이싱
+    // 최근 5개 슬라이싱
     const recentFive = entries.slice(0, 5);
+    latestBackupKey = recentFive.length > 0 ? recentFive[0][0] : null;
 
     let html = "";
     recentFive.forEach(([key, item], index) => {
       const totalCount = item.unassignedTotal || 0;
+      const displayTime = item.uploadTimeOnly || (item.lastUpdate ? item.lastUpdate.split(' ')[1] : '정보없음');
+      const displayPdd = item.pddInfoFull || `PDD ${item.pddTime || '07'}시`;
+
       html += `
         <tr>
           <td><input type="radio" name="restoreSelectRadio" value="${key}" ${index === 0 ? "checked" : ""}></td>
-          <td style="font-weight:bold;color:#1d4ed8;">${item.lastUpdate || '정보 없음'}</td>
-          <td><b>PDD ${item.pddTime || '07'}시</b></td>
+          <td style="font-weight:bold;color:#1d4ed8;">${displayTime}</td>
+          <td style="font-weight:bold;color:#b45309;background:#fffbeb;">${displayPdd}</td>
           <td><b style="color:#2563eb;">${totalCount.toLocaleString()} 건</b></td>
           <td>
             <button class="restore-btn-action" onclick="restoreSelectedHistory('${key}')">🔄 이 데이터로 복구</button>
@@ -1980,13 +2015,13 @@ function restoreSelectedHistory(key) {
   const targetKey = key || document.querySelector('input[name="restoreSelectRadio"]:checked')?.value;
 
   if (!targetKey || !recentHistoryData[targetKey]) {
-    alert("복구할 내역을 선택해 주세요.");
+    alert("복구할 내역이 없습니다.");
     return;
   }
 
   const payload = recentHistoryData[targetKey];
 
-  if (confirm(`[${payload.lastUpdate}] 시점의 데이터로 실시간 모니터링 화면을 복구하시겠습니까?`)) {
+  if (confirm(`[${payload.pddInfoFull || payload.lastUpdate}] 시점의 데이터로 복구하시겠습니까?`)) {
     db.ref("dashboardSummary").set(payload).then(() => {
       alert("성공적으로 복구되었습니다!");
       showTab('result');
@@ -1994,6 +2029,15 @@ function restoreSelectedHistory(key) {
       alert("복구 실패: " + err.message);
     });
   }
+}
+
+/* ⚡ 모바일/PC 원클릭 최신 백업 데이터 즉시 복구 */
+function restoreLatestBackup() {
+  if (!latestBackupKey || !recentHistoryData[latestBackupKey]) {
+    alert("복구 가능한 최근 백업 데이터가 없습니다.");
+    return;
+  }
+  restoreSelectedHistory(latestBackupKey);
 }
 
 function sendCallSignal(){
