@@ -1226,13 +1226,81 @@ background:#1d4ed8;
 .modal-btn.confirm { background: #10b981; color: white; }
 .modal-btn.cancel { background: #94a3b8; color: white; }
 
-/* 📱 모바일 전용 반응형 스타일 */
+/* 📱 모바일 전용 반응형 및 누적 데이터 카드 스타일 */
+.mobile-trend-card-list {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.mobile-trend-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.mobile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.mobile-card-cat {
+  font-size: 13px;
+  font-weight: bold;
+  color: #1d4ed8;
+  background: #eff6ff;
+  padding: 3px 8px;
+  border-radius: 6px;
+}
+
+.mobile-card-time {
+  font-size: 12px;
+  color: #64748b;
+  font-weight: bold;
+}
+
+.mobile-card-body {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 6px;
+  text-align: center;
+}
+
+.mobile-card-stat {
+  background: #f8fafc;
+  padding: 6px 4px;
+  border-radius: 8px;
+  border: 1px solid #f1f5f9;
+}
+
+.mobile-card-stat-label {
+  font-size: 10px;
+  color: #64748b;
+  margin-bottom: 2px;
+}
+
+.mobile-card-stat-val {
+  font-size: 14px;
+  font-weight: bold;
+}
+
 @media (max-width: 768px) {
   .mobile-menu-toggle { display: block; }
   
-  #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section, .trend-btn, .mobile-hide-del, #audioEnableBtn, .pc-only-menu { 
+  #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section, .trend-btn, .mobile-hide-del, #audioEnableBtn, .pc-only-menu, .lab-menu-folder { 
     display: none !important; 
   }
+
+  /* 모바일 누적데이터 카드형으로 보기 편하게 전환 */
+  .trend-table-scroll-wrap { display: none !important; }
+  .mobile-trend-card-list { display: flex !important; }
 
   .quick-restore-btn {
     font-size: 12px;
@@ -1338,20 +1406,22 @@ background:#1d4ed8;
       </div>
     </div>
 
-    <!-- 🧪 신규 3번째 폴더: 고급 분석 (Lab - 아이디어 테스트용) -->
-    <div class="folder-title" style="margin-top:8px; padding-left:4px; color:#f43f5e;" onclick="toggleMenu('labFolderMenu')">
-      <span id="labFolderArrow">▼</span> 🧪 고급 분석 (Lab)
-    </div>
+    <!-- 🧪 3번째 폴더: 고급 분석 (Lab - 모바일 미노출) -->
+    <div class="lab-menu-folder">
+      <div class="folder-title" style="margin-top:8px; padding-left:4px; color:#f43f5e;" onclick="toggleMenu('labFolderMenu')">
+        <span id="labFolderArrow">▼</span> 🧪 고급 분석 (Lab)
+      </div>
 
-    <div class="sub-menu-level2" id="labFolderMenu">
-      <div class="menu-item" id="menuLabCenter" onclick="showTab('labCenter')">
-        <span>🚚 센터별 지연 원인 분석 (2번)</span>
-      </div>
-      <div class="menu-item" id="menuLabRoute" onclick="showTab('labRoute')">
-        <span>🎯 라우트 쏠림/히트맵 (3번)</span>
-      </div>
-      <div class="menu-item" id="menuLabDayPattern" onclick="showTab('labDayPattern')">
-        <span>📊 요일별/PDD 패턴 (4번)</span>
+      <div class="sub-menu-level2" id="labFolderMenu">
+        <div class="menu-item" id="menuLabCenter" onclick="showTab('labCenter')">
+          <span>🚚 센터별 지연 원인 분석 (2번)</span>
+        </div>
+        <div class="menu-item" id="menuLabRoute" onclick="showTab('labRoute')">
+          <span>🎯 라우트 쏠림/히트맵 (3번)</span>
+        </div>
+        <div class="menu-item" id="menuLabDayPattern" onclick="showTab('labDayPattern')">
+          <span>📊 요일별/PDD 패턴 (4번)</span>
+        </div>
       </div>
     </div>
 
@@ -1628,6 +1698,7 @@ background:#1d4ed8;
       '데이터 누적하기' 버튼을 눌렀을 당시 기록된 <b>투입 인원</b>, <b>신선 수량</b>, <b>던 수량</b>, <b>SH_ISN5 수량</b> 이력입니다.
     </div>
     
+    <!-- PC용 가로 테이블 -->
     <div class="trend-table-scroll-wrap">
       <table class="invoice-table" id="trendTable">
         <thead>
@@ -1646,6 +1717,11 @@ background:#1d4ed8;
           <tr><td colspan="8">누적된 데이터가 없습니다.</td></tr>
         </tbody>
       </table>
+    </div>
+
+    <!-- 📱 모바일 전용 카드형 리스트 -->
+    <div class="mobile-trend-card-list" id="mobileTrendCardList">
+      <div style="text-align:center; padding:20px; color:#94a3b8; font-size:13px;">누적 데이터가 없습니다.</div>
     </div>
 
     <!-- 📊 날짜 기준 PDD 소분 완료 트렌드 대시보드 카드 -->
@@ -2233,9 +2309,11 @@ function updateTrendCustomTime(key, val) {
   db.ref("accumulatedLogs/" + key).update({ customTime: val });
 }
 
-/* 📈 누적 데이터 실시간 불러오기 */
+/* 📈 누적 데이터 실시간 불러오기 (PC/모바일 분리 렌더링) */
 db.ref("accumulatedLogs").on("value", (snapshot) => {
   const tbody = document.getElementById("trendTable").querySelector("tbody");
+  const mobileCardList = document.getElementById("mobileTrendCardList");
+
   if (snapshot.exists() && snapshot.val() !== null) {
     const logsObj = snapshot.val();
     const entries = Object.entries(logsObj);
@@ -2244,27 +2322,30 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
     globalLogEntries = entries.map(e => e[1]);
 
     let html = "";
+    let mobileHtml = "";
+
     entries.forEach(([key, item]) => {
-      const selectedCat = item.category || "";
+      const selectedCat = item.category || "- 선택안됨 -";
       const customTimeVal = item.customTime || "";
       const disabledAttr = isMobile ? "disabled" : "";
 
       const totalW = item.totalWorkers || 0;
       const fixedW = item.fixedWorkers || 0;
       const newW = item.newWorkers || 0;
-      const workerDisplay = totalW > 0 ? `<b>${totalW}명</b> <span style="font-size:11px;color:#64748b;">(고정:${fixedW} / 신규:${newW})</span>` : '-';
+      const workerDisplay = totalW > 0 ? `<b>${totalW}명</b> <span style="font-size:11px;color:#64748b;">(고정:${fixedW}/신규:${newW})</span>` : '-';
 
+      // PC 테이블용 HTML
       html += `
         <tr>
           <td>
             <div style="display:inline-flex;align-items:center;justify-content:center;gap:4px;">
               <select class="trend-select" ${disabledAttr} onchange="updateTrendCategory('${key}', this.value)">
-                <option value="" ${selectedCat === "" ? "selected" : ""}>- 선택 -</option>
-                <option value="D2 소분 종료" ${selectedCat === "D2 소분 종료" ? "selected" : ""}>D2 소분 종료</option>
-                <option value="01:30" ${selectedCat === "01:30" ? "selected" : ""}>01:30</option>
-                <option value="F3 소분 종료" ${selectedCat === "F3 소분 종료" ? "selected" : ""}>F3 소분 종료</option>
+                <option value="" ${item.category === "" ? "selected" : ""}>- 선택 -</option>
+                <option value="D2 소분 종료" ${item.category === "D2 소분 종료" ? "selected" : ""}>D2 소분 종료</option>
+                <option value="01:30" ${item.category === "01:30" ? "selected" : ""}>01:30</option>
+                <option value="F3 소분 종료" ${item.category === "F3 소분 종료" ? "selected" : ""}>F3 소분 종료</option>
               </select>
-              ${selectedCat === "F3 소분 종료" ? `
+              ${item.category === "F3 소분 종료" ? `
                 <input type="text" class="trend-custom-time-input" ${disabledAttr} placeholder="03:45" value="${customTimeVal}" onchange="updateTrendCustomTime('${key}', this.value)">
               ` : ''}
             </div>
@@ -2280,15 +2361,44 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
           </td>
         </tr>
       `;
+
+      // 📱 모바일 카드용 HTML
+      const catDisplay = selectedCat === "F3 소분 종료" && customTimeVal ? `F3 종료 [${customTimeVal}]` : selectedCat;
+      mobileHtml += `
+        <div class="mobile-trend-card">
+          <div class="mobile-card-header">
+            <span class="mobile-card-cat">${catDisplay}</span>
+            <span class="mobile-card-time">🕒 ${item.saveTime.split(' ')[1] || item.saveTime}</span>
+          </div>
+          <div style="font-size:11px; color:#64748b; margin-bottom:8px;">👥 투입인원: <b>${totalW}명</b> (고정 ${fixedW} / 신규 ${newW})</div>
+          <div class="mobile-card-body">
+            <div class="mobile-card-stat">
+              <div class="mobile-card-stat-label">🥬 신선</div>
+              <div class="mobile-card-stat-val" style="color:#15803d;">${item.freshQty}</div>
+            </div>
+            <div class="mobile-card-stat">
+              <div class="mobile-card-stat-label">🌙 던</div>
+              <div class="mobile-card-stat-val" style="color:#1d4ed8;">${item.dawnQty}</div>
+            </div>
+            <div class="mobile-card-stat">
+              <div class="mobile-card-stat-label">📦 SH Total</div>
+              <div class="mobile-card-stat-val" style="color:#2563eb;">${item.shQty}</div>
+            </div>
+          </div>
+        </div>
+      `;
     });
+
     tbody.innerHTML = html;
+    mobileCardList.innerHTML = mobileHtml;
 
     renderDailyTrendSummary(globalLogEntries);
     calcAndRenderPrediction();
     renderLabDayPattern(globalLogEntries);
 
   } else {
-    tbody.innerHTML = '<tr><td colspan="8">누적된 데이터가 없습니다. \'데이터 누적하기\' 버튼을 눌러보세요!</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8">누적된 데이터가 없습니다.</td></tr>';
+    mobileCardList.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8; font-size:13px;">누적 데이터가 없습니다.</div>';
     globalLogEntries = [];
     renderDailyTrendSummary([]);
     calcAndRenderPrediction();
