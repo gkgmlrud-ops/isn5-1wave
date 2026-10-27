@@ -187,7 +187,7 @@ font-weight:700;
 background:#fffbebf8;
 border:1px solid #fcd34d;
 border-radius:20px;
-padding:20px;
+padding:16px 20px;
 margin-top:20px;
 }
 
@@ -195,10 +195,11 @@ margin-top:20px;
 font-size:18px;
 font-weight:bold;
 color:#b45309;
-margin-bottom:12px;
 display:flex;
 align-items:center;
 justify-content:space-between;
+cursor:pointer;
+user-select:none;
 }
 
 .restore-table{
@@ -208,6 +209,7 @@ background:white;
 border-radius:8px;
 overflow:hidden;
 border:1px solid #fde68a;
+margin-top:12px;
 }
 
 .restore-table th{
@@ -678,6 +680,19 @@ align-items:center;
 }
 .trend-select:focus {
   border-color: #2563eb;
+}
+
+.trend-custom-time-input {
+  width: 75px;
+  margin-left: 4px;
+  padding: 4px 6px;
+  border: 1px solid #2563eb;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #1d4ed8;
+  outline: none;
+  text-align: center;
 }
 
 .misplace-layout{
@@ -1185,26 +1200,28 @@ background:#1d4ed8;
 </div>
 </div>
 
-<!-- ↺ 최근 업로드 백업 이력 5회 복구 섹션 -->
+<!-- ↺ 최근 업로드 백업 이력 5회 복구 섹션 (기본 접힘 형태) -->
 <div class="restore-section">
-  <div class="restore-title">
+  <div class="restore-title" onclick="toggleRestoreTable()">
     <span>↺ 최근 업로드 이력 백업 (최신 5회 보관)</span>
-    <span style="font-size:12px;color:#d97706;font-weight:normal;">* 초기화 시 원클릭 재복구 가능</span>
+    <span style="font-size:13px;color:#d97706;font-weight:bold;" id="restoreToggleArrow">▼ 펼치기 (원클릭 복구)</span>
   </div>
-  <table class="restore-table" id="restoreHistoryTable">
-    <thead>
-      <tr>
-        <th style="width:50px;">선택</th>
-        <th>업로드 일시</th>
-        <th style="background:#fef3c7; color:#b45309; font-weight:bold;">대상 PDD</th>
-        <th>미도착 건수</th>
-        <th>복구 진행</th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr><td colspan="5">저장된 최근 백업 이력이 없습니다.</td></tr>
-    </tbody>
-  </table>
+  <div id="restoreTableWrap" class="hidden">
+    <table class="restore-table" id="restoreHistoryTable">
+      <thead>
+        <tr>
+          <th style="width:50px;">선택</th>
+          <th>업로드 일시</th>
+          <th style="background:#fef3c7; color:#b45309; font-weight:bold;">대상 PDD</th>
+          <th>미도착 건수</th>
+          <th>복구 진행</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td colspan="5">저장된 최근 백업 이력이 없습니다.</td></tr>
+      </tbody>
+    </table>
+  </div>
 </div>
 
 <div class="hub-section">
@@ -1364,7 +1381,7 @@ background:#1d4ed8;
       <table class="invoice-table" id="trendTable">
         <thead>
           <tr>
-            <th style="width:160px;">소분/시간 구분</th>
+            <th style="width:200px;">소분/시간 구분</th>
             <th style="width:160px;">누적 저장 일시</th>
             <th>기준 업데이트 정보</th>
             <th>🥬 신선 수량</th>
@@ -1561,44 +1578,75 @@ let latestBackupKey = null;
 
 const hubWaybillsStore = {};
 
-/* 📱 순수 스마트폰(모바일) 감지 (창 크기 조건 제거하여 Mac 무음 방지) */
+/* 📱 순수 스마트폰(모바일) 감지 */
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-/* 🔊 초기 가장 잘 되던 단순 TTS 방식 음성 출력 함수 */
-function speakText(text) {
-  if (isMobile) return; // 모바일 기기는 소리 출력 안 함
+/* 🔊 Web Audio API 신시사이저 비프음 생성기 (Mac 오디오 채널 활성화용) */
+function playBeepSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
 
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    if (window.speechSynthesis.paused) {
-      window.speechSynthesis.resume();
-    }
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
 
-    const utterance = new SpeechSynthesisUtterance("알림. " + text);
-    utterance.lang = 'ko-KR';
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
+    osc.connect(gain);
+    gain.connect(ctx.destination);
 
-    window.speechSynthesis.speak(utterance);
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  } catch (e) {
+    console.log("AudioContext error:", e);
   }
+}
+
+/* 🔊 비프음(0.15초) 1회 출력 후 0.5초 뒤 텍스트 순차 재생 */
+function speakText(text) {
+  if (isMobile) return;
+
+  playBeepSound();
+
+  setTimeout(() => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ko-KR';
+      utterance.rate = 1.0;
+      utterance.pitch = 1.0;
+
+      window.speechSynthesis.speak(utterance);
+    }
+  }, 500);
 }
 
 /* 🔊 Mac 및 PC 음성 권한 해제 버튼 함수 */
 function enableAudio() {
   if (isMobile) return;
 
+  playBeepSound();
+
   if ('speechSynthesis' in window) {
     window.speechSynthesis.cancel();
     if (window.speechSynthesis.paused) {
       window.speechSynthesis.resume();
     }
 
-    const dummy = new SpeechSynthesisUtterance("음성 알림이 연결되었습니다.");
-    dummy.lang = 'ko-KR';
-    dummy.rate = 1.0;
-    dummy.volume = 1.0;
+    setTimeout(() => {
+      const dummy = new SpeechSynthesisUtterance("음성 알림이 연결되었습니다.");
+      dummy.lang = 'ko-KR';
+      dummy.rate = 1.0;
+      dummy.volume = 1.0;
 
-    window.speechSynthesis.speak(dummy);
+      window.speechSynthesis.speak(dummy);
+    }, 300);
 
     const btn = document.getElementById("audioEnableBtn");
     if(btn) {
@@ -1650,6 +1698,20 @@ function toggleMobileCard(prefix) {
       const isCollapsed = table.classList.contains("mobile-collapsed");
       if (arrow) arrow.innerText = isCollapsed ? "▼" : "▲";
     }
+  }
+}
+
+/* ↺ 최근 업로드 이력 백업 접기/펼치기 토글 함수 */
+function toggleRestoreTable(){
+  const wrap = document.getElementById("restoreTableWrap");
+  const arrow = document.getElementById("restoreToggleArrow");
+  if(!wrap) return;
+  
+  wrap.classList.toggle("hidden");
+  if(wrap.classList.contains("hidden")){
+    arrow.innerText = "▼ 펼치기 (원클릭 복구)";
+  } else {
+    arrow.innerText = "▲ 접기";
   }
 }
 
@@ -1720,7 +1782,8 @@ function saveAccumulatedData() {
     freshQty: freshVal,
     dawnQty: dawnVal,
     shQty: shVal,
-    category: ""
+    category: "",
+    customTime: ""
   };
 
   db.ref("accumulatedLogs").push(payload).then(() => {
@@ -1736,7 +1799,13 @@ function updateTrendCategory(key, val) {
   });
 }
 
-/* 📈 누적 데이터 실시간 불러오기 */
+function updateTrendCustomTime(key, val) {
+  db.ref("accumulatedLogs/" + key).update({
+    customTime: val
+  });
+}
+
+/* 📈 누적 데이터 실시간 불러오기 (F3 소분 종료 선택 시 수기 시간 입력칸 노출) */
 db.ref("accumulatedLogs").on("value", (snapshot) => {
   const tbody = document.getElementById("trendTable").querySelector("tbody");
   if (snapshot.exists() && snapshot.val() !== null) {
@@ -1747,17 +1816,23 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
     let html = "";
     entries.forEach(([key, item]) => {
       const selectedCat = item.category || "";
+      const customTimeVal = item.customTime || "";
       const disabledAttr = isMobile ? "disabled" : "";
 
       html += `
         <tr>
           <td>
-            <select class="trend-select" ${disabledAttr} onchange="updateTrendCategory('${key}', this.value)">
-              <option value="" ${selectedCat === "" ? "selected" : ""}>- 선택 -</option>
-              <option value="D2 소분 종료" ${selectedCat === "D2 소분 종료" ? "selected" : ""}>D2 소분 종료</option>
-              <option value="01:30" ${selectedCat === "01:30" ? "selected" : ""}>01:30</option>
-              <option value="F3 소분 종료" ${selectedCat === "F3 소분 종료" ? "selected" : ""}>F3 소분 종료</option>
-            </select>
+            <div style="display:inline-flex;align-items:center;justify-content:center;gap:4px;">
+              <select class="trend-select" ${disabledAttr} onchange="updateTrendCategory('${key}', this.value)">
+                <option value="" ${selectedCat === "" ? "selected" : ""}>- 선택 -</option>
+                <option value="D2 소분 종료" ${selectedCat === "D2 소분 종료" ? "selected" : ""}>D2 소분 종료</option>
+                <option value="01:30" ${selectedCat === "01:30" ? "selected" : ""}>01:30</option>
+                <option value="F3 소분 종료" ${selectedCat === "F3 소분 종료" ? "selected" : ""}>F3 소분 종료</option>
+              </select>
+              ${selectedCat === "F3 소분 종료" ? `
+                <input type="text" class="trend-custom-time-input" ${disabledAttr} placeholder="03:45" value="${customTimeVal}" onchange="updateTrendCustomTime('${key}', this.value)" title="F3 소분종료 시간을 적으세요">
+              ` : ''}
+            </div>
           </td>
           <td style="color:#1d4ed8; font-weight:bold;">${item.saveTime}</td>
           <td style="color:#64748b; font-size:12px;">${item.lastUpdateInfo}</td>
@@ -1881,15 +1956,11 @@ async function processFiles(files){
       }
     });
 
-    const timeOnlyStr = String(now.getHours()).padStart(2,"0") + ":" +
-      String(now.getMinutes()).padStart(2,"0") + ":" +
-      String(now.getSeconds()).padStart(2,"0");
-
-    const fullInfoStr = `${now.getFullYear()}-${String(now.getMonth()+1).padStart(2,"0")}-${String(now.getDate()).padStart(2,"0")} ${timeOnlyStr} (${targetDateStr} / PDD ${selectedPddTime}시)`;
+    const fullInfoStr = formatTimeString(now) + ` (${targetDateStr} / PDD ${selectedPddTime}시)`;
 
     const payload = {
       lastUpdate: fullInfoStr,
-      uploadTimeOnly: timeOnlyStr,
+      uploadTimeOnly: formatTimeString(now),
       pddInfoFull: `${targetDateStr} / PDD ${selectedPddTime}시`,
       shCounts, isnCounts, yajCounts,
       shList, isnList, yajList,
@@ -1900,10 +1971,7 @@ async function processFiles(files){
       timestamp: now.getTime()
     };
 
-    // 1. 실시간 모니터링 메인 노드 업데이트
     await db.ref("dashboardSummary").set(payload);
-
-    // 2. 최근 업로드 히스토리 (최대 5개 유지) 자동 보관
     await db.ref("uploadHistory").push(payload);
 
     document.getElementById("badge").innerHTML = `🟢 서버 업데이트 완료 (${targetDateStr} ${selectedPddTime}시)`;
@@ -1948,7 +2016,7 @@ function formatTimeString(d) {
   return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
 }
 
-/* ↺ 최근 5개 백업 히스토리 불러오기 및 정렬 */
+/* ↺ 최근 5개 백업 히스토리 불러오기 */
 db.ref("uploadHistory").on("value", (snapshot) => {
   const tbody = document.getElementById("restoreHistoryTable").querySelector("tbody");
   if (snapshot.exists() && snapshot.val() !== null) {
@@ -1956,18 +2024,35 @@ db.ref("uploadHistory").on("value", (snapshot) => {
     recentHistoryData = historyObj;
     const entries = Object.entries(historyObj);
 
-    // 최신 업로드순 정렬
     entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
 
-    // 최근 5개 슬라이싱
     const recentFive = entries.slice(0, 5);
     latestBackupKey = recentFive.length > 0 ? recentFive[0][0] : null;
 
     let html = "";
     recentFive.forEach(([key, item], index) => {
       const totalCount = item.unassignedTotal || 0;
-      const displayTime = item.uploadTimeOnly || (item.lastUpdate ? item.lastUpdate.split(' ')[1] : '정보없음');
-      const displayPdd = item.pddInfoFull || `PDD ${item.pddTime || '07'}시`;
+      
+      let displayTime = item.uploadTimeOnly;
+      if (!displayTime || displayTime.length <= 8) {
+        if (item.timestamp) {
+          displayTime = formatTimeString(new Date(item.timestamp));
+        } else if (item.lastUpdate) {
+          displayTime = item.lastUpdate.split(' (')[0];
+        } else {
+          displayTime = "정보 없음";
+        }
+      }
+
+      let displayPdd = item.pddInfoFull;
+      if (!displayPdd || displayPdd.indexOf('/') === -1) {
+        let pddDateStr = "2026-10-28";
+        if (item.timestamp) {
+          const tDate = new Date(item.timestamp);
+          pddDateStr = `${tDate.getFullYear()}-${String(tDate.getMonth()+1).padStart(2,'0')}-${String(tDate.getDate()).padStart(2,'0')}`;
+        }
+        displayPdd = `${pddDateStr} / PDD ${item.pddTime || '07'}시`;
+      }
 
       html += `
         <tr>
@@ -1987,7 +2072,6 @@ db.ref("uploadHistory").on("value", (snapshot) => {
   }
 });
 
-/* ↺ 선택한 백업 이력으로 실시간 데이터 원클릭 복구 */
 function restoreSelectedHistory(key) {
   const targetKey = key || document.querySelector('input[name="restoreSelectRadio"]:checked')?.value;
 
@@ -2008,7 +2092,6 @@ function restoreSelectedHistory(key) {
   }
 }
 
-/* ⚡ 모바일/PC 원클릭 최신 백업 데이터 즉시 복구 */
 function restoreLatestBackup() {
   if (!latestBackupKey || !recentHistoryData[latestBackupKey]) {
     alert("복구 가능한 최근 백업 데이터가 없습니다.");
@@ -2065,7 +2148,7 @@ db.ref("callLogs").on("value", (snapshot) => {
   }
 });
 
-/* 🔔 호출 수신 리스너 (초기 방식 복원) */
+/* 🔔 호출 수신 리스너 */
 db.ref("callSignal").on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -2078,7 +2161,6 @@ db.ref("callSignal").on("value", (snapshot) => {
     if (data.timestamp > lastSpokenTime) {
       lastSpokenTime = data.timestamp;
       
-      // 최근 10초 이내 호출 시 PC/Mac에서 초기 단순 방식으로 음성 출력
       if (Date.now() - data.timestamp < 10000) {
         if (!isMobile) {
           speakText(data.message);
