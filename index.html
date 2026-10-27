@@ -1460,17 +1460,23 @@ function loadVoices() {
     availableVoices = window.speechSynthesis.getVoices();
   }
 }
+
 if ('speechSynthesis' in window) {
   loadVoices();
   window.speechSynthesis.onvoiceschanged = loadVoices;
 }
 
-/* 🔊 Mac 및 PC 음성 재생 제한 해제 함수 (모바일 제외) */
+/* 🔊 Mac 및 PC 음성 재생 제한 해제 함수 (Mac Stuck 현상 강제 해제 적용) */
 function enableAudio() {
   if (isMobile) return;
 
   if ('speechSynthesis' in window) {
+    // Mac 브라우저 음성 엔진 멈춤 현상 해제
     window.speechSynthesis.cancel();
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+
     loadVoices();
 
     const dummy = new SpeechSynthesisUtterance("음성 알림이 연결되었습니다.");
@@ -1478,7 +1484,8 @@ function enableAudio() {
     dummy.rate = 1.0;
     dummy.volume = 1.0;
 
-    const korVoice = availableVoices.find(v => v.lang.includes('ko'));
+    // 한국어 전용 음성 엔진 선택
+    const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
     if (korVoice) dummy.voice = korVoice;
 
     window.speechSynthesis.speak(dummy);
@@ -1510,19 +1517,22 @@ function showDesktopNotification(msg) {
   }
 }
 
-/* 🔊 음성 출력 함수 (모바일 디바이스 완전 제외) */
+/* 🔊 음성 출력 함수 (Mac 멈춤 방지 및 한국어 보이스 지정) */
 function speakText(text) {
   if (isMobile) return; // 핸드폰 접속 시 소리 출력 안 함
 
   if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
+    window.speechSynthesis.cancel(); // 기존 음성 취소로 Mac 음성 엔진 초기화
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
     
     const utterance = new SpeechSynthesisUtterance(text);
     utterance.lang = 'ko-KR';
     utterance.rate = 1.0;
     utterance.pitch = 1.0;
 
-    const korVoice = availableVoices.find(v => v.lang.includes('ko'));
+    const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
     if (korVoice) utterance.voice = korVoice;
 
     window.speechSynthesis.speak(utterance);
