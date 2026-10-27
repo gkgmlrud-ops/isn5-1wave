@@ -1157,11 +1157,11 @@ background:#1d4ed8;
   font-weight: bold;
 }
 
-/* 🧪 아이디어 4번 전체 물량 및 완진율 전용 대시보드 요약 스타일 */
+/* 🧪 요약 카드 대시보드 스타일 */
 .lab-summary-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 14px;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 12px;
   margin-bottom: 20px;
 }
 
@@ -1169,20 +1169,20 @@ background:#1d4ed8;
   background: #ffffff;
   border: 1px solid #cbd5e1;
   border-radius: 14px;
-  padding: 16px;
+  padding: 14px 10px;
   text-align: center;
   box-shadow: 0 2px 6px rgba(0,0,0,0.02);
 }
 
 .lab-card-title {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: bold;
   color: #64748b;
   margin-bottom: 6px;
 }
 
 .lab-card-val {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 900;
   color: #1e293b;
 }
@@ -1435,7 +1435,7 @@ background:#1d4ed8;
       </div>
     </div>
 
-    <!-- 🧪 3번째 폴더: 고급 분석 (Lab - 모바일 미노출) -->
+    <!-- 🧪 3번째 폴더: 고급 분석 (Lab) -->
     <div class="lab-menu-folder">
       <div class="folder-title" style="margin-top:8px; padding-left:4px; color:#f43f5e;" onclick="toggleMenu('labFolderMenu')">
         <span id="labFolderArrow">▼</span> 🧪 고급 분석 (Lab)
@@ -1786,14 +1786,14 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 🧪 [Lab 1 개편] 🚚 F3 종료 시점 상습 지연 Hub 분석 (아이디어 2번 - 누적 기반) -->
+<!-- 🧪 [Lab 1] 🚚 F3 종료 시점 상습 지연 Hub 분석 -->
 <div id="labCenterPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title">
       <span>🚚 F3 종료 시점 상습 미도착 / 지연 센터(Hub) 분석 (누적 데이터 연동)</span>
     </div>
     <div style="font-size:13px; color:#64748b; margin-bottom:15px;">
-      단발성 하루치가 아닌, <b>매일 F3 소분 종료 시점에 쌓인 누적 데이터</b>를 바탕으로 어떤 출고 센터(Hub/FC)가 지속적으로 미도착 원인을 제공하는지 상습 순위를 집계합니다.
+      <b>매일 F3 소분 종료 시점에 쌓인 누적 데이터</b>를 바탕으로 어떤 출고 센터(Hub/FC)가 지속적으로 미도착 원인을 제공하는지 상습 순위를 집계합니다.
     </div>
 
     <div class="invoice-table-wrap">
@@ -1808,21 +1808,21 @@ background:#1d4ed8;
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="5">누적된 F3 소분 종료 데이터가 없습니다. ('데이터 누적하기' 시 F3 종료 구분 데이터를 축적해주세요)</td></tr>
+          <tr><td colspan="5">누적된 F3 소분 종료 데이터가 없습니다.</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </div>
 
-<!-- 🧪 [Lab 2 개편] 🎯 전체 물동량 기준 라우트 밀도 & 히트맵 (아이디어 3번 - Raw 전체 기준) -->
+<!-- 🧪 [Lab 2] 🎯 선택 PDD 전체 출고 물동량 라우트 히트맵 -->
 <div id="labRoutePage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title">
       <span>🎯 선택 PDD 기준 전체 출고 물동량 라우트 히트맵 (전체 물량)</span>
     </div>
     <div style="font-size:13px; color:#64748b; margin-bottom:12px;">
-      미도착(미스캔) 건수가 아닌, **업로드된 엑셀 Raw 파일 전체 출고 물량**을 선택된 PDD 시간 기준(예: 07시/08시/09시 PDD)으로 집계하여 라우트별 물동량 밀도 히트맵을 보여줍니다.
+      업로드된 엑셀 Raw 파일 전체 출고 물량을 선택된 PDD 시간 기준(07시/08시/09시)으로 집계하여 라우트별 물동량 밀도 히트맵을 보여줍니다.
     </div>
 
     <div class="lab-card-grid" id="labRouteGrid">
@@ -1833,7 +1833,7 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 🧪 [Lab 3 개편] 📊 요일별 전체 출고 물동량 및 최종 소분완료율 (아이디어 4번 - 출고/완진율) -->
+<!-- 🧪 [Lab 3] 📊 요일별 전체 출고 물동량 & 최종 소분완료율 (완진율) -->
 <div id="labDayPatternPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title">
@@ -1843,16 +1843,24 @@ background:#1d4ed8;
     <!-- 금일 PDD 기준 핵심 지연/완료율 카드 요약 -->
     <div class="lab-summary-grid">
       <div class="lab-summary-card">
-        <div class="lab-card-title">📦 YAJ_3 전체 출고 (선택 PDD)</div>
+        <div class="lab-card-title">📦 YAJ_3 전체 출고</div>
         <div class="lab-card-val" id="dayYajTotal" style="color:#1d4ed8;">0 건</div>
       </div>
       <div class="lab-summary-card">
-        <div class="lab-card-title">📦 ISN_5 전체 출고 (선택 PDD)</div>
+        <div class="lab-card-title">📦 ISN_5 전체 출고</div>
         <div class="lab-card-val" id="dayIsnTotal" style="color:#15803d;">0 건</div>
       </div>
       <div class="lab-summary-card">
-        <div class="lab-card-title">🚚 S-ISN5 총 출고 (선택 PDD)</div>
+        <div class="lab-card-title">🚚 S-ISN5 총 출고</div>
         <div class="lab-card-val" id="dayShTotal" style="color:#2563eb;">0 건</div>
+      </div>
+      <div class="lab-summary-card">
+        <div class="lab-card-title">🚚 도착 물량 (오도착 차감)</div>
+        <div class="lab-card-val" id="dayArrivedTotal" style="color:#16a34a;">0 건</div>
+      </div>
+      <div class="lab-summary-card">
+        <div class="lab-card-title">⚠️ 타캠프 오도착 건수</div>
+        <div class="lab-card-val" id="dayMisplaceTotal" style="color:#dc2626;">0 건</div>
       </div>
       <div class="lab-summary-card" style="background:#f0fdf4; border-color:#86efac;">
         <div class="lab-card-title" style="color:#166534;">🎯 최종 소분완료율 (완진율)</div>
@@ -1861,7 +1869,7 @@ background:#1d4ed8;
     </div>
 
     <div style="font-size:13px; color:#64748b; margin-bottom:15px;">
-      누적 데이터를 바탕으로 요일별 평균 전체 출고량 및 최종 도착/미도착 수량과 소분완료율 추이를 분석합니다.
+      R열 PDD 기준 전체 출고 물량 및 M/N열 도착 필드값, 타캠프 오도착을 반영한 요일별 평균 완진율 추이입니다.
     </div>
 
     <div class="invoice-table-wrap">
@@ -1873,12 +1881,13 @@ background:#1d4ed8;
             <th>일산5 전체출고</th>
             <th>S-ISN5 총 출고</th>
             <th>평균 도착 물량</th>
+            <th>평균 오도착 건수</th>
             <th>평균 최종 미도착</th>
-            <th style="background:#ecfdf5; color:#15803d;">🎯 평균 소분완료율 (%)</th>
+            <th style="background:#ecfdf5; color:#15803d;">🎯 평균 완진율 (%)</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="7">누적 데이터 수집 중입니다.</td></tr>
+          <tr><td colspan="8">누적 데이터 수집 중입니다.</td></tr>
         </tbody>
       </table>
     </div>
@@ -2257,7 +2266,7 @@ function showTab(page){
   document.getElementById("invoiceYAJPage").classList.toggle("hidden", page !== "invoiceYAJ");
   document.getElementById("callLogPage").classList.toggle("hidden", page !== "callLog");
 
-  /* Lab 신규 페이지 연결 */
+  /* Lab 페이지 연결 */
   document.getElementById("labCenterPage").classList.toggle("hidden", page !== "labCenter");
   document.getElementById("labRoutePage").classList.toggle("hidden", page !== "labRoute");
   document.getElementById("labDayPatternPage").classList.toggle("hidden", page !== "labDayPattern");
@@ -2347,7 +2356,9 @@ function confirmSaveAccumulatedData() {
     newWorkers: parseInt(newW),
     totalYajShipment: remoteData.totalYajShipment || 0,
     totalIsnShipment: remoteData.totalIsnShipment || 0,
-    totalShShipment: remoteData.totalShShipment || 0
+    totalShShipment: remoteData.totalShShipment || 0,
+    arrivedTotal: remoteData.arrivedTotal || 0,
+    misplaceTotal: remoteData.misplaceTotal || 0
   };
 
   db.ref("accumulatedLogs").push(payload).then(() => {
@@ -2656,7 +2667,7 @@ function renderTrendLineChart(labels, d2Data, t130Data, f3Data) {
   });
 }
 
-/* 🧪 [Lab 1 개편] 누적 F3 종료 데이터 기반 상습 미도착 Hub 집계 (아이디어 2번) */
+/* 🧪 [Lab 1] 누적 F3 종료 데이터 기반 상습 미도착 Hub 집계 */
 function renderLabCenterData(logList) {
   const tbody = document.getElementById("labCenterTable").querySelector("tbody");
   if (!logList || logList.length === 0) {
@@ -2708,7 +2719,7 @@ function renderLabCenterData(logList) {
   tbody.innerHTML = html;
 }
 
-/* 🧪 [Lab 2 개편] 🎯 선택 PDD 전체 출고 물동량 라우트 히트맵 (아이디어 3번 - 전체 Raw 기준) */
+/* 🧪 [Lab 2] 🎯 선택 PDD 전체 출고 물동량 라우트 히트맵 */
 function renderLabRouteData() {
   const grid = document.getElementById("labRouteGrid");
   if (!remoteData || !remoteData.allRouteList) {
@@ -2753,40 +2764,43 @@ function renderLabRouteData() {
   grid.innerHTML = html;
 }
 
-/* 🧪 [Lab 3 개편] 📊 요일별 전체 출고/도착/완진율 패턴 분석 (아이디어 4번) */
+/* 🧪 [Lab 3] 📊 요일별 전체 출고/도착/오도착/완진율 패턴 분석 */
 function renderLabDayPattern(logList) {
   const tbody = document.getElementById("labDayPatternTable").querySelector("tbody");
 
-  // 금일 실시간 요약 카드 업데이트
   const dayYajEl = document.getElementById("dayYajTotal");
   const dayIsnEl = document.getElementById("dayIsnTotal");
   const dayShEl = document.getElementById("dayShTotal");
+  const dayArrEl = document.getElementById("dayArrivedTotal");
+  const dayMispEl = document.getElementById("dayMisplaceTotal");
   const dayCompEl = document.getElementById("dayCompletionRate");
 
   if (remoteData) {
     const totalYaj = remoteData.totalYajShipment || 0;
     const totalIsn = remoteData.totalIsnShipment || 0;
     const totalSh = remoteData.totalShShipment || 0;
-    const unassignedTotal = parseInt(document.getElementById("shTotal").innerText.replace(/,/g, '')) || 0;
+    const arrivedTot = remoteData.arrivedTotal || 0;
+    const misplaceTot = remoteData.misplaceTotal || 0;
 
-    const arrived = Math.max(0, totalSh - unassignedTotal);
-    const compRate = totalSh > 0 ? ((arrived / totalSh) * 100).toFixed(1) : "0.0";
+    const compRate = totalSh > 0 ? ((arrivedTot / totalSh) * 100).toFixed(1) : "0.0";
 
     if (dayYajEl) dayYajEl.innerText = `${totalYaj.toLocaleString()} 건`;
     if (dayIsnEl) dayIsnEl.innerText = `${totalIsn.toLocaleString()} 건`;
     if (dayShEl) dayShEl.innerText = `${totalSh.toLocaleString()} 건`;
+    if (dayArrEl) dayArrEl.innerText = `${arrivedTot.toLocaleString()} 건`;
+    if (dayMispEl) dayMispEl.innerText = `${misplaceTot.toLocaleString()} 건`;
     if (dayCompEl) dayCompEl.innerText = `${compRate} %`;
   }
 
   if (!logList || logList.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="7">누적된 트렌드 데이터가 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="8">누적된 트렌드 데이터가 없습니다.</td></tr>';
     return;
   }
 
   const daysKR = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
   const dayStats = {};
 
-  daysKR.forEach(d => { dayStats[d] = { yajTot: 0, isnTot: 0, shTot: 0, residualTot: 0, count: 0 }; });
+  daysKR.forEach(d => { dayStats[d] = { yajTot: 0, isnTot: 0, shTot: 0, arrTot: 0, mispTot: 0, resTot: 0, count: 0 }; });
 
   logList.forEach(item => {
     if (item.timestamp && item.category === "F3 소분 종료") {
@@ -2797,7 +2811,9 @@ function renderLabDayPattern(logList) {
       dayStats[dayName].yajTot += (item.totalYajShipment || 0);
       dayStats[dayName].isnTot += (item.totalIsnShipment || 0);
       dayStats[dayName].shTot += (item.totalShShipment || 0);
-      dayStats[dayName].residualTot += shVal;
+      dayStats[dayName].arrTot += (item.arrivedTotal || 0);
+      dayStats[dayName].mispTot += (item.misplaceTotal || 0);
+      dayStats[dayName].resTot += shVal;
       dayStats[dayName].count += 1;
     }
   });
@@ -2809,9 +2825,10 @@ function renderLabDayPattern(logList) {
       const avgYaj = Math.round(stat.yajTot / stat.count);
       const avgIsn = Math.round(stat.isnTot / stat.count);
       const avgSh = Math.round(stat.shTot / stat.count);
-      const avgRes = Math.round(stat.residualTot / stat.count);
-      const avgArrived = Math.max(0, avgSh - avgRes);
-      const avgRate = avgSh > 0 ? ((avgArrived / avgSh) * 100).toFixed(1) : "0.0";
+      const avgArr = Math.round(stat.arrTot / stat.count);
+      const avgMisp = Math.round(stat.mispTot / stat.count);
+      const avgRes = Math.round(stat.resTot / stat.count);
+      const avgRate = avgSh > 0 ? ((avgArr / avgSh) * 100).toFixed(1) : "0.0";
 
       html += `
         <tr>
@@ -2819,8 +2836,9 @@ function renderLabDayPattern(logList) {
           <td>${avgYaj.toLocaleString()} 건</td>
           <td>${avgIsn.toLocaleString()} 건</td>
           <td style="font-weight:bold; color:#2563eb;">${avgSh.toLocaleString()} 건</td>
-          <td style="color:#15803d; font-weight:bold;">${avgArrived.toLocaleString()} 건</td>
-          <td style="color:#dc2626;">${avgRes.toLocaleString()} 건</td>
+          <td style="color:#16a34a; font-weight:bold;">${avgArr.toLocaleString()} 건</td>
+          <td style="color:#dc2626; font-weight:bold;">${avgMisp.toLocaleString()} 건</td>
+          <td style="color:#64748b;">${avgRes.toLocaleString()} 건</td>
           <td style="background:#ecfdf5; color:#166534; font-weight:900;">${avgRate} %</td>
         </tr>
       `;
@@ -2828,7 +2846,7 @@ function renderLabDayPattern(logList) {
       html += `
         <tr>
           <td style="font-weight:bold; color:#1e40af;">${day}</td>
-          <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+          <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
         </tr>
       `;
     }
@@ -2888,10 +2906,11 @@ async function processFiles(files){
       String(targetDate.getMonth()+1).padStart(2,"0") + "-" +
       String(targetDate.getDate()).padStart(2,"0");
 
-    // 1. 선택 PDD 전체 출고 물동량 추출
+    // 1. R열(인덱스 17) PDD 날짜+시간 기준 필터 및 F열(인덱스 6) 출고센터 필터
     const pddAllRows = rows.filter(r => {
       const rt = String(r[17]||"").trim();
-      return rt.startsWith(targetDateStr + " " + selectedPddTime);
+      const camp = String(r[6]||"").trim();
+      return rt.startsWith(targetDateStr + " " + selectedPddTime) && (camp === "YAJ_3" || camp === "ISN_5");
     });
 
     const allRouteList = pddAllRows.map(r => ({
@@ -2903,7 +2922,26 @@ async function processFiles(files){
     const totalIsnShipment = pddAllRows.filter(r => String(r[6]||"").trim() === "ISN_5").length;
     const totalShShipment = pddAllRows.length;
 
-    // 2. 미스캔 (미도착) 물동량 추출
+    // 2. M열(인덱스 12) 및 N열(인덱스 13) 도착 필터링
+    const rawArrivedRows = pddAllRows.filter(r => {
+      const m = String(r[12]||"").trim();
+      const n = String(r[13]||"").trim();
+      return (m !== "" || n !== "");
+    });
+
+    // 3. 타캠프 오도착 건수 산출
+    let misplaceTotal = 0;
+    pddAllRows.forEach(r => {
+      const id = String(r[12]||"").trim();
+      if (id !== "" && !excludedIds.includes(id)) {
+        misplaceTotal++;
+      }
+    });
+
+    // 4. 오도착 차감된 실제 도착 물량
+    const arrivedTotal = Math.max(0, rawArrivedRows.length - misplaceTotal);
+
+    // 5. 미스캔 (미도착) 물동량 추출
     const filteredUnarrived = pddAllRows.filter(r => {
       const m = String(r[12]||"").trim();
       const n = String(r[13]||"").trim();
@@ -2973,7 +3011,9 @@ async function processFiles(files){
       allRouteList,
       totalYajShipment,
       totalIsnShipment,
-      totalShShipment
+      totalShShipment,
+      arrivedTotal,
+      misplaceTotal
     };
 
     await db.ref("dashboardSummary").set(payload);
