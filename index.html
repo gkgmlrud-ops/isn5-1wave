@@ -1035,7 +1035,6 @@ background:#1d4ed8;
     display: none !important; 
   }
 
-  /* 모바일 상단 원클릭 복구 버튼 표시 */
   .quick-restore-btn {
     font-size: 12px;
     padding: 5px 12px;
@@ -1150,7 +1149,6 @@ background:#1d4ed8;
 
 <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px; flex-wrap:wrap;">
   <div id="lastUpdate" style="color:#6b7280;font-size:15px;text-align:center;width:100%;">업데이트 확인 중...</div>
-  <!-- ⚡ 모바일/PC 겸용 최근 데이터 원클릭 복구 버튼 (실시간 상태 바 바로 아래) -->
   <button class="quick-restore-btn" onclick="restoreLatestBackup()">⚡ 최근 데이터로 복구</button>
   <button class="audio-btn" id="audioEnableBtn" onclick="enableAudio()">🔊 Mac/PC 음성 활성화</button>
   <button class="reset-btn" onclick="resetData()">🗑️ 데이터 초기화</button>
@@ -1563,23 +1561,29 @@ let latestBackupKey = null;
 
 const hubWaybillsStore = {};
 
-// 모바일 접속 여부 감지
-const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || window.innerWidth <= 768;
+/* 📱 순수 스마트폰(모바일) 감지 (창 크기 조건 제거하여 Mac 무음 방지) */
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-/* 🔊 macOS/Safari 보이스 로딩 사전 설정 */
-let availableVoices = [];
-function loadVoices() {
+/* 🔊 초기 가장 잘 되던 단순 TTS 방식 음성 출력 함수 */
+function speakText(text) {
+  if (isMobile) return; // 모바일 기기는 소리 출력 안 함
+
   if ('speechSynthesis' in window) {
-    availableVoices = window.speechSynthesis.getVoices();
+    window.speechSynthesis.cancel();
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+
+    const utterance = new SpeechSynthesisUtterance("알림. " + text);
+    utterance.lang = 'ko-KR';
+    utterance.rate = 1.0;
+    utterance.pitch = 1.0;
+
+    window.speechSynthesis.speak(utterance);
   }
 }
 
-if ('speechSynthesis' in window) {
-  loadVoices();
-  window.speechSynthesis.onvoiceschanged = loadVoices;
-}
-
-/* 🔊 Mac 및 PC 음성 재생 제한 해제 함수 */
+/* 🔊 Mac 및 PC 음성 권한 해제 버튼 함수 */
 function enableAudio() {
   if (isMobile) return;
 
@@ -1589,15 +1593,10 @@ function enableAudio() {
       window.speechSynthesis.resume();
     }
 
-    loadVoices();
-
     const dummy = new SpeechSynthesisUtterance("음성 알림이 연결되었습니다.");
     dummy.lang = 'ko-KR';
     dummy.rate = 1.0;
     dummy.volume = 1.0;
-
-    const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
-    if (korVoice) dummy.voice = korVoice;
 
     window.speechSynthesis.speak(dummy);
 
@@ -1625,28 +1624,6 @@ function showDesktopNotification(msg) {
     notification.onclick = function() {
       window.focus();
     };
-  }
-}
-
-/* 🔊 음성 출력 함수 */
-function speakText(text) {
-  if (isMobile) return;
-
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    if (window.speechSynthesis.paused) {
-      window.speechSynthesis.resume();
-    }
-
-    const utterance = new SpeechSynthesisUtterance("알림. " + text);
-    utterance.lang = 'ko-KR';
-    utterance.rate = 1.0;
-    utterance.pitch = 1.0;
-
-    const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
-    if (korVoice) utterance.voice = korVoice;
-
-    window.speechSynthesis.speak(utterance);
   }
 }
 
@@ -1691,7 +1668,7 @@ function showTab(page){
   document.getElementById("menuInvoiceSH").classList.toggle("active", page === "invoiceSH");
   document.getElementById("menuInvoiceISN").classList.toggle("active", page === "invoiceISN");
   document.getElementById("menuInvoiceYAJ").classList.toggle("active", page === "invoiceYAJ");
-  document.getElementById("callLogPage").classList.toggle("active", page === "callLog");
+  document.getElementById("menuCallLog").classList.toggle("active", page === "callLog");
 
   document.getElementById("mainSidebar").classList.remove("mobile-open");
 }
@@ -2088,15 +2065,7 @@ db.ref("callLogs").on("value", (snapshot) => {
   }
 });
 
-function clearCallLogs(){
-  if(confirm("모든 호출 기록(Log)을 삭제하시겠습니까?")){
-    db.ref("callLogs").remove().then(()=>{
-      alert("호출 로그가 삭제되었습니다.");
-    });
-  }
-}
-
-/* 🔔 호출 수신 리스너 (모바일/PC 분기 처리) */
+/* 🔔 호출 수신 리스너 (초기 방식 복원) */
 db.ref("callSignal").on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -2109,7 +2078,7 @@ db.ref("callSignal").on("value", (snapshot) => {
     if (data.timestamp > lastSpokenTime) {
       lastSpokenTime = data.timestamp;
       
-      // 최근 10초 이내 호출 시 PC/Mac에서만 음성 읽기 및 데스크톱 알림 실행
+      // 최근 10초 이내 호출 시 PC/Mac에서 초기 단순 방식으로 음성 출력
       if (Date.now() - data.timestamp < 10000) {
         if (!isMobile) {
           speakText(data.message);
