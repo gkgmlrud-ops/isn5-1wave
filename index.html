@@ -1157,7 +1157,37 @@ background:#1d4ed8;
   font-weight: bold;
 }
 
-/* 🧪 실험실 전용 히트맵 & 지연 원인 스타일 */
+/* 🧪 아이디어 4번 전체 물량 및 완진율 전용 대시보드 요약 스타일 */
+.lab-summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.lab-summary-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 14px;
+  padding: 16px;
+  text-align: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.02);
+}
+
+.lab-card-title {
+  font-size: 13px;
+  font-weight: bold;
+  color: #64748b;
+  margin-bottom: 6px;
+}
+
+.lab-card-val {
+  font-size: 24px;
+  font-weight: 900;
+  color: #1e293b;
+}
+
+/* 🧪 히트맵 스타일 */
 .lab-card-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
@@ -1298,7 +1328,6 @@ background:#1d4ed8;
     display: none !important; 
   }
 
-  /* 모바일 누적데이터 카드형으로 보기 편하게 전환 */
   .trend-table-scroll-wrap { display: none !important; }
   .mobile-trend-card-list { display: flex !important; }
 
@@ -1414,13 +1443,13 @@ background:#1d4ed8;
 
       <div class="sub-menu-level2" id="labFolderMenu">
         <div class="menu-item" id="menuLabCenter" onclick="showTab('labCenter')">
-          <span>🚚 센터별 지연 원인 분석 (2번)</span>
+          <span>🚚 F3종료 상습 지연 Hub (2번)</span>
         </div>
         <div class="menu-item" id="menuLabRoute" onclick="showTab('labRoute')">
-          <span>🎯 라우트 쏠림/히트맵 (3번)</span>
+          <span>🎯 전체 라우트 쏠림/히트맵 (3번)</span>
         </div>
         <div class="menu-item" id="menuLabDayPattern" onclick="showTab('labDayPattern')">
-          <span>📊 요일별/PDD 패턴 (4번)</span>
+          <span>📊 요일별 전체 출고 & 완진율 (4번)</span>
         </div>
       </div>
     </div>
@@ -1757,61 +1786,82 @@ background:#1d4ed8;
   </div>
 </div>
 
-<!-- 🧪 [Lab 1] 🚚 센터별 지연 원인 분석 (2번 아이디어) -->
+<!-- 🧪 [Lab 1 개편] 🚚 F3 종료 시점 상습 지연 Hub 분석 (아이디어 2번 - 누적 기반) -->
 <div id="labCenterPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title">
-      <span>🚚 센터별 미도착/지연 물량 비율 분석 (아이디어 2번)</span>
+      <span>🚚 F3 종료 시점 상습 미도착 / 지연 센터(Hub) 분석 (누적 데이터 연동)</span>
     </div>
     <div style="font-size:13px; color:#64748b; margin-bottom:15px;">
-      스캔되지 않은 잔여 물량이 **어느 출고 센터(Hub/FC)**에서 유입된 물량인지 비율과 수량을 자동으로 정렬합니다.
+      단발성 하루치가 아닌, <b>매일 F3 소분 종료 시점에 쌓인 누적 데이터</b>를 바탕으로 어떤 출고 센터(Hub/FC)가 지속적으로 미도착 원인을 제공하는지 상습 순위를 집계합니다.
     </div>
 
     <div class="invoice-table-wrap">
       <table class="invoice-table" id="labCenterTable">
         <thead>
           <tr>
-            <th>순위</th>
+            <th>상습 지연 순위</th>
             <th>출고 Hub / FC</th>
-            <th>미도착 잔여 수량</th>
-            <th>점유 비율 (%)</th>
-            <th>지연 상태 뱃지</th>
+            <th>F3 종료시 평균 미도착 건수</th>
+            <th>누적 미도착 건수</th>
+            <th>상습 지연 원인 뱃지</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="5">업로드된 원천 데이터가 없습니다.</td></tr>
+          <tr><td colspan="5">누적된 F3 소분 종료 데이터가 없습니다. ('데이터 누적하기' 시 F3 종료 구분 데이터를 축적해주세요)</td></tr>
         </tbody>
       </table>
     </div>
   </div>
 </div>
 
-<!-- 🧪 [Lab 2] 🎯 라우트 물동량 쏠림/히트맵 (3번 아이디어) -->
+<!-- 🧪 [Lab 2 개편] 🎯 전체 물동량 기준 라우트 밀도 & 히트맵 (아이디어 3번 - Raw 전체 기준) -->
 <div id="labRoutePage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title">
-      <span>🎯 라우트별 물동량 밀도 & 히트맵 (아이디어 3번)</span>
+      <span>🎯 선택 PDD 기준 전체 출고 물동량 라우트 히트맵 (전체 물량)</span>
     </div>
     <div style="font-size:13px; color:#64748b; margin-bottom:12px;">
-      물동량이 집중되는 **Top 5 라우트** 및 전체 라우트별 쏠림 현상을 히트맵 카드로 한눈에 확인하여 헬퍼 인원 배치를 효율화합니다.
+      미도착(미스캔) 건수가 아닌, **업로드된 엑셀 Raw 파일 전체 출고 물량**을 선택된 PDD 시간 기준(예: 07시/08시/09시 PDD)으로 집계하여 라우트별 물동량 밀도 히트맵을 보여줍니다.
     </div>
 
     <div class="lab-card-grid" id="labRouteGrid">
       <div style="grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;">
-        데이터를 분석 중입니다...
+        엑셀 Raw 데이터를 읽는 중입니다...
       </div>
     </div>
   </div>
 </div>
 
-<!-- 🧪 [Lab 3] 📊 요일별/PDD 패턴 (4번 아이디어) -->
+<!-- 🧪 [Lab 3 개편] 📊 요일별 전체 출고 물동량 및 최종 소분완료율 (아이디어 4번 - 출고/완진율) -->
 <div id="labDayPatternPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title">
-      <span>📊 요일별 PDD 평균 물동량 & 패턴 분석 (아이디어 4번)</span>
+      <span>📊 요일별 PDD 전체 출고 물동량 & 최종 소분완료율(완진율) 분석</span>
     </div>
+
+    <!-- 금일 PDD 기준 핵심 지연/완료율 카드 요약 -->
+    <div class="lab-summary-grid">
+      <div class="lab-summary-card">
+        <div class="lab-card-title">📦 YAJ_3 전체 출고 (선택 PDD)</div>
+        <div class="lab-card-val" id="dayYajTotal" style="color:#1d4ed8;">0 건</div>
+      </div>
+      <div class="lab-summary-card">
+        <div class="lab-card-title">📦 ISN_5 전체 출고 (선택 PDD)</div>
+        <div class="lab-card-val" id="dayIsnTotal" style="color:#15803d;">0 건</div>
+      </div>
+      <div class="lab-summary-card">
+        <div class="lab-card-title">🚚 S-ISN5 총 출고 (선택 PDD)</div>
+        <div class="lab-card-val" id="dayShTotal" style="color:#2563eb;">0 건</div>
+      </div>
+      <div class="lab-summary-card" style="background:#f0fdf4; border-color:#86efac;">
+        <div class="lab-card-title" style="color:#166534;">🎯 최종 소분완료율 (완진율)</div>
+        <div class="lab-card-val" id="dayCompletionRate" style="color:#15803d;">0.0 %</div>
+      </div>
+    </div>
+
     <div style="font-size:13px; color:#64748b; margin-bottom:15px;">
-      누적된 빅데이터를 바탕으로 요일별(월~일) 평균 물동량과 전주 대비 물동량 증감 패턴을 비교합니다.
+      누적 데이터를 바탕으로 요일별 평균 전체 출고량 및 최종 도착/미도착 수량과 소분완료율 추이를 분석합니다.
     </div>
 
     <div class="invoice-table-wrap">
@@ -1819,13 +1869,16 @@ background:#1d4ed8;
         <thead>
           <tr>
             <th>요일</th>
-            <th>평균 미도착 물동량</th>
-            <th>평균 F3 소분종료 시각</th>
-            <th>전주 동요일 대비 추이</th>
+            <th>양주3 전체출고</th>
+            <th>일산5 전체출고</th>
+            <th>S-ISN5 총 출고</th>
+            <th>평균 도착 물량</th>
+            <th>평균 최종 미도착</th>
+            <th style="background:#ecfdf5; color:#15803d;">🎯 평균 소분완료율 (%)</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="4">누적 데이터 수집 중입니다. (1~2일 이상 누적 시 표시)</td></tr>
+          <tr><td colspan="7">누적 데이터 수집 중입니다.</td></tr>
         </tbody>
       </table>
     </div>
@@ -2286,16 +2339,20 @@ function confirmSaveAccumulatedData() {
     freshQty: freshVal,
     dawnQty: dawnVal,
     shQty: shVal,
+    shCounts: remoteData.shCounts || {},
     category: "",
     customTime: "",
     totalWorkers: parseInt(totalW),
     fixedWorkers: parseInt(fixedW),
-    newWorkers: parseInt(newW)
+    newWorkers: parseInt(newW),
+    totalYajShipment: remoteData.totalYajShipment || 0,
+    totalIsnShipment: remoteData.totalIsnShipment || 0,
+    totalShShipment: remoteData.totalShShipment || 0
   };
 
   db.ref("accumulatedLogs").push(payload).then(() => {
     closeSaveModal();
-    alert(`[${timeStr}] 현재 데이터가 인원 정보와 함께 저장되었습니다!\n\n👥 총 투입: ${totalW}명 (고정: ${fixedW}명 / 신규: ${newW}명)\n📦 SH_ISN5 수량: ${shVal}`);
+    alert(`[${timeStr}] 현재 데이터가 누적 저장되었습니다!\n\n👥 총 투입: ${totalW}명\n📦 SH_ISN5 미도착 수량: ${shVal}`);
   }).catch((err) => {
     alert("누적 저장 중 오류 발생: " + err.message);
   });
@@ -2394,6 +2451,7 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
 
     renderDailyTrendSummary(globalLogEntries);
     calcAndRenderPrediction();
+    renderLabCenterData(globalLogEntries);
     renderLabDayPattern(globalLogEntries);
 
   } else {
@@ -2402,11 +2460,12 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
     globalLogEntries = [];
     renderDailyTrendSummary([]);
     calcAndRenderPrediction();
+    renderLabCenterData([]);
     renderLabDayPattern([]);
   }
 });
 
-/* ⏱️ F3 소분 종료 예상시간 계산 (F3 종료시 센터 미도착 보정 반영) */
+/* ⏱️ F3 소분 종료 예상시간 계산 */
 function calcAndRenderPrediction() {
   const timeEl = document.getElementById("predF3Time");
   const statusEl = document.getElementById("predStatusText");
@@ -2597,41 +2656,50 @@ function renderTrendLineChart(labels, d2Data, t130Data, f3Data) {
   });
 }
 
-/* 🧪 [Lab 1 구현] 센터별 지연 원인 분석 (2번 아이디어) */
-function renderLabCenterData() {
+/* 🧪 [Lab 1 개편] 누적 F3 종료 데이터 기반 상습 미도착 Hub 집계 (아이디어 2번) */
+function renderLabCenterData(logList) {
   const tbody = document.getElementById("labCenterTable").querySelector("tbody");
-  if (!remoteData || !remoteData.shCounts) {
-    tbody.innerHTML = '<tr><td colspan="5">업로드된 원천 엑셀 데이터가 없습니다.</td></tr>';
+  if (!logList || logList.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5">누적된 F3 소분 종료 데이터가 없습니다.</td></tr>';
     return;
   }
 
-  const counts = remoteData.shCounts;
-  const total = parseInt(document.getElementById("shTotal").innerText.replace(/,/g, '')) || 0;
-
-  if (total === 0) {
-    tbody.innerHTML = '<tr><td colspan="5">미도착 잔여 물량이 없습니다.</td></tr>';
+  const f3Logs = logList.filter(x => x.category === "F3 소분 종료");
+  if (f3Logs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5">누적 데이터 중 \'F3 소분 종료\' 구분 기록이 없습니다.</td></tr>';
     return;
   }
 
-  const entries = Object.entries(counts).sort((a, b) => b[1] - a[1]);
+  const hubTotMap = {};
+  f3Logs.forEach(item => {
+    if (item.shCounts) {
+      Object.entries(item.shCounts).forEach(([hub, qty]) => {
+        hubTotMap[hub] = (hubTotMap[hub] || 0) + qty;
+      });
+    }
+  });
+
+  const entries = Object.entries(hubTotMap).sort((a, b) => b[1] - a[1]);
+  if (entries.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5">집계할 미도착 허브 데이터가 없습니다.</td></tr>';
+    return;
+  }
+
   let html = "";
-
-  entries.forEach(([hub, qty], index) => {
-    const ratio = ((qty / total) * 100).toFixed(1);
-    let badgeHtml = `<span style="background:#ecfdf5; color:#166534; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:11px;">🟢 양호</span>`;
+  entries.forEach(([hub, totQty], index) => {
+    const avgQty = Math.round(totQty / f3Logs.length);
+    let badgeHtml = `<span style="background:#fffbeb; color:#92400e; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:11px;">🟡 일반 지연</span>`;
     
-    if (ratio >= 25) {
-      badgeHtml = `<span style="background:#fef2f2; color:#991b1b; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:11px;">🔴 주요 지연원인 (${ratio}%)</span>`;
-    } else if (ratio >= 10) {
-      badgeHtml = `<span style="background:#fffbeb; color:#92400e; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:11px;">🟡 주의</span>`;
+    if (index === 0 || avgQty >= 30) {
+      badgeHtml = `<span style="background:#fef2f2; color:#991b1b; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:11px;">🔴 상습 최상위 지연</span>`;
     }
 
     html += `
       <tr>
         <td style="font-weight:bold; color:#64748b;">${index + 1}위</td>
         <td style="font-weight:bold; color:#1d4ed8;">📦 ${hub}</td>
-        <td><b style="color:#2563eb;">${qty.toLocaleString()}</b> 건</td>
-        <td><b>${ratio} %</b></td>
+        <td><b style="color:#2563eb;">${avgQty.toLocaleString()}</b> 건 / 일</td>
+        <td><b>${totQty.toLocaleString()}</b> 건</td>
         <td>${badgeHtml}</td>
       </tr>
     `;
@@ -2640,15 +2708,15 @@ function renderLabCenterData() {
   tbody.innerHTML = html;
 }
 
-/* 🧪 [Lab 2 구현] 라우트별 쏠림 & 히트맵 (3번 아이디어) */
+/* 🧪 [Lab 2 개편] 🎯 선택 PDD 전체 출고 물동량 라우트 히트맵 (아이디어 3번 - 전체 Raw 기준) */
 function renderLabRouteData() {
   const grid = document.getElementById("labRouteGrid");
-  if (!remoteData || !remoteData.shList) {
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;">원천 엑셀 데이터가 없습니다.</div>';
+  if (!remoteData || !remoteData.allRouteList) {
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;">원천 엑셀 파일이 업로드되지 않았습니다.</div>';
     return;
   }
 
-  const list = remoteData.shList;
+  const list = remoteData.allRouteList;
   const routeGroupMap = {};
 
   list.forEach(item => {
@@ -2661,7 +2729,7 @@ function renderLabRouteData() {
 
   const entries = Object.entries(routeGroupMap).sort((a, b) => b[1] - a[1]);
   if (entries.length === 0) {
-    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;">라우트 정보가 없습니다.</div>';
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;">선택한 PDD 시간에 대한 라우트 물동량이 없습니다.</div>';
     return;
   }
 
@@ -2675,7 +2743,7 @@ function renderLabRouteData() {
 
     html += `
       <div class="route-heat-card ${heatClass}">
-        <div style="font-size:11px; color:#64748b; font-weight:bold;">라우트</div>
+        <div style="font-size:11px; color:#64748b; font-weight:bold;">라우트 (전체물량)</div>
         <div style="font-size:18px; font-weight:900; color:#1e293b; margin:4px 0;">${route}</div>
         <div style="font-size:14px; font-weight:bold; color:#2563eb;">${count.toLocaleString()} 건</div>
       </div>
@@ -2685,54 +2753,85 @@ function renderLabRouteData() {
   grid.innerHTML = html;
 }
 
-/* 🧪 [Lab 3 구현] 요일별 PDD 패턴 분석 (4번 아이디어) */
+/* 🧪 [Lab 3 개편] 📊 요일별 전체 출고/도착/완진율 패턴 분석 (아이디어 4번) */
 function renderLabDayPattern(logList) {
   const tbody = document.getElementById("labDayPatternTable").querySelector("tbody");
+
+  // 금일 실시간 요약 카드 업데이트
+  const dayYajEl = document.getElementById("dayYajTotal");
+  const dayIsnEl = document.getElementById("dayIsnTotal");
+  const dayShEl = document.getElementById("dayShTotal");
+  const dayCompEl = document.getElementById("dayCompletionRate");
+
+  if (remoteData) {
+    const totalYaj = remoteData.totalYajShipment || 0;
+    const totalIsn = remoteData.totalIsnShipment || 0;
+    const totalSh = remoteData.totalShShipment || 0;
+    const unassignedTotal = parseInt(document.getElementById("shTotal").innerText.replace(/,/g, '')) || 0;
+
+    const arrived = Math.max(0, totalSh - unassignedTotal);
+    const compRate = totalSh > 0 ? ((arrived / totalSh) * 100).toFixed(1) : "0.0";
+
+    if (dayYajEl) dayYajEl.innerText = `${totalYaj.toLocaleString()} 건`;
+    if (dayIsnEl) dayIsnEl.innerText = `${totalIsn.toLocaleString()} 건`;
+    if (dayShEl) dayShEl.innerText = `${totalSh.toLocaleString()} 건`;
+    if (dayCompEl) dayCompEl.innerText = `${compRate} %`;
+  }
+
   if (!logList || logList.length === 0) {
-    tbody.innerHTML = '<tr><td colspan="4">누적된 데이터가 없습니다. 트렌드 데이터를 쌓아주세요.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="7">누적된 트렌드 데이터가 없습니다.</td></tr>';
     return;
   }
 
   const daysKR = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
   const dayStats = {};
 
-  daysKR.forEach(d => { dayStats[d] = { totalSh: 0, count: 0, f3Times: [] }; });
+  daysKR.forEach(d => { dayStats[d] = { yajTot: 0, isnTot: 0, shTot: 0, residualTot: 0, count: 0 }; });
 
   logList.forEach(item => {
-    if (item.timestamp) {
+    if (item.timestamp && item.category === "F3 소분 종료") {
       const dateObj = new Date(item.timestamp);
       const dayName = daysKR[dateObj.getDay()];
       const shVal = parseInt(String(item.shQty).replace(/,/g, '')) || 0;
 
-      if (item.category === "D2 소분 종료") {
-        dayStats[dayName].totalSh += shVal;
-        dayStats[dayName].count += 1;
-      }
-      if (item.category === "F3 소분 종료" && item.customTime) {
-        dayStats[dayName].f3Times.push(item.customTime);
-      }
+      dayStats[dayName].yajTot += (item.totalYajShipment || 0);
+      dayStats[dayName].isnTot += (item.totalIsnShipment || 0);
+      dayStats[dayName].shTot += (item.totalShShipment || 0);
+      dayStats[dayName].residualTot += shVal;
+      dayStats[dayName].count += 1;
     }
   });
 
   let html = "";
   daysKR.forEach(day => {
     const stat = dayStats[day];
-    const avgQty = stat.count > 0 ? Math.round(stat.totalSh / stat.count) : '-';
-    const lastF3 = stat.f3Times.length > 0 ? stat.f3Times[stat.f3Times.length - 1] : '-';
-
-    let trendBadge = `<span style="color:#64748b; font-weight:bold;">-</span>`;
     if (stat.count > 0) {
-      trendBadge = `<span style="color:#15803d; font-weight:bold;">🟢 정상 물동량 패턴</span>`;
-    }
+      const avgYaj = Math.round(stat.yajTot / stat.count);
+      const avgIsn = Math.round(stat.isnTot / stat.count);
+      const avgSh = Math.round(stat.shTot / stat.count);
+      const avgRes = Math.round(stat.residualTot / stat.count);
+      const avgArrived = Math.max(0, avgSh - avgRes);
+      const avgRate = avgSh > 0 ? ((avgArrived / avgSh) * 100).toFixed(1) : "0.0";
 
-    html += `
-      <tr>
-        <td style="font-weight:bold; color:#1e40af;">${day}</td>
-        <td><b>${typeof avgQty === 'number' ? avgQty.toLocaleString() + ' 건' : avgQty}</b></td>
-        <td style="color:#2563eb; font-weight:bold;">${lastF3}</td>
-        <td>${trendBadge}</td>
-      </tr>
-    `;
+      html += `
+        <tr>
+          <td style="font-weight:bold; color:#1e40af;">${day}</td>
+          <td>${avgYaj.toLocaleString()} 건</td>
+          <td>${avgIsn.toLocaleString()} 건</td>
+          <td style="font-weight:bold; color:#2563eb;">${avgSh.toLocaleString()} 건</td>
+          <td style="color:#15803d; font-weight:bold;">${avgArrived.toLocaleString()} 건</td>
+          <td style="color:#dc2626;">${avgRes.toLocaleString()} 건</td>
+          <td style="background:#ecfdf5; color:#166534; font-weight:900;">${avgRate} %</td>
+        </tr>
+      `;
+    } else {
+      html += `
+        <tr>
+          <td style="font-weight:bold; color:#1e40af;">${day}</td>
+          <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+        </tr>
+      `;
+    }
   });
 
   tbody.innerHTML = html;
@@ -2789,12 +2888,27 @@ async function processFiles(files){
       String(targetDate.getMonth()+1).padStart(2,"0") + "-" +
       String(targetDate.getDate()).padStart(2,"0");
 
-    const filteredUnarrived = rows.filter(r => {
+    // 1. 선택 PDD 전체 출고 물동량 추출
+    const pddAllRows = rows.filter(r => {
+      const rt = String(r[17]||"").trim();
+      return rt.startsWith(targetDateStr + " " + selectedPddTime);
+    });
+
+    const allRouteList = pddAllRows.map(r => ({
+      route: String(r[1]||"").trim(),
+      camp: String(r[6]||"").trim()
+    }));
+
+    const totalYajShipment = pddAllRows.filter(r => String(r[6]||"").trim() === "YAJ_3").length;
+    const totalIsnShipment = pddAllRows.filter(r => String(r[6]||"").trim() === "ISN_5").length;
+    const totalShShipment = pddAllRows.length;
+
+    // 2. 미스캔 (미도착) 물동량 추출
+    const filteredUnarrived = pddAllRows.filter(r => {
       const m = String(r[12]||"").trim();
       const n = String(r[13]||"").trim();
       const q = String(r[16]||"").trim();
-      const rt = String(r[17]||"").trim();
-      return (m === "" && n === "" && q === "N" && rt.startsWith(targetDateStr + " " + selectedPddTime));
+      return (m === "" && n === "" && q === "N");
     });
 
     const shCounts = {}, isnCounts = {}, yajCounts = {};
@@ -2855,7 +2969,11 @@ async function processFiles(files){
       allHubs,
       misplaceMap,
       pddTime: selectedPddTime,
-      timestamp: now.getTime()
+      timestamp: now.getTime(),
+      allRouteList,
+      totalYajShipment,
+      totalIsnShipment,
+      totalShShipment
     };
 
     await db.ref("dashboardSummary").set(payload);
@@ -3063,8 +3181,9 @@ db.ref("dashboardSummary").on("value", (snapshot) => {
     document.getElementById("lastUpdate").innerText = "마지막 업데이트 : " + data.lastUpdate;
     renderData();
     calcAndRenderPrediction();
-    renderLabCenterData();
+    renderLabCenterData(globalLogEntries);
     renderLabRouteData();
+    renderLabDayPattern(globalLogEntries);
     document.getElementById("badge").innerHTML = "🟢 실시간 동기화 완료";
   } else {
     if (snapshot.key === "dashboardSummary" && !snapshot.exists()) {
@@ -3078,8 +3197,9 @@ db.ref("dashboardSummary").on("value", (snapshot) => {
       document.getElementById("badge").innerHTML = "⚪ 데이터 없음";
       resetInvoiceTables();
       calcAndRenderPrediction();
-      renderLabCenterData();
+      renderLabCenterData([]);
       renderLabRouteData();
+      renderLabDayPattern([]);
     }
   }
 });
