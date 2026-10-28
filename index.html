@@ -26,7 +26,8 @@ font-family:'맑은 고딕',sans-serif;
 }
 
 body{
-background:#f3f4f6;
+background:#f8fafc;
+color:#1e293b;
 overflow-x:hidden;
 }
 
@@ -48,9 +49,10 @@ margin-bottom:20px;
 }
 
 .title{
-font-size:36px;
+font-size:32px;
 font-weight:bold;
 text-align:center;
+color:#0f172a;
 }
 
 .badge{
@@ -416,19 +418,139 @@ min-height:100vh;
 position:relative;
 }
 
+/* ========================================================= */
+/* 🎨 개편된 업무 도구 사이드바 (모던 Light/Clean 디자인) */
+/* ========================================================= */
+
 .sidebar{
-width:240px;
+width:260px;
 flex:none;
-background:#111827;
-border-right:1px solid #1f2937;
-padding:20px 15px;
+background:#ffffff;
+border-right:1px solid #e2e8f0;
+padding:20px 12px;
 overflow-y:auto;
 transition: transform 0.3s ease;
 z-index: 1000;
 display:flex;
 flex-direction:column;
 justify-content:space-between;
+box-shadow: 2px 0 10px rgba(0,0,0,0.02);
 }
+
+.sidebar-logo{
+font-size:18px;
+font-weight:800;
+color:#1e293b;
+margin-bottom:20px;
+padding-bottom:12px;
+border-bottom:1px solid #f1f5f9;
+display:flex;
+align-items:center;
+gap:8px;
+letter-spacing:-0.5px;
+}
+
+.menu-section{
+margin-bottom:20px;
+flex:1;
+}
+
+/* 대메뉴 (1차 그룹) */
+.nav-group-title {
+font-size: 14px;
+font-weight: 700;
+color: #334155;
+padding: 10px 12px;
+border-radius: 8px;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: space-between;
+transition: background 0.15s ease;
+user-select: none;
+margin-top: 4px;
+}
+
+.nav-group-title:hover {
+background: #f1f5f9;
+color: #0f172a;
+}
+
+.nav-group-title .arrow {
+font-size: 10px;
+color: #64748b;
+transition: transform 0.2s;
+}
+
+/* 하위 메뉴 서브 그룹 (2차 뎁스 - 들여쓰기 & 좌측 가이드 라인) */
+.nav-sub-group {
+margin-left: 14px;
+padding-left: 10px;
+border-left: 2px solid #e2e8f0;
+margin-top: 2px;
+margin-bottom: 6px;
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+
+/* 하위 메뉴 3차 뎁스 (Invoice 전용) */
+.nav-sub-group-level2 {
+margin-left: 12px;
+padding-left: 8px;
+border-left: 1.5px dashed #cbd5e1;
+margin-top: 2px;
+margin-bottom: 4px;
+display: flex;
+flex-direction: column;
+gap: 2px;
+}
+
+/* 소메뉴 (클릭 가능한 아이템) */
+.nav-item {
+padding: 8px 12px;
+border-radius: 6px;
+font-size: 13px;
+font-weight: 600;
+color: #475569;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: space-between;
+transition: all 0.15s ease;
+text-decoration: none;
+}
+
+.nav-item:hover {
+background: #f8fafc;
+color: #2563eb;
+}
+
+/* 선택(Active) 상태 스타일 (참고 사진 블루 하이라이트 느낌) */
+.nav-item.active {
+background: #eff6ff;
+color: #2563eb;
+font-weight: 700;
+border-radius: 6px;
+}
+
+.nav-item.active::before {
+content: '';
+width: 4px;
+height: 14px;
+background: #2563eb;
+border-radius: 2px;
+margin-right: 8px;
+display: inline-block;
+}
+
+.sidebar-bottom-section {
+padding-top: 12px;
+border-top: 1px solid #f1f5f9;
+margin-top: auto;
+}
+
+/* ========================================================= */
 
 .mobile-menu-toggle{
 display:none;
@@ -446,96 +568,12 @@ cursor:pointer;
 box-shadow:0 2px 8px rgba(0,0,0,0.2);
 }
 
-.sidebar-logo{
-font-size:20px;
-font-weight:bold;
-color:#fff;
-margin-bottom:20px;
-text-align:center;
-padding-bottom:15px;
-border-bottom:1px solid #374151;
-}
-
-.menu-section{
-margin-bottom:20px;
-flex:1;
-}
-
-.menu-title{
-font-size:12px;
-color:#94a3b8;
-margin-bottom:12px;
-text-transform:uppercase;
-letter-spacing:0.5px;
-}
-
-.folder-title{
-padding:10px 12px;
-border-radius:8px;
-cursor:pointer;
-color:#f3f4f6;
-font-size:14px;
-font-weight:bold;
-display:flex;
-align-items:center;
-gap:8px;
-transition:.2s;
-user-select:none;
-}
-
-.folder-title:hover{
-background:#1e293b;
-}
-
-.sub-menu{
-margin-left:12px;
-margin-top:4px;
-margin-bottom:8px;
-}
-
-.sub-menu-level2{
-margin-left:18px;
-margin-top:4px;
-margin-bottom:8px;
-}
-
-.menu-item{
-padding:10px 14px;
-border-radius:8px;
-cursor:pointer;
-margin-bottom:4px;
-transition:.2s;
-color:#cbd5e1;
-font-size:13px;
-display:flex;
-align-items:center;
-justify-content:space-between;
-gap:8px;
-}
-
-.menu-item:hover{
-background:#1e293b;
-color:#ffffff;
-}
-
-.menu-item.active{
-background:#2563eb;
-color:#ffffff;
-font-weight:bold;
-}
-
-.sidebar-bottom-section {
-  padding-top: 15px;
-  border-top: 1px solid #374151;
-  margin-top: auto;
-}
-
 .main-area{
 flex:1;
 min-width:0;
 overflow:auto;
 padding:20px;
-background:#f3f4f6;
+background:#f8fafc;
 }
 
 .raw-section{
@@ -1350,81 +1388,89 @@ background:#1d4ed8;
 
 <div class="app-layout">
 
+<!-- 🎨 개편된 모던 Light 업무 도구 사이드바 -->
 <div class="sidebar" id="mainSidebar">
 
-<div>
-  <div class="sidebar-logo">ISN_5 1Wave CL</div>
-
-  <div class="menu-section">
-  <div class="menu-title">업무 도구</div>
-
-  <div class="folder-title" onclick="toggleMenu('hubMenu')">
-    <span id="hubArrow">▼</span> 📦 HUB 미스캔 확인
-  </div>
-
-  <div class="sub-menu" id="hubMenu">
-    <div class="menu-item" id="menuUpload" onclick="showTab('upload')">
-      <span>📁 Raw & Setting ⚙️</span>
-    </div>
-    
-    <div class="menu-item active" id="menuResult" onclick="clickResultMenu(event)">
-      <span>📊 결과 (실시간)</span>
-      <span id="resultSubArrow" style="font-size:11px;color:#94a3b8;">▼</span>
+  <div>
+    <div class="sidebar-logo">
+      <span>📦</span> ISN_5 1Wave CL
     </div>
 
-    <div class="sub-menu-level2" id="resultSubMenu">
-      <div class="menu-item" id="menuInvoiceSH" onclick="showTab('invoiceSH')">
-        <span>📋 SH_ISN5 Invoice</span>
-      </div>
-      <div class="menu-item" id="menuInvoiceISN" onclick="showTab('invoiceISN')">
-        <span>📋 ISN_5 Invoice</span>
-      </div>
-      <div class="menu-item" id="menuInvoiceYAJ" onclick="showTab('invoiceYAJ')">
-        <span>📋 YAJ_3 Invoice</span>
-      </div>
-    </div>
-
-    <div class="folder-title" style="margin-top:8px; padding-left:4px;" onclick="toggleMenu('trendFolderMenu')">
-      <span id="trendFolderArrow">▼</span> 📈 누적 및 소분종료 예상
-    </div>
-
-    <div class="sub-menu-level2" id="trendFolderMenu">
-      <div class="menu-item" id="menuTrend" onclick="showTab('trend')">
-        <span>📈 누적 데이터 (트렌드)</span>
-      </div>
-      <div class="menu-item pc-only-menu" id="menuPredict" onclick="showTab('predict')">
-        <span>⏱️ F3 소분종료 예측</span>
-      </div>
-    </div>
-
-    <div class="lab-menu-folder">
-      <div class="folder-title" style="margin-top:8px; padding-left:4px; color:#f43f5e;" onclick="toggleMenu('labFolderMenu')">
-        <span id="labFolderArrow">▼</span> 🧪 고급 분석 (Lab)
+    <div class="menu-section">
+      
+      <!-- 대메뉴 1: HUB 미스캔 확인 -->
+      <div class="nav-group-title" onclick="toggleMenu('hubMenuGroup')">
+        <span>📦 HUB 미스캔 확인</span>
+        <span class="arrow" id="hubMenuArrow">▲</span>
       </div>
 
-      <div class="sub-menu-level2" id="labFolderMenu">
-        <div class="menu-item" id="menuLabCenter" onclick="showTab('labCenter')">
-          <span>🚚 F3종료 상습 지연 Hub (2번)</span>
+      <div class="nav-sub-group" id="hubMenuGroup">
+        
+        <div class="nav-item" id="menuUpload" onclick="showTab('upload')">
+          <span>📁 Raw & Setting ⚙️</span>
         </div>
-        <div class="menu-item" id="menuLabRoute" onclick="showTab('labRoute')">
-          <span>🎯 전체 라우트 쏠림/히트맵 (3번)</span>
+
+        <div class="nav-item active" id="menuResult" onclick="clickResultMenu(event)">
+          <span>📊 결과 (실시간)</span>
+          <span style="font-size:9px;color:#94a3b8;" id="resultSubArrow">▲</span>
         </div>
-        <div class="menu-item" id="menuLabDayPattern" onclick="showTab('labDayPattern')">
-          <span>📊 요일별 전체 출고 & 완진율 (4번)</span>
+
+        <!-- 2차 서브메뉴 (Invoice) -->
+        <div class="nav-sub-group-level2" id="resultSubMenu">
+          <div class="nav-item" id="menuInvoiceSH" onclick="showTab('invoiceSH')">
+            <span>📋 SH_ISN5 Invoice</span>
+          </div>
+          <div class="nav-item" id="menuInvoiceISN" onclick="showTab('invoiceISN')">
+            <span>📋 ISN_5 Invoice</span>
+          </div>
+          <div class="nav-item" id="menuInvoiceYAJ" onclick="showTab('invoiceYAJ')">
+            <span>📋 YAJ_3 Invoice</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- 대메뉴 2: 누적 및 소분종료 예상 -->
+      <div class="nav-group-title" onclick="toggleMenu('trendMenuGroup')">
+        <span>📈 누적 및 소분종료 예상</span>
+        <span class="arrow" id="trendMenuArrow">▲</span>
+      </div>
+
+      <div class="nav-sub-group" id="trendMenuGroup">
+        <div class="nav-item" id="menuTrend" onclick="showTab('trend')">
+          <span>📈 누적 데이터 (트렌드)</span>
+        </div>
+        <div class="nav-item pc-only-menu" id="menuPredict" onclick="showTab('predict')">
+          <span>⏱️ F3 소분종료 예측</span>
         </div>
       </div>
+
+      <!-- 대메뉴 3: 고급 분석 (Lab) -->
+      <div class="nav-group-title lab-menu-folder" style="color:#e11d48;" onclick="toggleMenu('labMenuGroup')">
+        <span>🧪 고급 분석 (Lab)</span>
+        <span class="arrow" id="labMenuArrow">▲</span>
+      </div>
+
+      <div class="nav-sub-group lab-menu-folder" id="labMenuGroup">
+        <div class="nav-item" id="menuLabCenter" onclick="showTab('labCenter')">
+          <span>🚚 F3종료 상습 지연 Hub</span>
+        </div>
+        <div class="nav-item" id="menuLabRoute" onclick="showTab('labRoute')">
+          <span>🎯 라우트 쏠림/히트맵</span>
+        </div>
+        <div class="nav-item" id="menuLabDayPattern" onclick="showTab('labDayPattern')">
+          <span>📊 요일별 출고 & 완진율</span>
+        </div>
+      </div>
+
     </div>
-
   </div>
 
+  <div class="sidebar-bottom-section">
+    <div class="nav-item" id="menuCallLog" onclick="showTab('callLog')">
+      <span>📜 호출 기록 (Log)</span>
+    </div>
   </div>
-</div>
-
-<div class="sidebar-bottom-section">
-  <div class="menu-item" id="menuCallLog" onclick="showTab('callLog')">
-    <span>📜 호출 Log</span>
-  </div>
-</div>
 
 </div>
 
@@ -2243,15 +2289,18 @@ function showTab(page){
 
 function toggleMenu(menuId){
   const menu = document.getElementById(menuId);
+  if(!menu) return;
+
   menu.classList.toggle("hidden");
-  let arrowId = "hubArrow";
+
+  let arrowId = "hubMenuArrow";
   if(menuId === "resultSubMenu") arrowId = "resultSubArrow";
-  if(menuId === "trendFolderMenu") arrowId = "trendFolderArrow";
-  if(menuId === "labFolderMenu") arrowId = "labFolderArrow";
+  if(menuId === "trendMenuGroup") arrowId = "trendMenuArrow";
+  if(menuId === "labMenuGroup") arrowId = "labMenuArrow";
   
   const arrow = document.getElementById(arrowId);
   if(arrow){
-    arrow.innerText = menu.classList.contains("hidden") ? "▶" : "▼";
+    arrow.innerText = menu.classList.contains("hidden") ? "▼" : "▲";
   }
 }
 
@@ -2364,7 +2413,6 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
       const planNew = item.planNewWorkers || 0;
       const planDisplay = (planFixed > 0 || planNew > 0) ? `<b style="color:#d97706;">${planFixed + planNew}명</b> <span style="font-size:11px;color:#b45309;">(${planFixed}/${planNew})</span>` : '-';
 
-      // 날짜별 하루 구획선 구분 로직
       let pddDate = "기타 날짜";
       if (item.lastUpdateInfo && item.lastUpdateInfo.includes('(')) {
         const match = item.lastUpdateInfo.match(/\((\d{4}-\d{2}-\d{2})\s*\//);
@@ -2376,7 +2424,7 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
       if (lastDateStr !== "" && lastDateStr !== pddDate) {
         html += `
           <tr class="day-divider-row">
-            <td colspan="9">📅 PDD 일자 구분 line : <b>${lastDateStr}</b> ➔ <b>${pddDate}</b></td>
+            <td colspan="9">📅 PDD 일자 구분 : <b>${lastDateStr}</b> ➔ <b>${pddDate}</b></td>
           </tr>
         `;
       }
@@ -2472,11 +2520,9 @@ function calcAndRenderPrediction() {
 
   const currentSH = parseInt(document.getElementById("shTotal").innerText.replace(/,/g,'')) || 0;
 
-  // 1. 당일 F3 소분 종료 입력 여부 확인
   const todayStr = formatTimeString(new Date()).split(' ')[0];
   const todayF3Entry = globalLogEntries.find(x => x.category === "F3 소분 종료" && (x.saveTime || "").includes(todayStr));
 
-  // 2. 과거 F3 종료 시점의 지속적 미도착 평균 잔여량 계산
   const f3Items = globalLogEntries.filter(x => x.category === "F3 소분 종료");
   let avgF3Residual = 190;
   if (f3Items.length > 0) {
@@ -2486,7 +2532,6 @@ function calcAndRenderPrediction() {
 
   const netRemainingToProcess = Math.max(0, currentSH - avgF3Residual);
 
-  // 3. 당일 F3 완료 처리 판정
   if (todayF3Entry || netRemainingToProcess === 0) {
     const finishTime = todayF3Entry && todayF3Entry.customTime ? todayF3Entry.customTime : (todayF3Entry ? todayF3Entry.saveTime.split(' ')[1] : "완료");
     timeEl.innerText = `🎉 금일 F3 소분 종료 완료 (${finishTime})`;
@@ -2503,30 +2548,25 @@ function calcAndRenderPrediction() {
 
   remainEl.innerText = `${netRemainingToProcess.toLocaleString()} 건 (전체: ${currentSH}건)`;
 
-  // 4. 인공지능형 빅데이터 패턴 매칭 및 예상 투입 인원 반영
   const t130Item = globalLogEntries.find(x => x.category === "01:30");
 
-  let planWorkersIndex = 30; // 기본 투입 예정 실질 인력
+  let planWorkersIndex = 30;
   if (t130Item) {
     const pFixed = t130Item.planFixedWorkers || t130Item.fixedWorkers || 27;
     const pNew = t130Item.planNewWorkers || t130Item.newWorkers || 13;
     planWorkersIndex = (pFixed * 1.0) + (pNew * 0.6);
   }
 
-  // 과거 빅데이터 인당 CPM (헬퍼 1명이 분당 처리하는 건수) 평균 산출
-  let avgWorkerCPM = 3.8; // 기본 생산성 지수
+  let avgWorkerCPM = 3.8;
   if (d2And130PairsExist()) {
     avgWorkerCPM = calculateHistoricalWorkerCPM();
   }
 
-  // 실질 소분 속도(CPM) = F3 예정 투입 인력 지수 * 헬퍼 인당 평균 CPM
   let cpm = planWorkersIndex * avgWorkerCPM;
 
-  // 과거 01:30 잔여 수량 및 인원이 유사했던 날의 소요 시간 매칭 보정
   if (f3Items.length > 0 && t130Item) {
     const historicalAvgMinutes = getSimilarPatternMinutes(netRemainingToProcess, planWorkersIndex);
     if (historicalAvgMinutes > 0) {
-      // 빅데이터 소요시간 기반 CPM 보정
       cpm = netRemainingToProcess / historicalAvgMinutes;
     }
   }
@@ -2595,9 +2635,6 @@ function getSimilarPatternMinutes(currentNetQty, currentPlanWorkers) {
     const matched130 = t130Logs.find(t => Math.abs(f3.timestamp - t.timestamp) < 24 * 3600 * 1000);
     if (matched130) {
       let diffMinutes = (f3.timestamp - matched130.timestamp) / (1000 * 60);
-      if (f3.customTime && matched130.saveTime) {
-        // 커스텀 시간이 기록되어 있다면 이를 정밀시간으로 환산
-      }
       if (diffMinutes > 10 && diffMinutes < 300) {
         matchedMinutesSum += diffMinutes;
         matchCount++;
