@@ -41,7 +41,7 @@ max-width:1800px;
 margin:auto;
 }
 
-/* 👤 PC 전용 우측 상단 프로필 탑바 (참고 이미지 스타일) */
+/* 👤 PC 전용 우측 상단 프로필 탑바 */
 .top-header-bar {
 display: flex;
 justify-content: flex-end;
@@ -555,11 +555,23 @@ z-index:1001;
 background:#0f172a;
 color:white;
 border:none;
-padding:8px 12px;
+padding:8px 14px;
 border-radius:8px;
-font-size:18px;
+font-size:14px;
+font-weight:bold;
 cursor:pointer;
-box-shadow:0 2px 8px rgba(0,0,0,0.2);
+box-shadow:0 4px 12px rgba(0,0,0,0.3);
+transition: background 0.2s;
+}
+
+/* 📱 모바일 배경 어둡게 처리하는 오버레이 */
+.sidebar-overlay {
+display: none;
+position: fixed;
+top: 0; left: 0; width: 100vw; height: 100vh;
+background: rgba(15, 23, 42, 0.6);
+backdrop-filter: blur(2px);
+z-index: 999;
 }
 
 .main-area{
@@ -1252,6 +1264,7 @@ gap:6px;
   color: white; 
 }
 
+/* 📱 모바일 디바이스 최적화 스타일 (Camp Leader & Helper Leader 공통) */
 @media (max-width: 768px) {
   .top-header-bar { display: none !important; }
   .mobile-menu-toggle { display: block; }
@@ -1296,6 +1309,53 @@ gap:6px;
   .login-card {
     padding: 32px 22px;
     border-radius: 20px;
+  }
+
+  /* 📱 모바일 최적화: F3 예측 및 고급 분석(Lab) 반응형 처리 */
+  .prediction-card {
+    flex-direction: column;
+    align-items: stretch;
+    padding: 18px;
+    gap: 16px;
+  }
+
+  .pred-main-time {
+    font-size: 26px;
+  }
+
+  .pred-grid-box {
+    flex-direction: column;
+    gap: 12px;
+    padding: 12px;
+  }
+
+  .pred-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-left: none !important;
+    padding-left: 0 !important;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+    padding-bottom: 8px;
+  }
+
+  .pred-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .lab-summary-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .lab-card-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+  }
+
+  .route-heat-card {
+    padding: 10px 6px;
   }
 }
 
@@ -1355,7 +1415,9 @@ gap:6px;
   </div>
 </div>
 
-<button class="mobile-menu-toggle" onclick="toggleMobileSidebar()">☰ 메뉴</button>
+<!-- 📱 모바일 토글 버튼 & 오버레이 -->
+<button class="mobile-menu-toggle" id="mobileMenuToggleBtn" onclick="toggleMobileSidebar()">☰ 메뉴</button>
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeMobileSidebar()"></div>
 
 <div class="app-layout">
 
@@ -1421,7 +1483,7 @@ gap:6px;
           <div class="nav-item" id="menuTrend" onclick="showTab('trend')">
             <span>📈 누적 데이터 (트렌드)</span>
           </div>
-          <div class="nav-item pc-only-menu" id="menuPredict" onclick="showTab('predict')">
+          <div class="nav-item" id="menuPredict" onclick="showTab('predict')">
             <span>⏱️ F3 소분종료 예측</span>
           </div>
         </div>
@@ -1682,7 +1744,7 @@ gap:6px;
 <div id="predictPage" class="hidden">
   <div class="result-panel">
     <div class="result-panel-title">
-      <span>⏱️ F3 소분 종료 예상 시각 분석 (PC 전용)</span>
+      <span>⏱️ F3 소분 종료 예상 시각 분석</span>
     </div>
 
     <div class="prediction-card" id="predCard">
@@ -2212,8 +2274,37 @@ function showDesktopNotification(msg) {
   }
 }
 
+/* 📱 모바일 메뉴 토글 & 배경 터치 닫기 UX 로직 */
 function toggleMobileSidebar(){
-  document.getElementById("mainSidebar").classList.toggle("mobile-open");
+  const sidebar = document.getElementById("mainSidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  const btn = document.getElementById("mobileMenuToggleBtn");
+
+  const isOpen = sidebar.classList.contains("mobile-open");
+
+  if(isOpen){
+    closeMobileSidebar();
+  } else {
+    sidebar.classList.add("mobile-open");
+    if(overlay) overlay.style.display = "block";
+    if(btn) {
+      btn.innerText = "✕ 닫기";
+      btn.style.background = "#ef4444";
+    }
+  }
+}
+
+function closeMobileSidebar(){
+  const sidebar = document.getElementById("mainSidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  const btn = document.getElementById("mobileMenuToggleBtn");
+
+  if(sidebar) sidebar.classList.remove("mobile-open");
+  if(overlay) overlay.style.display = "none";
+  if(btn) {
+    btn.innerText = "☰ 메뉴";
+    btn.style.background = "#0f172a";
+  }
 }
 
 function toggleExcludeList(){
@@ -2278,7 +2369,7 @@ function showTab(page){
   document.getElementById("menuLabRoute").classList.toggle("active", page === "labRoute");
   document.getElementById("menuLabDayPattern").classList.toggle("active", page === "labDayPattern");
 
-  document.getElementById("mainSidebar").classList.remove("mobile-open");
+  closeMobileSidebar();
 }
 
 function toggleMenu(menuId){
@@ -3237,7 +3328,7 @@ function restoreLatestBackup() {
   restoreSelectedHistory(latestBackupKey);
 }
 
-// 🔔 호출 메시지 전송 로직 (로그인 ID / 계정명 자동 명시)
+// 🔔 호출 메시지 전송 로직
 function sendCallSignal(){
   const input = document.getElementById("callMsgInput");
   const rawMsg = input.value.trim() || "호출이 들어왔습니다.";
@@ -3566,7 +3657,7 @@ function copyWaybills(){
 }
 
 // =========================================================
-// 🔐 로그인 계정 정보 및 직군별 권한 제어 로직
+// 🔐 로그인 계정 정보 및 직군별 권한 제어 / 8시간 만료 관리
 // =========================================================
 
 const USER_ACCOUNTS = {
@@ -3591,6 +3682,7 @@ const USER_ACCOUNTS = {
 };
 
 let currentUser = null;
+const EIGHT_HOURS_MS = 8 * 60 * 60 * 1000; // 8시간 (밀리초)
 
 function onRoleSelectChange() {
   const selectedRole = document.getElementById("loginRoleSelect").value;
@@ -3634,21 +3726,27 @@ function handleLogin() {
   }
 
   currentUser = account;
-  sessionStorage.setItem("isn5_user", JSON.stringify(currentUser));
+  
+  // ⏰ 8시간 유지 만료 시각 계산 및 저장
+  const sessionData = {
+    user: currentUser,
+    expireTime: Date.now() + EIGHT_HOURS_MS
+  };
+  localStorage.setItem("isn5_session", JSON.stringify(sessionData));
 
   document.getElementById("loginModal").classList.add("hidden");
   applyRolePermissions();
 }
 
 function handleLogout() {
-  sessionStorage.removeItem("isn5_user");
+  localStorage.removeItem("isn5_session");
   location.reload();
 }
 
 function applyRolePermissions() {
   if (!currentUser) return;
 
-  // 사이드바 & 탑 헤더 프로필 텍스트 적용
+  // 프로필 텍스트 적용
   const nameEl = document.getElementById("displayUserName");
   const roleEl = document.getElementById("displayUserRole");
   const topNameEl = document.getElementById("topUserName");
@@ -3699,7 +3797,7 @@ function applyRolePermissions() {
       }
     });
 
-    // ⚡ 최근데이터 복구 권한은 허용, 📥 데이터 누적하기 버튼은 차단
+    // ⚡ 최근데이터 복구 권한 허용, 📥 데이터 누적하기 버튼은 차단
     resetBtns.forEach(btn => btn.style.display = "none");
     if (quickRestoreBtn) quickRestoreBtn.style.display = "inline-flex";
     if (accumulateDataBtn) accumulateDataBtn.style.display = "none";
@@ -3713,21 +3811,36 @@ window.addEventListener("load", ()=>{
   requestNotificationPermission();
   loadVoices();
 
-  // 기존 로그인 세션 체크
-  const savedUser = sessionStorage.getItem("isn5_user");
-  if (savedUser) {
-    currentUser = JSON.parse(savedUser);
+  // ⏰ 8시간 세션 검증 체크
+  const savedSession = localStorage.getItem("isn5_session");
+  if (savedSession) {
+    try {
+      const session = JSON.parse(savedSession);
+      const now = Date.now();
 
-    if (currentUser.role === "hl" && !isMobile) {
-      sessionStorage.removeItem("isn5_user");
-      currentUser = null;
-      document.getElementById("loginModal").classList.remove("hidden");
-      alert("📱 Helper Leader 계정은 PC에서 이용할 수 없습니다. 모바일로 접속해 주세요.");
-      return;
+      if (session.expireTime && now < session.expireTime) {
+        currentUser = session.user;
+
+        if (currentUser.role === "hl" && !isMobile) {
+          localStorage.removeItem("isn5_session");
+          currentUser = null;
+          document.getElementById("loginModal").classList.remove("hidden");
+          alert("📱 Helper Leader 계정은 PC에서 이용할 수 없습니다. 모바일로 접속해 주세요.");
+          return;
+        }
+
+        document.getElementById("loginModal").classList.add("hidden");
+        applyRolePermissions();
+      } else {
+        // 8시간 지났을 때 자동 로그아웃
+        localStorage.removeItem("isn5_session");
+        currentUser = null;
+        document.getElementById("loginModal").classList.remove("hidden");
+        alert("⏰ 로그인 세션(8시간)이 만료되었습니다. 다시 로그인해 주세요.");
+      }
+    } catch(e) {
+      localStorage.removeItem("isn5_session");
     }
-
-    document.getElementById("loginModal").classList.add("hidden");
-    applyRolePermissions();
   }
 });
 
