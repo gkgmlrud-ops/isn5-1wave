@@ -41,11 +41,68 @@ max-width:1800px;
 margin:auto;
 }
 
+/* 👤 PC 전용 우측 상단 프로필 탑바 (참고 이미지 스타일) */
+.top-header-bar {
+display: flex;
+justify-content: flex-end;
+align-items: center;
+background: #ffffff;
+border-bottom: 1px solid #e2e8f0;
+padding: 10px 24px;
+box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+position: sticky;
+top: 0;
+z-index: 900;
+}
+
+.top-user-profile {
+display: flex;
+align-items: center;
+gap: 12px;
+font-size: 13.5px;
+color: #334155;
+font-weight: 600;
+}
+
+.top-user-info {
+display: flex;
+align-items: center;
+gap: 6px;
+background: #f8fafc;
+border: 1px solid #cbd5e1;
+padding: 5px 12px;
+border-radius: 20px;
+}
+
+.top-user-icon {
+color: #2563eb;
+font-size: 15px;
+}
+
+.top-logout-btn {
+background: #f1f5f9;
+color: #64748b;
+border: 1px solid #cbd5e1;
+padding: 5px 12px;
+border-radius: 8px;
+font-size: 12px;
+font-weight: 700;
+cursor: pointer;
+transition: all 0.2s;
+}
+
+.top-logout-btn:hover {
+background: #ef4444;
+color: #ffffff;
+border-color: #ef4444;
+}
+
 .header{
 display:flex;
 flex-direction:column;
 align-items:center;
 margin-bottom:20px;
+margin-top: 10px;
 }
 
 .title{
@@ -509,7 +566,7 @@ box-shadow:0 2px 8px rgba(0,0,0,0.2);
 flex:1;
 min-width:0;
 overflow:auto;
-padding:24px;
+padding:0 24px 24px 24px;
 background:#f1f5f9;
 }
 
@@ -1034,7 +1091,7 @@ gap:6px;
 .mobile-card-stat-label { font-size: 10px; color: #64748b; margin-bottom: 2px; }
 .mobile-card-stat-val { font-size: 14px; font-weight: bold; }
 
-/* 🔐 모던 로그인 모달 & 프로필 스타일 (전면 개편) */
+/* 🔐 모던 로그인 모달 & 프로필 스타일 */
 .login-overlay {
   position: fixed;
   top: 0; left: 0; width: 100vw; height: 100vh;
@@ -1196,11 +1253,8 @@ gap:6px;
 }
 
 @media (max-width: 768px) {
+  .top-header-bar { display: none !important; }
   .mobile-menu-toggle { display: block; }
-  
-  #menuUpload, .reset-btn, #audioEnableBtn, .pc-only-menu, .lab-menu-folder { 
-    display: none !important; 
-  }
 
   .trend-table-scroll-wrap { display: none !important; }
   .mobile-trend-card-list { display: flex !important; }
@@ -1313,7 +1367,7 @@ gap:6px;
       <span>📦</span> ISN_5 1Wave CL
     </div>
 
-    <!-- 👤 로그인 유저 프로필 영역 -->
+    <!-- 👤 로그인 유저 프로필 영역 (모바일용 & 사이드바 백업) -->
     <div class="user-profile-card">
       <div class="user-info-text">
         <span class="user-name" id="displayUserName">사용자</span>
@@ -1403,6 +1457,19 @@ gap:6px;
 </div>
 
 <div class="main-area">
+
+<!-- 👤 PC 전용 오른쪽 상단 프로필 헤더 바 -->
+<div class="top-header-bar">
+  <div class="top-user-profile">
+    <div class="top-user-info">
+      <span class="top-user-icon">👤</span>
+      <span id="topUserName">Camp Leader</span>
+      <span style="color:#cbd5e1;">|</span>
+      <span id="topUserRole" style="color:#2563eb; font-weight:700;">ISN5CL</span>
+    </div>
+    <button class="top-logout-btn" onclick="handleLogout()">로그아웃</button>
+  </div>
+</div>
 
 <div class="wrapper">
 
@@ -1507,7 +1574,7 @@ gap:6px;
 
 <div class="result-panel-title">
   <span>📦 S-일산5 미도착</span>
-  <button class="trend-btn" onclick="openSaveModal()">📥 데이터 누적하기</button>
+  <button class="trend-btn" id="accumulateDataBtn" onclick="openSaveModal()">📥 데이터 누적하기</button>
 </div>
 
 <div class="result-grid">
@@ -1940,11 +2007,12 @@ gap:6px;
         <thead>
           <tr>
             <th style="width:180px;">호출 일시</th>
+            <th style="width:160px;">호출자 (계정 ID)</th>
             <th>호출 메시지 내용</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="2">기록된 호출 로그가 없습니다.</td></tr>
+          <tr><td colspan="3">기록된 호출 로그가 없습니다.</td></tr>
         </tbody>
       </table>
     </div>
@@ -3169,25 +3237,33 @@ function restoreLatestBackup() {
   restoreSelectedHistory(latestBackupKey);
 }
 
+// 🔔 호출 메시지 전송 로직 (로그인 ID / 계정명 자동 명시)
 function sendCallSignal(){
   const input = document.getElementById("callMsgInput");
-  const msg = input.value.trim() || "모바일에서 현장 호출이 들어왔습니다.";
+  const rawMsg = input.value.trim() || "호출이 들어왔습니다.";
   const now = new Date();
   const timeStr = formatTimeString(now);
   const timestamp = now.getTime();
 
+  const callerName = currentUser ? currentUser.name : "익명";
+  const callerId = currentUser ? currentUser.label : "미인증";
+
   db.ref("callSignal").set({
-    message: msg,
+    message: rawMsg,
+    callerName: callerName,
+    callerId: callerId,
     timeStr: timeStr,
     timestamp: timestamp
   });
 
   db.ref("callLogs").push({
     timeStr: timeStr,
-    message: msg,
+    message: rawMsg,
+    callerName: callerName,
+    callerId: callerId,
     timestamp: timestamp
   }).then(()=>{
-    alert("PC로 호출 메시지가 전송되었으며, 호출 Log에 기록되었습니다.");
+    alert(`[${callerName}] 이름으로 PC 호출 알림이 전송되었습니다.`);
     input.value = "";
   }).catch(err=>{
     alert("호출 전송 실패: " + err.message);
@@ -3204,16 +3280,19 @@ db.ref("callLogs").on("value", (snapshot) => {
     let html = "";
     logList.forEach(log => {
       const timeDisplay = log.timeStr || (log.timestamp ? formatTimeString(new Date(log.timestamp)) : '-');
+      const senderDisplay = log.callerName ? `${log.callerName} (${log.callerId || ''})` : '알수없음';
+
       html += `
         <tr>
           <td style="color:#64748b;font-weight:bold;">${timeDisplay}</td>
+          <td style="color:#1d4ed8;font-weight:bold;">👤 ${senderDisplay}</td>
           <td style="text-align:left;padding-left:15px;font-weight:600;color:#1e293b;">${log.message}</td>
         </tr>
       `;
     });
     tbody.innerHTML = html;
   } else {
-    tbody.innerHTML = '<tr><td colspan="2">기록된 호출 로그가 없습니다.</td></tr>';
+    tbody.innerHTML = '<tr><td colspan="3">기록된 호출 로그가 없습니다.</td></tr>';
   }
 });
 
@@ -3221,9 +3300,11 @@ db.ref("callSignal").on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
     const displayTime = data.timeStr || (data.timestamp ? formatTimeString(new Date(data.timestamp)) : '');
+    const senderDisplay = data.callerName ? `[${data.callerName}]` : '';
     const lastCallInfoEl = document.getElementById("lastCallInfo");
+
     if (lastCallInfoEl) {
-      lastCallInfoEl.innerHTML = `🔔 최근 호출: <span style="color:#1d4ed8;font-weight:bold;">[${displayTime}]</span> <span style="color:#1e293b;font-weight:bold;">${data.message}</span>`;
+      lastCallInfoEl.innerHTML = `🔔 최근 호출: <span style="color:#1d4ed8;font-weight:bold;">[${displayTime}] ${senderDisplay}</span> <span style="color:#1e293b;font-weight:bold;">${data.message}</span>`;
     }
 
     if (data.timestamp > lastSpokenTime) {
@@ -3231,8 +3312,9 @@ db.ref("callSignal").on("value", (snapshot) => {
       
       if (Date.now() - data.timestamp < 10000) {
         if (!isMobile) {
-          speakText(data.message);
-          showDesktopNotification(data.message);
+          const speakMsg = `${senderDisplay} ${data.message}`;
+          speakText(speakMsg);
+          showDesktopNotification(speakMsg);
         }
       }
     }
@@ -3492,19 +3574,19 @@ const USER_ACCOUNTS = {
     pw: "dlftks5zoavm1!!", 
     name: "Camp Leader", 
     role: "cl", 
-    label: "Camp Leader" 
+    label: "ISN5CL" 
   },
   "isn5hl": { 
     pw: "dlftks5!!", 
     name: "Helper Leader", 
     role: "hl", 
-    label: "Helper Leader" 
+    label: "ISN5HL" 
   },
   "isn5cpf": { 
     pw: "dlftks5zoavm@@", 
     name: "CPF", 
     role: "cpf", 
-    label: "CPF (준비중)" 
+    label: "ISN5CPF" 
   }
 };
 
@@ -3566,10 +3648,16 @@ function handleLogout() {
 function applyRolePermissions() {
   if (!currentUser) return;
 
+  // 사이드바 & 탑 헤더 프로필 텍스트 적용
   const nameEl = document.getElementById("displayUserName");
   const roleEl = document.getElementById("displayUserRole");
+  const topNameEl = document.getElementById("topUserName");
+  const topRoleEl = document.getElementById("topUserRole");
+
   if (nameEl) nameEl.innerText = currentUser.name;
   if (roleEl) roleEl.innerText = currentUser.label;
+  if (topNameEl) topNameEl.innerText = currentUser.name;
+  if (topRoleEl) topRoleEl.innerText = currentUser.label;
 
   const role = currentUser.role;
 
@@ -3582,9 +3670,10 @@ function applyRolePermissions() {
   const navSubTitles = document.querySelectorAll(".nav-sub-title");
   const resetBtns = document.querySelectorAll(".reset-btn");
   const quickRestoreBtn = document.querySelector(".quick-restore-btn");
+  const accumulateDataBtn = document.getElementById("accumulateDataBtn");
 
   if (role === "cl") {
-    // Camp Leader: 전체 권한 오픈
+    // 👑 Camp Leader: PC & 모바일 모든 탭 권한 오픈
     if (menuUpload) menuUpload.style.display = "flex";
     if (trendMenuGroup) trendMenuGroup.style.display = "flex";
     labMenuFolders.forEach(el => el.style.display = "flex");
@@ -3593,11 +3682,12 @@ function applyRolePermissions() {
 
     resetBtns.forEach(btn => btn.style.display = "inline-block");
     if (quickRestoreBtn) quickRestoreBtn.style.display = "inline-flex";
+    if (accumulateDataBtn) accumulateDataBtn.style.display = "inline-flex";
 
     showTab(isMobile ? 'result' : 'upload');
 
   } else if (role === "hl") {
-    // Helper Leader: 모바일 전용 / [결과(실시간)] 탭만 노출
+    // 👷 Helper Leader: 모바일 전용 / [결과(실시간)] 탭 중심
     if (menuUpload) menuUpload.style.display = "none";
     if (trendMenuGroup) trendMenuGroup.style.display = "none";
     labMenuFolders.forEach(el => el.style.display = "none");
@@ -3609,8 +3699,10 @@ function applyRolePermissions() {
       }
     });
 
+    // ⚡ 최근데이터 복구 권한은 허용, 📥 데이터 누적하기 버튼은 차단
     resetBtns.forEach(btn => btn.style.display = "none");
-    if (quickRestoreBtn) quickRestoreBtn.style.display = "none";
+    if (quickRestoreBtn) quickRestoreBtn.style.display = "inline-flex";
+    if (accumulateDataBtn) accumulateDataBtn.style.display = "none";
 
     showTab('result');
   }
