@@ -1661,7 +1661,7 @@ background:#1d4ed8;
   <div class="result-panel">
     <div class="result-panel-title" style="display:flex; justify-content:space-between; align-items:center;">
       <span>📈 누적 데이터 기록 (트렌드)</span>
-      <button class="reset-btn mobile-hide-del" onclick="clearTrendLogs()" style="margin:0;">🗑️ 전체 누적 삭제</button>
+      <button class="reset-btn" onclick="clearTrendLogs()" style="margin:0;">🗑️ 전체 누적 삭제</button>
     </div>
     <div style="font-size:13px; color:#64748b; margin-bottom:12px; margin-top:6px;">
       '데이터 누적하기' 버튼을 눌렀을 당시 기록된 <b>투입 인원</b>, <b>신선 수량</b>, <b>던 수량</b>, <b>SH_ISN5 수량</b> 이력입니다.
@@ -1678,7 +1678,7 @@ background:#1d4ed8;
             <th>🥬 신선 수량</th>
             <th>🌙 던 수량</th>
             <th>📦 SH_ISN5 Total</th>
-            <th class="mobile-hide-del" style="width:70px;">관리</th>
+            <th style="width:70px;">관리</th>
           </tr>
         </thead>
         <tbody>
@@ -1939,7 +1939,7 @@ background:#1d4ed8;
   <div class="result-panel">
     <div class="result-panel-title" style="display:flex;justify-content:space-between;align-items:center;">
       <span>📜 PC 관리자 호출 기록 (Log)</span>
-      <button class="reset-btn mobile-hide-del" onclick="clearCallLogs()" style="margin:0;">🗑️ 로그 전체 삭제</button>
+      <button class="reset-btn" onclick="clearCallLogs()" style="margin:0;">🗑️ 로그 전체 삭제</button>
     </div>
     <div style="font-size:13px;color:#64748b;margin-bottom:12px;">현장 및 PC에서 전송된 실시간 음성/팝업 호출 이력입니다.</div>
     <div class="invoice-table-wrap" style="max-height:700px;">
@@ -2121,7 +2121,7 @@ function enableAudio() {
 
 function requestNotificationPermission() {
   if (!isMobile && "Notification" in window && Notification.permission !== "granted") {
-    Notification.requestPermission();
+    Notification.permission !== "granted" && Notification.requestPermission();
   }
 }
 
@@ -2199,7 +2199,7 @@ function showTab(page){
   document.getElementById("menuInvoiceSH").classList.toggle("active", page === "invoiceSH");
   document.getElementById("menuInvoiceISN").classList.toggle("active", page === "invoiceISN");
   document.getElementById("menuInvoiceYAJ").classList.toggle("active", page === "invoiceYAJ");
-  document.getElementById("callLogPage").classList.toggle("active", page === "callLog");
+  document.getElementById("menuCallLog").classList.toggle("active", page === "callLog");
 
   document.getElementById("menuLabCenter").classList.toggle("active", page === "labCenter");
   document.getElementById("menuLabRoute").classList.toggle("active", page === "labRoute");
@@ -2342,7 +2342,7 @@ db.ref("accumulatedLogs").on("value", (snapshot) => {
           <td><b style="color:#15803d;">${item.freshQty}</b></td>
           <td><b style="color:#1d4ed8;">${item.dawnQty}</b></td>
           <td><b style="color:#2563eb;">${item.shQty}</b></td>
-          <td class="mobile-hide-del">
+          <td>
             <button onclick="deleteTrendLog('${key}')" style="padding:2px 6px; border:none; border-radius:4px; background:#ef4444; color:white; cursor:pointer; font-size:11px;">삭제</button>
           </td>
         </tr>
@@ -2767,6 +2767,16 @@ function clearTrendLogs() {
   if (confirm("모든 누적 데이터를 삭제하시겠습니까? (복구할 수 없습니다)")) {
     db.ref("accumulatedLogs").remove().then(() => {
       alert("누적 데이터가 전체 삭제되었습니다.");
+    });
+  }
+}
+
+function clearCallLogs() {
+  if (confirm("모든 호출 로그 기록을 삭제하시겠습니까?")) {
+    db.ref("callLogs").remove().then(() => {
+      alert("호출 기록 로그가 전체 삭제되었습니다.");
+    }).catch(err => {
+      alert("삭제 실패: " + err.message);
     });
   }
 }
