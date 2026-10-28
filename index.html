@@ -22,12 +22,12 @@
 margin:0;
 padding:0;
 box-sizing:border-box;
-font-family:'맑은 고딕',sans-serif;
+font-family:'맑은 고딕', sans-serif;
 }
 
 body{
-background:#f8fafc;
-color:#1e293b;
+background:#f1f5f9;
+color:#0f172a;
 overflow-x:hidden;
 }
 
@@ -49,10 +49,11 @@ margin-bottom:20px;
 }
 
 .title{
-font-size:32px;
-font-weight:bold;
+font-size:30px;
+font-weight:800;
 text-align:center;
 color:#0f172a;
+letter-spacing:-0.5px;
 }
 
 .badge{
@@ -60,15 +61,12 @@ display:inline-block;
 margin-top:10px;
 padding:8px 16px;
 border-radius:25px;
-
-background:#ecfdf3;
-border:1px solid #86efac;
-color:#15803d;
-
+background:#ecfdf5;
+border:1px solid #6ee7b7;
+color:#047857;
 font-weight:bold;
 animation:pulse 1.5s infinite;
-
-box-shadow:0 2px 6px rgba(34,197,94,.15);
+box-shadow:0 2px 6px rgba(16,185,129,0.15);
 }
 
 .reset-btn{
@@ -85,9 +83,7 @@ transition:0.2s;
 box-shadow:0 2px 6px rgba(239, 68, 68, 0.2);
 }
 
-.reset-btn:hover{
-background:#dc2626;
-}
+.reset-btn:hover{ background:#dc2626; }
 
 .audio-btn{
 margin-top:8px;
@@ -103,9 +99,7 @@ transition:0.2s;
 box-shadow:0 2px 6px rgba(37, 99, 235, 0.2);
 }
 
-.audio-btn:hover{
-background:#1d4ed8;
-}
+.audio-btn:hover{ background:#1d4ed8; }
 
 .quick-restore-btn{
 margin-top:8px;
@@ -124,13 +118,9 @@ align-items:center;
 gap:4px;
 }
 
-.quick-restore-btn:hover{
-background:#b45309;
-}
+.quick-restore-btn:hover{ background:#b45309; }
 
-.hidden{
-display:none !important;
-}
+.hidden{ display:none !important; }
 
 #dropZone{
 margin-top:15px;
@@ -142,7 +132,6 @@ justify-content:center;
 align-items:center;
 cursor:pointer;
 transition:.2s;
-
 background:#ffffff;
 box-shadow:0 1px 3px rgba(0,0,0,0.08);
 }
@@ -152,24 +141,10 @@ background:#f8fafc;
 border-color:#60a5fa;
 }
 
-.drop-content{
-text-align:center;
-}
-
-.folder{
-font-size:50px;
-}
-
-.main-text{
-font-size:22px;
-font-weight:bold;
-color:#111827;
-}
-
-.sub-text{
-margin-top:10px;
-color:#6b7280;
-}
+.drop-content{ text-align:center; }
+.folder{ font-size:50px; }
+.main-text{ font-size:22px; font-weight:bold; color:#111827; }
+.sub-text{ margin-top:10px; color:#6b7280; }
 
 .status-box{
 margin-top:6px;
@@ -245,9 +220,7 @@ cursor:pointer;
 transition:0.2s;
 }
 
-.restore-btn-action:hover{
-background:#b45309;
-}
+.restore-btn-action:hover{ background:#b45309; }
 
 .result-grid{
 display:flex;
@@ -266,7 +239,7 @@ gap:12px;
 }
 
 .summary-card-item{
-background:#f8fafc;
+background:#ffffff;
 border:1px solid #cbd5e1;
 border-radius:16px;
 padding:20px 10px;
@@ -292,7 +265,7 @@ font-weight:800;
 .hub-table{
 flex:1;
 min-width:140px;
-background:#f8fafc;
+background:#ffffff;
 border:1px solid #93c5fd;
 border-radius:18px;
 overflow:hidden;
@@ -320,11 +293,7 @@ align-items:center;
 gap:6px;
 }
 
-.toggle-arrow {
-display:none;
-font-size:12px;
-color:#2563eb;
-}
+.toggle-arrow { display:none; font-size:12px; color:#2563eb; }
 
 .total-title{
 background:#e2e8f0;
@@ -337,7 +306,7 @@ letter-spacing:1px;
 }
 
 .total-value{
-background:#edf2f7;
+background:#f1f5f9;
 color:#2563eb;
 font-size:30px;
 font-weight:800;
@@ -347,46 +316,20 @@ border-top:1px solid #cbd5e1;
 border-bottom:1px solid #cbd5e1;
 }
 
-.hub-table table{
-width:100%;
-border-collapse:collapse;
-}
-
-.hub-table th{
-background:#e2e8f0;
-color:#334155;
-padding:8px 4px;
-font-size:13px;
-border-bottom:1px solid #cbd5e1;
-text-align:center;
-}
-
-.hub-table td{
-background:#f8fafc;
-color:#334155;
-border-bottom:1px solid #e2e8f0;
-padding:7px 4px;
-font-size:13px;
-text-align:center;
-}
-
-.hub-table tr:hover td{
-background:#eff6ff;
-}
+.hub-table table{ width:100%; border-collapse:collapse; }
+.hub-table th{ background:#e2e8f0; color:#334155; padding:8px 4px; font-size:13px; border-bottom:1px solid #cbd5e1; text-align:center; }
+.hub-table td{ background:#ffffff; color:#334155; border-bottom:1px solid #e2e8f0; padding:7px 4px; font-size:13px; text-align:center; }
+.hub-table tr:hover td{ background:#eff6ff; }
 
 .setting-card{
-background:#f8fafc;
+background:#ffffff;
 border:1px solid #dbeafe;
 border-radius:16px;
 padding:20px;
 color:#111827;
 }
 
-.setting-table-wrap{
-height:320px;
-overflow-y:auto;
-margin-top:15px;
-}
+.setting-table-wrap{ height:320px; overflow-y:auto; margin-top:15px; }
 
 .selected-info{
 margin-top:10px;
@@ -400,11 +343,7 @@ line-height:1.4;
 color:#334155;
 }
 
-.selected-count{
-font-weight:bold;
-color:#2563eb;
-margin-bottom:4px;
-}
+.selected-count{ font-weight:bold; color:#2563eb; margin-bottom:4px; }
 
 @keyframes pulse{
 0%{transform:scale(1);}
@@ -419,14 +358,14 @@ position:relative;
 }
 
 /* ========================================================= */
-/* 🎨 개편된 업무 도구 사이드바 (모던 Light/Clean 디자인) */
+/* 🎨 모던 ERP 홈페이지 스타일 사이드바 (Dark Slate Theme) */
 /* ========================================================= */
 
 .sidebar{
-width:260px;
+width:270px;
 flex:none;
-background:#ffffff;
-border-right:1px solid #e2e8f0;
+background:#0f172a; /* 고급스러운 다크 네이비 / 스포티한 대시보드 */
+color:#f8fafc;
 padding:20px 12px;
 overflow-y:auto;
 transition: transform 0.3s ease;
@@ -434,16 +373,16 @@ z-index: 1000;
 display:flex;
 flex-direction:column;
 justify-content:space-between;
-box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+box-shadow: 4px 0 15px rgba(0,0,0,0.08);
 }
 
 .sidebar-logo{
 font-size:18px;
 font-weight:800;
-color:#1e293b;
+color:#ffffff;
 margin-bottom:20px;
-padding-bottom:12px;
-border-bottom:1px solid #f1f5f9;
+padding-bottom:14px;
+border-bottom:1px solid #1e293b;
 display:flex;
 align-items:center;
 gap:8px;
@@ -455,50 +394,69 @@ margin-bottom:20px;
 flex:1;
 }
 
-/* 대메뉴 (1차 그룹) */
-.nav-group-title {
-font-size: 14px;
-font-weight: 700;
-color: #334155;
+/* 최상위 대제목 (HUB 미스캔 확인 하나로 고정) */
+.main-root-title {
+font-size: 15px;
+font-weight: 800;
+color: #38bdf8; /* 밝은 스카이블루 강조 */
 padding: 10px 12px;
 border-radius: 8px;
 cursor: pointer;
 display: flex;
 align-items: center;
 justify-content: space-between;
-transition: background 0.15s ease;
+background: #1e293b;
 user-select: none;
-margin-top: 4px;
+margin-bottom: 8px;
 }
 
-.nav-group-title:hover {
-background: #f1f5f9;
-color: #0f172a;
-}
-
-.nav-group-title .arrow {
-font-size: 10px;
-color: #64748b;
+.main-root-title .arrow {
+font-size: 11px;
+color: #94a3b8;
 transition: transform 0.2s;
 }
 
-/* 하위 메뉴 서브 그룹 (2차 뎁스 - 들여쓰기 & 좌측 가이드 라인) */
-.nav-sub-group {
-margin-left: 14px;
+/* Level 1 서브 트래킹 (Root 하위 그룹) */
+.nav-sub-group-level1 {
+margin-left: 8px;
 padding-left: 10px;
-border-left: 2px solid #e2e8f0;
-margin-top: 2px;
-margin-bottom: 6px;
+border-left: 2px solid #334155;
+margin-top: 4px;
 display: flex;
 flex-direction: column;
-gap: 2px;
+gap: 3px;
 }
 
-/* 하위 메뉴 3차 뎁스 (Invoice 전용) */
+/* 중간 대메뉴 (결과 실시간, 누적/예상, 고급분석 등) */
+.nav-sub-title {
+font-size: 13px;
+font-weight: 700;
+color: #e2e8f0;
+padding: 8px 10px;
+border-radius: 6px;
+cursor: pointer;
+display: flex;
+align-items: center;
+justify-content: space-between;
+transition: background 0.15s ease;
+user-select: none;
+}
+
+.nav-sub-title:hover {
+background: #1e293b;
+color: #ffffff;
+}
+
+.nav-sub-title .arrow {
+font-size: 10px;
+color: #94a3b8;
+}
+
+/* Level 2 서브 그룹 (인보이스, 트렌드 세부 항목) */
 .nav-sub-group-level2 {
 margin-left: 12px;
 padding-left: 8px;
-border-left: 1.5px dashed #cbd5e1;
+border-left: 1.5px dashed #475569;
 margin-top: 2px;
 margin-bottom: 4px;
 display: flex;
@@ -506,13 +464,13 @@ flex-direction: column;
 gap: 2px;
 }
 
-/* 소메뉴 (클릭 가능한 아이템) */
+/* 최하위 클릭 가능 메뉴 아이템 */
 .nav-item {
-padding: 8px 12px;
+padding: 8px 10px;
 border-radius: 6px;
-font-size: 13px;
+font-size: 12.5px;
 font-weight: 600;
-color: #475569;
+color: #cbd5e1;
 cursor: pointer;
 display: flex;
 align-items: center;
@@ -522,31 +480,28 @@ text-decoration: none;
 }
 
 .nav-item:hover {
-background: #f8fafc;
-color: #2563eb;
+background: #1e293b;
+color: #60a5fa;
 }
 
-/* 선택(Active) 상태 스타일 (참고 사진 블루 하이라이트 느낌) */
+/* 활성화 상태 (Active State) */
 .nav-item.active {
-background: #eff6ff;
-color: #2563eb;
+background: #2563eb;
+color: #ffffff;
 font-weight: 700;
-border-radius: 6px;
+box-shadow: 0 2px 6px rgba(37,99,235,0.4);
 }
 
 .nav-item.active::before {
-content: '';
-width: 4px;
-height: 14px;
-background: #2563eb;
-border-radius: 2px;
-margin-right: 8px;
-display: inline-block;
+content: '•';
+color: #ffffff;
+margin-right: 6px;
+font-size: 14px;
 }
 
 .sidebar-bottom-section {
 padding-top: 12px;
-border-top: 1px solid #f1f5f9;
+border-top: 1px solid #1e293b;
 margin-top: auto;
 }
 
@@ -558,7 +513,7 @@ position:fixed;
 top:12px;
 left:12px;
 z-index:1001;
-background:#111827;
+background:#0f172a;
 color:white;
 border:none;
 padding:8px 12px;
@@ -572,23 +527,24 @@ box-shadow:0 2px 8px rgba(0,0,0,0.2);
 flex:1;
 min-width:0;
 overflow:auto;
-padding:20px;
-background:#f8fafc;
+padding:24px;
+background:#f1f5f9;
 }
 
 .raw-section{
-background:#ecfdf5;
-border:1px solid #bbf7d0;
+background:#ffffff;
+border:1px solid #cbd5e1;
 border-radius:20px;
 padding:20px;
 margin-bottom:20px;
+box-shadow:0 2px 8px rgba(0,0,0,0.02);
 }
 
 .raw-section-title-wrap{
 display:flex;
 justify-content:space-between;
 align-items:center;
-background:#dcfce7;
+background:#ecfdf5;
 padding:10px 16px;
 border-radius:12px;
 margin-bottom:15px;
@@ -613,40 +569,24 @@ border:1px solid #86efac;
 box-shadow:0 1px 3px rgba(0,0,0,0.05);
 }
 
-.pdd-time-label{
-font-size:13px;
-font-weight:bold;
-color:#166534;
-}
-
-.pdd-option{
-display:flex;
-align-items:center;
-gap:4px;
-font-size:13px;
-font-weight:bold;
-color:#15803d;
-cursor:pointer;
-}
-
-.pdd-option input[type="radio"]{
-cursor:pointer;
-accent-color:#16a34a;
-}
+.pdd-time-label{ font-size:13px; font-weight:bold; color:#166534; }
+.pdd-option{ display:flex; align-items:center; gap:4px; font-size:13px; font-weight:bold; color:#15803d; cursor:pointer; }
+.pdd-option input[type="radio"]{ cursor:pointer; accent-color:#16a34a; }
 
 .hub-section{
-background:#eff6ff;
-border:1px solid #bfdbfe;
+background:#ffffff;
+border:1px solid #cbd5e1;
 border-radius:20px;
 padding:20px;
 margin-top:20px;
+box-shadow:0 2px 8px rgba(0,0,0,0.02);
 }
 
 .hub-section-title{
 font-size:18px;
 font-weight:bold;
 color:#2563eb;
-background:#dbeafe;
+background:#eff6ff;
 padding:10px;
 border-radius:12px;
 margin-bottom:15px;
@@ -663,9 +603,10 @@ width:100%;
 flex:1;
 min-width:0;
 background:#ffffff;
-border:1px solid #dbeafe;
+border:1px solid #cbd5e1;
 border-radius:18px;
-padding:16px;
+padding:20px;
+box-shadow:0 2px 8px rgba(0,0,0,0.02);
 }
 
 .result-panel-title{
@@ -674,7 +615,7 @@ font-weight:bold;
 padding:10px;
 border-radius:10px;
 margin-bottom:15px;
-background:#dbeafe;
+background:#eff6ff;
 color:#1e40af;
 display:flex;
 justify-content:space-between;
@@ -697,9 +638,7 @@ align-items:center;
   gap:4px;
 }
 
-.trend-btn:hover {
-  background:#059669;
-}
+.trend-btn:hover { background:#059669; }
 
 .trend-select {
   padding: 4px 8px;
@@ -718,9 +657,7 @@ align-items:center;
   cursor: not-allowed;
   border-color: #e2e8f0;
 }
-.trend-select:focus {
-  border-color: #2563eb;
-}
+.trend-select:focus { border-color: #2563eb; }
 
 .trend-custom-time-input {
   width: 75px;
@@ -777,54 +714,14 @@ margin-bottom:8px;
 color:#2563eb;
 }
 
-#uniqueTable{
-width:100%;
-border-collapse:collapse;
-}
+#uniqueTable{ width:100%; border-collapse:collapse; }
+#uniqueTable th{ background:#dbeafe; padding:6px 2px; font-size:12px; border:1px solid #cbd5e1; }
+#uniqueTable td{ padding:6px 2px; border:1px solid #e2e8f0; text-align:center; font-size:12px; }
 
-#uniqueTable th{
-background:#dbeafe;
-padding:6px 2px;
-font-size:12px;
-border:1px solid #cbd5e1;
-}
-
-#uniqueTable td{
-padding:6px 2px;
-border:1px solid #e2e8f0;
-text-align:center;
-font-size:12px;
-}
-
-.detail-title{
-margin-top:5px;
-margin-bottom:8px;
-font-size:14px;
-font-weight:bold;
-color:#1e40af;
-}
-
-#detailTable{
-width:100%;
-margin-top:5px;
-border-collapse:collapse;
-}
-
-#detailTable th{
-background:#bfdbfe;
-padding:8px 4px;
-border:1px solid #cbd5e1;
-font-size:12px;
-white-space:nowrap;
-}
-
-#detailTable td{
-padding:6px 4px;
-border:1px solid #e2e8f0;
-font-size:12px;
-text-align:center;
-white-space:nowrap;
-}
+.detail-title{ margin-top:5px; margin-bottom:8px; font-size:14px; font-weight:bold; color:#1e40af; }
+#detailTable{ width:100%; margin-top:5px; border-collapse:collapse; }
+#detailTable th{ background:#bfdbfe; padding:8px 4px; border:1px solid #cbd5e1; font-size:12px; white-space:nowrap; }
+#detailTable td{ padding:6px 4px; border:1px solid #e2e8f0; font-size:12px; text-align:center; white-space:nowrap; }
 
 #detailTableWrap{
 max-height:520px;
@@ -833,22 +730,10 @@ border:1px solid #cbd5e1;
 border-radius:8px;
 }
 
-#detailTable th{
-position:sticky;
-top:0;
-z-index:5;
-background:#bfdbfe;
-}
+#detailTable th{ position:sticky; top:0; z-index:5; background:#bfdbfe; }
 
-.camp-click{
-cursor:pointer;
-font-weight:bold;
-color:#2563eb;
-}
-
-.camp-click:hover{
-background:#eff6ff;
-}
+.camp-click{ cursor:pointer; font-weight:bold; color:#2563eb; }
+.camp-click:hover{ background:#eff6ff; }
 
 .exclude-row{
 display:flex;
@@ -862,21 +747,8 @@ border-radius:6px;
 font-size:12px;
 }
 
-.exclude-delete{
-cursor:pointer;
-color:#dc2626;
-font-weight:bold;
-}
-
-.detail-box{
-flex:1;
-min-width:0;
-background:#f8fafc;
-border:1px solid #dbeafe;
-border-radius:10px;
-padding:10px;
-overflow-x:auto;
-}
+.exclude-delete{ cursor:pointer; color:#dc2626; font-weight:bold; }
+.detail-box{ flex:1; min-width:0; background:#f8fafc; border:1px solid #dbeafe; border-radius:10px; padding:10px; overflow-x:auto; }
 
 .call-box{
 margin-top:20px;
@@ -897,35 +769,10 @@ align-items:center;
 gap:6px;
 }
 
-.call-input-group{
-display:flex;
-gap:8px;
-}
-
-.call-input{
-flex:1;
-padding:10px;
-border:1px solid #cbd5e1;
-border-radius:8px;
-font-size:14px;
-outline:none;
-}
-
-.call-btn{
-padding:10px 16px;
-background:#2563eb;
-color:white;
-font-weight:bold;
-border:none;
-border-radius:8px;
-cursor:pointer;
-transition:0.2s;
-white-space:nowrap;
-}
-
-.call-btn:hover{
-background:#1d4ed8;
-}
+.call-input-group{ display:flex; gap:8px; }
+.call-input{ flex:1; padding:10px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px; outline:none; }
+.call-btn{ padding:10px 16px; background:#2563eb; color:white; font-weight:bold; border:none; border-radius:8px; cursor:pointer; transition:0.2s; white-space:nowrap; }
+.call-btn:hover{ background:#1d4ed8; }
 
 .call-box-footer {
   margin-top: 8px;
@@ -945,29 +792,11 @@ background:#1d4ed8;
   gap: 4px;
 }
 
-.call-log-link-wrap {
-  font-size: 12px;
-  margin-left: auto;
-}
+.call-log-link-wrap { font-size: 12px; margin-left: auto; }
+.call-log-link { color: #2563eb; font-weight: bold; text-decoration: none; cursor: pointer; }
+.call-log-link:hover { text-decoration: underline; color: #1d4ed8; }
 
-.call-log-link {
-  color: #2563eb;
-  font-weight: bold;
-  text-decoration: none;
-  cursor: pointer;
-}
-
-.call-log-link:hover {
-  text-decoration: underline;
-  color: #1d4ed8;
-}
-
-.invoice-container {
-  display: flex;
-  gap: 20px;
-  align-items: flex-start;
-  width: 100%;
-}
+.invoice-container { display: flex; gap: 20px; align-items: flex-start; width: 100%; }
 
 .invoice-left-panel {
   flex: 2;
@@ -1001,24 +830,9 @@ background:#1d4ed8;
   align-items: center;
 }
 
-.invoice-table-wrap {
-  max-height: 650px;
-  overflow-y: auto;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-}
-
-.trend-table-scroll-wrap {
-  max-height: 380px;
-  overflow-y: auto;
-  border: 1px solid #cbd5e1;
-  border-radius: 8px;
-}
-
-.invoice-table {
-  width: 100%;
-  border-collapse: collapse;
-}
+.invoice-table-wrap { max-height: 650px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 8px; }
+.trend-table-scroll-wrap { max-height: 380px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 8px; }
+.invoice-table { width: 100%; border-collapse: collapse; }
 
 .invoice-table th {
   position: sticky;
@@ -1040,7 +854,6 @@ background:#1d4ed8;
   color: #1e293b;
 }
 
-/* 하루 단위 구분선 스타일 */
 .day-divider-row td {
   background: #1e3a8a !important;
   color: #ffffff !important;
@@ -1072,18 +885,8 @@ background:#1d4ed8;
   gap: 8px;
 }
 
-.trend-dashboard-layout {
-  display: flex;
-  gap: 20px;
-  align-items: stretch;
-  flex-wrap: wrap;
-}
-
-.trend-summary-table-box {
-  flex: 1;
-  min-width: 320px;
-  overflow-x: auto;
-}
+.trend-dashboard-layout { display: flex; gap: 20px; align-items: stretch; flex-wrap: wrap; }
+.trend-summary-table-box { flex: 1; min-width: 320px; overflow-x: auto; }
 
 .trend-chart-box {
   flex: 1.2;
@@ -1099,11 +902,11 @@ background:#1d4ed8;
 }
 
 .prediction-card {
-  background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%);
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
   color: white;
   border-radius: 18px;
   padding: 24px;
-  box-shadow: 0 8px 20px rgba(37, 99, 235, 0.2);
+  box-shadow: 0 8px 20px rgba(15, 23, 42, 0.2);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -1111,15 +914,11 @@ background:#1d4ed8;
   gap: 15px;
 }
 
-.pred-left-box {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
+.pred-left-box { display: flex; flex-direction: column; gap: 6px; }
 
 .pred-title-tag {
   font-size: 13px;
-  background: rgba(255,255,255,0.2);
+  background: rgba(255,255,255,0.15);
   padding: 4px 10px;
   border-radius: 20px;
   display: inline-block;
@@ -1138,26 +937,15 @@ background:#1d4ed8;
 .pred-grid-box {
   display: flex;
   gap: 20px;
-  background: rgba(255,255,255,0.1);
+  background: rgba(255,255,255,0.08);
   padding: 14px 22px;
   border-radius: 12px;
   backdrop-filter: blur(5px);
 }
 
-.pred-item {
-  text-align: center;
-}
-
-.pred-item-label {
-  font-size: 11px;
-  color: #93c5fd;
-  margin-bottom: 4px;
-}
-
-.pred-item-val {
-  font-size: 18px;
-  font-weight: bold;
-}
+.pred-item { text-align: center; }
+.pred-item-label { font-size: 11px; color: #93c5fd; margin-bottom: 4px; }
+.pred-item-val { font-size: 18px; font-weight: bold; }
 
 .lab-summary-grid {
   display: grid;
@@ -1175,18 +963,8 @@ background:#1d4ed8;
   box-shadow: 0 2px 6px rgba(0,0,0,0.02);
 }
 
-.lab-card-title {
-  font-size: 12px;
-  font-weight: bold;
-  color: #64748b;
-  margin-bottom: 6px;
-}
-
-.lab-card-val {
-  font-size: 22px;
-  font-weight: 900;
-  color: #1e293b;
-}
+.lab-card-title { font-size: 12px; font-weight: bold; color: #64748b; margin-bottom: 6px; }
+.lab-card-val { font-size: 22px; font-weight: 900; color: #1e293b; }
 
 .lab-card-grid {
   display: grid;
@@ -1204,10 +982,7 @@ background:#1d4ed8;
   transition: transform 0.2s;
 }
 
-.route-heat-card:hover {
-  transform: translateY(-2px);
-}
-
+.route-heat-card:hover { transform: translateY(-2px); }
 .route-heat-card.high { border-left: 5px solid #ef4444; background: #fef2f2; }
 .route-heat-card.med { border-left: 5px solid #f59e0b; background: #fffbeb; }
 .route-heat-card.low { border-left: 5px solid #10b981; background: #ecfdf5; }
@@ -1215,7 +990,7 @@ background:#1d4ed8;
 .modal-overlay {
   position: fixed;
   top: 0; left: 0; width: 100%; height: 100%;
-  background: rgba(0,0,0,0.4);
+  background: rgba(0,0,0,0.5);
   display: flex; justify-content: center; align-items: center;
   z-index: 2000;
 }
@@ -1237,26 +1012,12 @@ background:#1d4ed8;
   font-size: 13px; font-weight: bold; color: #1d4ed8; background: #eff6ff; padding: 6px 10px; border-radius: 6px; margin: 10px 0 8px 0;
 }
 
-.modal-field {
-  margin-bottom: 10px;
-}
+.modal-field { margin-bottom: 10px; }
+.modal-field label { display: block; font-size: 12px; font-weight: bold; color: #334155; margin-bottom: 4px; }
+.modal-field input { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; outline: none; }
 
-.modal-field label {
-  display: block; font-size: 12px; font-weight: bold; color: #334155; margin-bottom: 4px;
-}
-
-.modal-field input {
-  width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; outline: none;
-}
-
-.modal-btn-group {
-  display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px;
-}
-
-.modal-btn {
-  padding: 8px 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer;
-}
-
+.modal-btn-group { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+.modal-btn { padding: 8px 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
 .modal-btn.confirm { background: #10b981; color: white; }
 .modal-btn.cancel { background: #94a3b8; color: white; }
 
@@ -1284,60 +1045,24 @@ background:#1d4ed8;
   margin-bottom: 8px;
 }
 
-.mobile-card-cat {
-  font-size: 13px;
-  font-weight: bold;
-  color: #1d4ed8;
-  background: #eff6ff;
-  padding: 3px 8px;
-  border-radius: 6px;
-}
-
-.mobile-card-time {
-  font-size: 12px;
-  color: #64748b;
-  font-weight: bold;
-}
-
-.mobile-card-body {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 6px;
-  text-align: center;
-}
-
-.mobile-card-stat {
-  background: #f8fafc;
-  padding: 6px 4px;
-  border-radius: 8px;
-  border: 1px solid #f1f5f9;
-}
-
-.mobile-card-stat-label {
-  font-size: 10px;
-  color: #64748b;
-  margin-bottom: 2px;
-}
-
-.mobile-card-stat-val {
-  font-size: 14px;
-  font-weight: bold;
-}
+.mobile-card-cat { font-size: 13px; font-weight: bold; color: #1d4ed8; background: #eff6ff; padding: 3px 8px; border-radius: 6px; }
+.mobile-card-time { font-size: 12px; color: #64748b; font-weight: bold; }
+.mobile-card-body { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
+.mobile-card-stat { background: #f8fafc; padding: 6px 4px; border-radius: 8px; border: 1px solid #f1f5f9; }
+.mobile-card-stat-label { font-size: 10px; color: #64748b; margin-bottom: 2px; }
+.mobile-card-stat-val { font-size: 14px; font-weight: bold; }
 
 @media (max-width: 768px) {
   .mobile-menu-toggle { display: block; }
   
-  #menuUpload, .reset-btn, #menuCallLog, .call-log-link-wrap, .sidebar-bottom-section, .trend-btn, .mobile-hide-del, #audioEnableBtn, .pc-only-menu, .lab-menu-folder { 
+  #menuUpload, .reset-btn, #audioEnableBtn, .pc-only-menu, .lab-menu-folder { 
     display: none !important; 
   }
 
   .trend-table-scroll-wrap { display: none !important; }
   .mobile-trend-card-list { display: flex !important; }
 
-  .quick-restore-btn {
-    font-size: 12px;
-    padding: 5px 12px;
-  }
+  .quick-restore-btn { font-size: 12px; padding: 5px 12px; }
 
   .sidebar {
     position: fixed;
@@ -1348,15 +1073,8 @@ background:#1d4ed8;
     box-shadow: 4px 0 12px rgba(0,0,0,0.3);
   }
 
-  .sidebar.mobile-open {
-    transform: translateX(0);
-  }
-
-  .main-area {
-    padding: 10px;
-    padding-top: 50px;
-  }
-
+  .sidebar.mobile-open { transform: translateX(0); }
+  .main-area { padding: 10px; padding-top: 50px; }
   .title { font-size: 22px; }
   .result-layout { flex-direction: column; }
   .result-grid { flex-wrap: wrap; gap: 10px; }
@@ -1388,7 +1106,7 @@ background:#1d4ed8;
 
 <div class="app-layout">
 
-<!-- 🎨 개편된 모던 Light 업무 도구 사이드바 -->
+<!-- 🎨 ERP 대시보드 테마 - 단일 최상위 계층 사이드바 -->
 <div class="sidebar" id="mainSidebar">
 
   <div>
@@ -1398,24 +1116,27 @@ background:#1d4ed8;
 
     <div class="menu-section">
       
-      <!-- 대메뉴 1: HUB 미스캔 확인 -->
-      <div class="nav-group-title" onclick="toggleMenu('hubMenuGroup')">
+      <!-- 1대목: 최상위 대제목 HUB 미스캔 확인 -->
+      <div class="main-root-title" onclick="toggleMenu('rootMenuGroup')">
         <span>📦 HUB 미스캔 확인</span>
-        <span class="arrow" id="hubMenuArrow">▲</span>
+        <span class="arrow" id="rootMenuArrow">▲</span>
       </div>
 
-      <div class="nav-sub-group" id="hubMenuGroup">
+      <!-- Root 하위 트래킹 전체 그룹 -->
+      <div class="nav-sub-group-level1" id="rootMenuGroup">
         
+        <!-- 1. Raw & Setting -->
         <div class="nav-item" id="menuUpload" onclick="showTab('upload')">
           <span>📁 Raw & Setting ⚙️</span>
         </div>
 
-        <div class="nav-item active" id="menuResult" onclick="clickResultMenu(event)">
+        <!-- 2. 결과 (실시간) -->
+        <div class="nav-sub-title" onclick="clickResultMenu(event)">
           <span>📊 결과 (실시간)</span>
-          <span style="font-size:9px;color:#94a3b8;" id="resultSubArrow">▲</span>
+          <span class="arrow" id="resultSubArrow">▲</span>
         </div>
 
-        <!-- 2차 서브메뉴 (Invoice) -->
+        <!-- 2차 서브메뉴 (Invoice 3종) -->
         <div class="nav-sub-group-level2" id="resultSubMenu">
           <div class="nav-item" id="menuInvoiceSH" onclick="showTab('invoiceSH')">
             <span>📋 SH_ISN5 Invoice</span>
@@ -1428,47 +1149,46 @@ background:#1d4ed8;
           </div>
         </div>
 
+        <!-- 3. 누적 및 소분종료 예상 -->
+        <div class="nav-sub-title" onclick="toggleMenu('trendMenuGroup')">
+          <span>📈 누적 및 소분종료 예상</span>
+          <span class="arrow" id="trendMenuArrow">▲</span>
+        </div>
+
+        <div class="nav-sub-group-level2" id="trendMenuGroup">
+          <div class="nav-item" id="menuTrend" onclick="showTab('trend')">
+            <span>📈 누적 데이터 (트렌드)</span>
+          </div>
+          <div class="nav-item pc-only-menu" id="menuPredict" onclick="showTab('predict')">
+            <span>⏱️ F3 소분종료 예측</span>
+          </div>
+        </div>
+
+        <!-- 4. 고급 분석 (Lab) -->
+        <div class="nav-sub-title lab-menu-folder" onclick="toggleMenu('labMenuGroup')">
+          <span style="color:#fb7185;">🧪 고급 분석 (Lab)</span>
+          <span class="arrow" id="labMenuArrow">▲</span>
+        </div>
+
+        <div class="nav-sub-group-level2 lab-menu-folder" id="labMenuGroup">
+          <div class="nav-item" id="menuLabCenter" onclick="showTab('labCenter')">
+            <span>🚚 F3종료 상습 지연 Hub</span>
+          </div>
+          <div class="nav-item" id="menuLabRoute" onclick="showTab('labRoute')">
+            <span>🎯 라우트 쏠림/히트맵</span>
+          </div>
+          <div class="nav-item" id="menuLabDayPattern" onclick="showTab('labDayPattern')">
+            <span>📊 요일별 출고 & 완진율</span>
+          </div>
+        </div>
+
+        <!-- 5. 최하단 호출 기록 (Log) -->
+        <div class="nav-item" id="menuCallLog" onclick="showTab('callLog')" style="margin-top:6px;">
+          <span>📜 호출 기록 (Log)</span>
+        </div>
+
       </div>
 
-      <!-- 대메뉴 2: 누적 및 소분종료 예상 -->
-      <div class="nav-group-title" onclick="toggleMenu('trendMenuGroup')">
-        <span>📈 누적 및 소분종료 예상</span>
-        <span class="arrow" id="trendMenuArrow">▲</span>
-      </div>
-
-      <div class="nav-sub-group" id="trendMenuGroup">
-        <div class="nav-item" id="menuTrend" onclick="showTab('trend')">
-          <span>📈 누적 데이터 (트렌드)</span>
-        </div>
-        <div class="nav-item pc-only-menu" id="menuPredict" onclick="showTab('predict')">
-          <span>⏱️ F3 소분종료 예측</span>
-        </div>
-      </div>
-
-      <!-- 대메뉴 3: 고급 분석 (Lab) -->
-      <div class="nav-group-title lab-menu-folder" style="color:#e11d48;" onclick="toggleMenu('labMenuGroup')">
-        <span>🧪 고급 분석 (Lab)</span>
-        <span class="arrow" id="labMenuArrow">▲</span>
-      </div>
-
-      <div class="nav-sub-group lab-menu-folder" id="labMenuGroup">
-        <div class="nav-item" id="menuLabCenter" onclick="showTab('labCenter')">
-          <span>🚚 F3종료 상습 지연 Hub</span>
-        </div>
-        <div class="nav-item" id="menuLabRoute" onclick="showTab('labRoute')">
-          <span>🎯 라우트 쏠림/히트맵</span>
-        </div>
-        <div class="nav-item" id="menuLabDayPattern" onclick="showTab('labDayPattern')">
-          <span>📊 요일별 출고 & 완진율</span>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-  <div class="sidebar-bottom-section">
-    <div class="nav-item" id="menuCallLog" onclick="showTab('callLog')">
-      <span>📜 호출 기록 (Log)</span>
     </div>
   </div>
 
@@ -1483,7 +1203,7 @@ background:#1d4ed8;
 <div class="badge" id="badge">🟢 실시간 연동 완료</div>
 
 <div style="display:flex; align-items:center; justify-content:center; gap:8px; margin-top:8px; flex-wrap:wrap;">
-  <div id="lastUpdate" style="color:#6b7280;font-size:15px;text-align:center;width:100%;">업데이트 확인 중...</div>
+  <div id="lastUpdate" style="color:#64748b;font-size:14px;font-weight:600;text-align:center;width:100%;">업데이트 확인 중...</div>
   <button class="quick-restore-btn" onclick="restoreLatestBackup()">⚡ 최근 데이터로 복구</button>
   <button class="audio-btn" id="audioEnableBtn" onclick="enableAudio()">🔊 Mac/PC 음성 활성화</button>
   <button class="reset-btn" onclick="resetData()">🗑️ 데이터 초기화</button>
@@ -2100,7 +1820,6 @@ let recentHistoryData = {};
 let latestBackupKey = null;
 
 let globalLogEntries = [];
-
 let trendChartInstance = null;
 
 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
@@ -2271,7 +1990,6 @@ function showTab(page){
   document.getElementById("labDayPatternPage").classList.toggle("hidden", page !== "labDayPattern");
 
   document.getElementById("menuUpload").classList.toggle("active", page === "upload");
-  document.getElementById("menuResult").classList.toggle("active", page === "result");
   const menuPred = document.getElementById("menuPredict");
   if (menuPred) menuPred.classList.toggle("active", page === "predict");
   document.getElementById("menuTrend").classList.toggle("active", page === "trend");
@@ -2293,7 +2011,8 @@ function toggleMenu(menuId){
 
   menu.classList.toggle("hidden");
 
-  let arrowId = "hubMenuArrow";
+  let arrowId = "rootMenuArrow";
+  if(menuId === "rootMenuGroup") arrowId = "rootMenuArrow";
   if(menuId === "resultSubMenu") arrowId = "resultSubArrow";
   if(menuId === "trendMenuGroup") arrowId = "trendMenuArrow";
   if(menuId === "labMenuGroup") arrowId = "labMenuArrow";
@@ -2973,7 +2692,6 @@ async function processFiles(files){
     document.getElementById("fileList").innerHTML = `✅ ${files[0].name}<br>✅ ${files[1].name}`;
 
     const rows = [...data1, ...data2.slice(1)];
-
     const now = new Date();
     
     const pddAllRows = rows.filter(r => {
