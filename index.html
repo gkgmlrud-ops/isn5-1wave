@@ -2,7 +2,7 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>ISN_5 1Wave CL (실시간 모바일/PC 제어 연동)</title>
 
@@ -238,11 +238,6 @@ cursor:pointer;
 user-select:none;
 }
 
-.restore-table-wrap {
-  width: 100%;
-  overflow-x: auto;
-}
-
 .restore-table{
 width:100%;
 border-collapse:collapse;
@@ -251,7 +246,6 @@ border-radius:8px;
 overflow:hidden;
 border:1px solid #fde68a;
 margin-top:12px;
-min-width: 450px;
 }
 
 .restore-table th{
@@ -696,6 +690,38 @@ align-items:center;
 
 .trend-btn:hover { background:#059669; }
 
+.trend-select {
+  padding: 4px 8px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #1e293b;
+  outline: none;
+  background-color: #ffffff;
+  cursor: pointer;
+}
+.trend-select:disabled {
+  background-color: #f1f5f9;
+  color: #64748b;
+  cursor: not-allowed;
+  border-color: #e2e8f0;
+}
+.trend-select:focus { border-color: #2563eb; }
+
+.trend-custom-time-input {
+  width: 75px;
+  margin-left: 4px;
+  padding: 4px 6px;
+  border: 1px solid #2563eb;
+  border-radius: 6px;
+  font-size: 12px;
+  font-weight: bold;
+  color: #1d4ed8;
+  outline: none;
+  text-align: center;
+}
+
 .misplace-layout{
 display:flex;
 gap:10px;
@@ -793,8 +819,8 @@ align-items:center;
 gap:6px;
 }
 
-.call-input-group{ display:flex; gap:8px; flex-wrap:wrap; }
-.call-input{ flex:1; min-width:200px; padding:10px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px; outline:none; }
+.call-input-group{ display:flex; gap:8px; }
+.call-input{ flex:1; padding:10px; border:1px solid #cbd5e1; border-radius:8px; font-size:14px; outline:none; }
 .call-btn{ padding:10px 16px; background:#2563eb; color:white; font-weight:bold; border:none; border-radius:8px; cursor:pointer; transition:0.2s; white-space:nowrap; }
 .call-btn:hover{ background:#1d4ed8; }
 
@@ -814,7 +840,6 @@ gap:6px;
   display: flex;
   align-items: center;
   gap: 4px;
-  word-break: break-all;
 }
 
 .call-log-link-wrap { font-size: 12px; margin-left: auto; }
@@ -855,9 +880,9 @@ gap:6px;
   align-items: center;
 }
 
-.invoice-table-wrap { max-height: 650px; overflow-y: auto; overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px; width: 100%; }
-.trend-table-scroll-wrap { max-height: 380px; overflow-y: auto; overflow-x: auto; border: 1px solid #cbd5e1; border-radius: 8px; }
-.invoice-table { width: 100%; border-collapse: collapse; min-width: 320px; }
+.invoice-table-wrap { max-height: 650px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 8px; }
+.trend-table-scroll-wrap { max-height: 380px; overflow-y: auto; border: 1px solid #cbd5e1; border-radius: 8px; }
+.invoice-table { width: 100%; border-collapse: collapse; }
 
 .invoice-table th {
   position: sticky;
@@ -869,7 +894,6 @@ gap:6px;
   border-bottom: 2px solid #cbd5e1;
   text-align: center;
   z-index: 5;
-  white-space: nowrap;
 }
 
 .invoice-table td {
@@ -878,7 +902,24 @@ gap:6px;
   border-bottom: 1px solid #e2e8f0;
   text-align: center;
   color: #1e293b;
-  white-space: nowrap;
+}
+
+.perm-table-header-role {
+  background: #e2e8f0 !important;
+  font-weight: bold;
+  border-left: 2px solid #cbd5e1;
+}
+
+.day-divider-row td {
+  background: #1e3a8a !important;
+  color: #ffffff !important;
+  font-weight: 800 !important;
+  font-size: 13px !important;
+  padding: 8px 12px !important;
+  text-align: left !important;
+  border-top: 3px solid #0284c7 !important;
+  border-bottom: 2px solid #1e3a8a !important;
+  letter-spacing: 0.5px;
 }
 
 .trend-summary-card {
@@ -1001,6 +1042,71 @@ gap:6px;
 .route-heat-card.high { border-left: 5px solid #ef4444; background: #fef2f2; }
 .route-heat-card.med { border-left: 5px solid #f59e0b; background: #fffbeb; }
 .route-heat-card.low { border-left: 5px solid #10b981; background: #ecfdf5; }
+
+.modal-overlay {
+  position: fixed;
+  top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0,0,0,0.5);
+  display: flex; justify-content: center; align-items: center;
+  z-index: 2000;
+}
+
+.modal-card {
+  background: white;
+  padding: 24px;
+  border-radius: 16px;
+  width: 90%; max-width: 440px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+
+.modal-title {
+  font-size: 18px; font-weight: bold; color: #1e40af;
+  margin-bottom: 12px; border-bottom: 2px solid #3b82f6; padding-bottom: 8px;
+}
+
+.modal-section-title {
+  font-size: 13px; font-weight: bold; color: #1d4ed8; background: #eff6ff; padding: 6px 10px; border-radius: 6px; margin: 10px 0 8px 0;
+}
+
+.modal-field { margin-bottom: 10px; }
+.modal-field label { display: block; font-size: 12px; font-weight: bold; color: #334155; margin-bottom: 4px; }
+.modal-field input { width: 100%; padding: 8px 10px; border: 1px solid #cbd5e1; border-radius: 8px; font-size: 13px; outline: none; }
+
+.modal-btn-group { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+.modal-btn { padding: 8px 14px; border: none; border-radius: 8px; font-weight: bold; font-size: 13px; cursor: pointer; }
+.modal-btn.confirm { background: #10b981; color: white; }
+.modal-btn.cancel { background: #94a3b8; color: white; }
+
+.mobile-trend-card-list {
+  display: none;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+
+.mobile-trend-card {
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  padding: 12px 14px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+}
+
+.mobile-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 8px;
+  margin-bottom: 8px;
+}
+
+.mobile-card-cat { font-size: 13px; font-weight: bold; color: #1d4ed8; background: #eff6ff; padding: 3px 8px; border-radius: 6px; }
+.mobile-card-time { font-size: 12px; color: #64748b; font-weight: bold; }
+.mobile-card-body { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; text-align: center; }
+.mobile-card-stat { background: #f8fafc; padding: 6px 4px; border-radius: 8px; border: 1px solid #f1f5f9; }
+.mobile-card-stat-label { font-size: 10px; color: #64748b; margin-bottom: 2px; }
+.mobile-card-stat-val { font-size: 14px; font-weight: bold; }
 
 /* 🔐 모던 로그인 모달 & 프로필 스타일 */
 .login-overlay {
@@ -1163,13 +1269,14 @@ gap:6px;
   color: white; 
 }
 
-/* 📱 모바일 가독성 / 한눈에 보기 종합 최적화 (반응형) */
 @media (max-width: 768px) {
   .top-header-bar { display: none !important; }
   .mobile-menu-toggle { display: block; }
 
-  .quick-restore-btn { font-size: 11px; padding: 5px 10px; }
-  .audio-btn, .reset-btn { font-size: 11px; padding: 5px 10px; }
+  .trend-table-scroll-wrap { display: none !important; }
+  .mobile-trend-card-list { display: flex !important; }
+
+  .quick-restore-btn { font-size: 12px; padding: 5px 12px; }
 
   .sidebar {
     position: fixed;
@@ -1182,65 +1289,47 @@ gap:6px;
 
   .sidebar.mobile-open { transform: translateX(0); }
   .main-area { padding: 10px; padding-top: 50px; }
-  .title { font-size: 20px; }
+  .title { font-size: 22px; }
   .result-layout { flex-direction: column; }
-  .result-panel { padding: 12px; }
-  .result-panel-title { font-size: 15px; padding: 8px; }
-  
-  .result-grid { flex-wrap: wrap; gap: 8px; }
-  .summary-table { width: 100%; flex-direction: row; gap: 8px; }
-  .summary-card-item { flex: 1; padding: 10px 4px; border-radius: 12px; }
-  .summary-card-label { font-size: 13px; margin-bottom: 4px; }
-  .summary-card-val { font-size: 22px; }
-
-  .hub-table { width: 100%; min-width: 100%; border-radius: 12px; }
-  .hub-name { font-size: 15px; padding: 8px; }
-  .total-value { font-size: 24px; padding: 6px; }
+  .result-grid { flex-wrap: wrap; gap: 10px; }
+  .summary-table { width: 100%; flex-direction: row; }
+  .summary-card-item { flex: 1; padding: 12px 6px; }
+  .hub-table { width: 100%; min-width: 100%; }
   .hub-name.collapsible { cursor: pointer; }
   .toggle-arrow { display: inline-block; }
   .mobile-collapsed { display: none !important; }
-
   .misplace-layout { flex-direction: column; height: auto; }
   .exclude-box { width: 100%; max-height: none; padding: 6px 10px; }
   .exclude-title { cursor: pointer; font-size: 13px; padding: 4px 0; user-select: none; }
   #excludeList { display: none; margin-top: 6px; max-height: 200px; overflow-y: auto; }
   #excludeList.mobile-show { display: block; }
-  .camp-box, .detail-box { width: 100%; max-height: 260px; }
-
-  .invoice-container { flex-direction: column-reverse; gap: 12px; }
-  .invoice-left-panel, .invoice-right-panel { width: 100%; padding: 10px; border-radius: 12px; }
-  .invoice-panel-title { font-size: 15px; padding-bottom: 6px; margin-bottom: 6px; }
-  .invoice-table-wrap { max-height: 420px; }
-
-  /* 📱 표 가독성 최적화 (글자 크기 & 패딩 꽉 차게) */
-  .invoice-table th, .invoice-table td {
-    padding: 6px 3px !important;
-    font-size: 11px !important;
-  }
-
+  .camp-box, .detail-box { width: 100%; max-height: 280px; }
+  .invoice-container { flex-direction: column-reverse; gap: 15px; }
+  .invoice-left-panel, .invoice-right-panel { width: 100%; padding: 12px; border-radius: 12px; }
+  .invoice-panel-title { font-size: 16px; padding-bottom: 8px; margin-bottom: 8px; }
+  .invoice-table-wrap { max-height: 480px; }
   .trend-dashboard-layout { flex-direction: column; }
-  .trend-chart-box { min-width: 100%; padding: 10px; }
 
   .login-card {
-    padding: 28px 18px;
+    padding: 32px 22px;
     border-radius: 20px;
   }
 
   .prediction-card {
     flex-direction: column;
     align-items: stretch;
-    padding: 16px;
-    gap: 12px;
+    padding: 18px;
+    gap: 16px;
   }
 
   .pred-main-time {
-    font-size: 24px;
+    font-size: 26px;
   }
 
   .pred-grid-box {
     flex-direction: column;
-    gap: 8px;
-    padding: 10px;
+    gap: 12px;
+    padding: 12px;
   }
 
   .pred-item {
@@ -1250,7 +1339,7 @@ gap:6px;
     border-left: none !important;
     padding-left: 0 !important;
     border-bottom: 1px solid rgba(255,255,255,0.1);
-    padding-bottom: 6px;
+    padding-bottom: 8px;
   }
 
   .pred-item:last-child {
@@ -1269,14 +1358,8 @@ gap:6px;
   }
 
   .route-heat-card {
-    padding: 8px 4px;
-    font-size: 11px;
+    padding: 10px 6px;
   }
-
-  .call-box { padding: 12px; }
-  .call-title { font-size: 14px; }
-  .call-input { font-size: 12px; padding: 8px; }
-  .call-btn { font-size: 12px; padding: 8px 12px; }
 }
 
 </style>
@@ -1372,11 +1455,13 @@ gap:6px;
           <span>📁 Raw & Setting ⚙️</span>
         </div>
 
+        <!-- 💡 상위 토글로 변경된 결과 (실시간) 메뉴 -->
         <div class="nav-sub-title" id="menuTitleResult" onclick="toggleMenu('resultSubMenu')">
           <span>📊 결과 (실시간)</span>
           <span class="arrow" id="resultSubArrow">▲</span>
         </div>
 
+        <!-- 💡 실시간 현황이 하위 탭으로 이동 완료 -->
         <div class="nav-sub-group-level2" id="resultSubMenu">
           <div class="nav-item" id="menuResultDashboard" onclick="showTab('result')">
             <span>📊 실시간 현황 (대시보드)</span>
@@ -1467,65 +1552,6 @@ gap:6px;
 </div>
 </div>
 
-<!-- 🔑 권한 관리 (Access) 페이지 (모바일 및 PC 최적화) -->
-<div id="accessControlPage" class="hidden">
-  <div class="result-panel">
-    <div class="result-panel-title">
-      <span>⚙️ 오너 계정 / 시스템 권한 관리 (Access Control)</span>
-    </div>
-    
-    <div style="font-size:13px; color:#475569; margin-bottom:15px; line-height:1.5;">
-      💡 시스템에 등록된 계정 정보 목록입니다. <b>Owner</b> 계정 접속 시 전체 계정 관리 현황을 한눈에 파악하실 수 있습니다.
-    </div>
-
-    <!-- 🔑 계정 ID / 비밀번호 정리 표 -->
-    <div class="invoice-table-wrap" style="margin-bottom:20px;">
-      <table class="invoice-table">
-        <thead>
-          <tr>
-            <th style="background:#e0f2fe; color:#0369a1;">권한 (Role)</th>
-            <th>사용자 이름</th>
-            <th>로그인 ID</th>
-            <th>비밀번호 (PW)</th>
-            <th style="text-align:left;">접근 및 부여 권한 범위</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="font-weight:bold; color:#d97706;">Owner</td>
-            <td>최고 관리자</td>
-            <td style="font-weight:bold;">owner</td>
-            <td style="font-weight:bold; color:#2563eb;">1234</td>
-            <td style="text-align:left; white-space:normal; font-size:12px;">전체 탭 접근, 엑셀 Raw 업로드, 설정 변경, 데이터 삭제, 권한 관리 등 모든 최고 제어 권한</td>
-          </tr>
-          <tr>
-            <td style="font-weight:bold; color:#2563eb;">ISN5CL</td>
-            <td>Camp Leader</td>
-            <td style="font-weight:bold;">isn5cl</td>
-            <td style="font-weight:bold; color:#2563eb;">1234</td>
-            <td style="text-align:left; white-space:normal; font-size:12px;">실시간 현황 대시보드 조회, Invoice 확인, 호출 전송, 트렌드 분석 모니터링</td>
-          </tr>
-          <tr>
-            <td style="font-weight:bold; color:#059669;">ISN5HL</td>
-            <td>Helper Leader</td>
-            <td style="font-weight:bold;">isn5hl</td>
-            <td style="font-weight:bold; color:#2563eb;">1234</td>
-            <td style="text-align:left; white-space:normal; font-size:12px;">현장 지원 조작, 미도착 현황 및 Invoice 조회, 팝업 호출 전송</td>
-          </tr>
-          <tr>
-            <td style="font-weight:bold; color:#6366f1;">ISN5CPF</td>
-            <td>CPF Leader</td>
-            <td style="font-weight:bold;">isn5cpf</td>
-            <td style="font-weight:bold; color:#2563eb;">1234</td>
-            <td style="text-align:left; white-space:normal; font-size:12px;">오도착 체크 및 랩 분석 모니터링</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-
-  </div>
-</div>
-
 <div id="uploadPage" class="hidden">
 <div class="raw-section">
 <div class="raw-section-title-wrap">
@@ -1560,7 +1586,7 @@ gap:6px;
     <span>↺ 최근 업로드 이력 백업 (최신 5회 보관)</span>
     <span style="font-size:13px;color:#d97706;font-weight:bold;" id="restoreToggleArrow">▼ 펼치기 (원클릭 복구)</span>
   </div>
-  <div id="restoreTableWrap" class="restore-table-wrap hidden">
+  <div id="restoreTableWrap" class="hidden">
     <table class="restore-table" id="restoreHistoryTable">
       <thead>
         <tr>
@@ -1730,21 +1756,307 @@ gap:6px;
       <div class="pred-left-box">
         <div class="pred-title-tag">⏱️ 실시간 F3 소분 종료 예상 시각</div>
         <div class="pred-main-time" id="predF3Time">분석 데이터 대기 중...</div>
-        <div style="font-size:12px; color:#cbd5e1;" id="predStatusText">누적 트렌드 데이터가 축적되면 실시간 종료 시간을 산출합니다.</div>
+        <div style="font-size:13px; color:#cbd5e1;" id="predStatusText">누적 트렌드 데이터가 축적되면 실시간 종료 시간을 산출합니다.</div>
       </div>
       <div class="pred-grid-box">
         <div class="pred-item">
           <div class="pred-item-label">⚡ 구간 소분 속도</div>
           <div class="pred-item-val" id="predSpeedVal">- 건/분</div>
         </div>
-        <div class="pred-item">
+        <div class="pred-item" style="border-left:1px solid rgba(255,255,255,0.2); padding-left:15px;">
           <div class="pred-item-label">👥 F3 투입(예정) 인력</div>
           <div class="pred-item-val" id="predWorkersVal">- 명</div>
         </div>
-        <div class="pred-item">
+        <div class="pred-item" style="border-left:1px solid rgba(255,255,255,0.2); padding-left:15px;">
           <div class="pred-item-label">📦 실소분 대상 잔여량</div>
           <div class="pred-item-val" id="predRemainVal">- 건</div>
         </div>
+      </div>
+    </div>
+
+    <div style="margin-top:15px; padding:15px; background:#f8fafc; border:1px solid #cbd5e1; border-radius:12px; font-size:13px; color:#334155; line-height:1.6;">
+      <b>💡 인공지능형 종료 예상시간 산출 알고리즘:</b><br>
+      • <b>01:30에 입력된 F3 투입 예정 TO</b>와 과거 누적 데이터(유사 잔여량 + 유사 투입 인원 패턴)를 빅데이터로 매칭하여 산출합니다.<br>
+      • 센터 미도착 지속 평균분(과거 평균 미도착 잔여량)을 차감한 실제 현장 소분 물량을 기준으로 계산됩니다.<br>
+      • 당일 <b>F3 소분 종료가 누적 저장되면 완료 상태로 즉시 고정</b>되며 오차가 발생하지 않습니다.
+    </div>
+  </div>
+</div>
+
+<div id="trendPage" class="hidden">
+  <div class="result-panel">
+    <div class="result-panel-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>📈 누적 데이터 기록 (트렌드)</span>
+      <button class="reset-btn" onclick="clearTrendLogs()" style="margin:0;">🗑️ 전체 누적 삭제</button>
+    </div>
+    <div style="font-size:13px; color:#64748b; margin-bottom:12px; margin-top:6px;">
+      '데이터 누적하기' 버튼을 눌렀을 당시 기록된 <b>투입 인원</b>, <b>신선 수량</b>, <b>던 수량</b>, <b>SH_ISN5 수량</b> 이력입니다. (파란색 구획선 = 하루 단위 구분)
+    </div>
+    
+    <div class="trend-table-scroll-wrap">
+      <table class="invoice-table" id="trendTable">
+        <thead>
+          <tr>
+            <th style="width:180px;">소분/시간 구분</th>
+            <th style="width:150px;">누적 저장 일시</th>
+            <th>기준 업데이트 정보</th>
+            <th style="background:#e0f2fe; color:#0369a1;">👥 투입 인원 (고정/신규)</th>
+            <th style="background:#fef3c7; color:#92400e;">🎯 F3 예정 TO</th>
+            <th>🥬 신선 수량</th>
+            <th>🌙 던 수량</th>
+            <th>📦 SH_ISN5 Total</th>
+            <th style="width:70px;">관리</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="9">누적된 데이터가 없습니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="mobile-trend-card-list" id="mobileTrendCardList">
+      <div style="text-align:center; padding:20px; color:#94a3b8; font-size:13px;">누적 데이터가 없습니다.</div>
+    </div>
+
+    <div class="trend-summary-card">
+      <div class="trend-summary-title">
+        <span>📊 날짜별 PDD 물동량 및 소분 완료 트렌드 요약</span>
+      </div>
+      <div class="trend-dashboard-layout">
+        <div class="trend-summary-table-box">
+          <table class="invoice-table" id="dailyTrendSummaryTable">
+            <thead>
+              <tr>
+                <th style="background:#e0f2fe; color:#0369a1;">대상 PDD 날짜</th>
+                <th>D2 소분 종료 (잔여)</th>
+                <th>01:30 (잔여)</th>
+                <th>F3 소분 종료 (시간 / 잔여)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td colspan="4">분석할 트렌드 데이터가 충분하지 않습니다.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="trend-chart-box">
+          <div style="width:100%; height:260px;">
+            <canvas id="trendLineChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<div id="labCenterPage" class="hidden">
+  <div class="result-panel">
+    <div class="result-panel-title">
+      <span>🚚 F3 종료 시점 상습 미도착 / 지연 센터(Hub) 분석 (누적 데이터 연동)</span>
+    </div>
+    <div style="font-size:13px; color:#64748b; margin-bottom:15px;">
+      <b>매일 F3 소분 종료 시점에 쌓인 누적 데이터</b>를 바탕으로 어떤 출고 센터(Hub/FC)가 지속적으로 미도착 원인을 제공하는지 상습 순위를 집계합니다.
+    </div>
+
+    <div class="invoice-table-wrap">
+      <table class="invoice-table" id="labCenterTable">
+        <thead>
+          <tr>
+            <th>상습 지연 순위</th>
+            <th>출고 Hub / FC</th>
+            <th>F3 종료시 평균 미도착 건수</th>
+            <th>누적 미도착 건수</th>
+            <th>상습 지연 원인 뱃지</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="5">누적된 F3 소분 종료 데이터가 없습니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="labRoutePage" class="hidden">
+  <div class="result-panel">
+    <div class="result-panel-title">
+      <span>🎯 선택 PDD 기준 전체 출고 물동량 라우트 히트맵 (전체 물량)</span>
+    </div>
+    <div style="font-size:13px; color:#64748b; margin-bottom:12px;">
+      업로드된 엑셀 Raw 파일 전체 출고 물량을 선택된 PDD 시간 기준(07시/08시/09시)으로 집계하여 라우트별 물동량 밀도 히트맵을 보여줍니다.
+    </div>
+
+    <div class="lab-card-grid" id="labRouteGrid">
+      <div style="grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;">
+        엑셀 Raw 데이터를 읽는 중입니다...
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="labDayPatternPage" class="hidden">
+  <div class="result-panel">
+    <div class="result-panel-title">
+      <span>📊 요일별 PDD 전체 출고 물동량 & 최종 소분완료율(완진율) 분석</span>
+    </div>
+
+    <div class="lab-summary-grid">
+      <div class="lab-summary-card">
+        <div class="lab-card-title">📦 YAJ_3 전체 출고</div>
+        <div class="lab-card-val" id="dayYajTotal" style="color:#1d4ed8;">0 건</div>
+      </div>
+      <div class="lab-summary-card">
+        <div class="lab-card-title">📦 ISN_5 전체 출고</div>
+        <div class="lab-card-val" id="dayIsnTotal" style="color:#15803d;">0 건</div>
+      </div>
+      <div class="lab-summary-card">
+        <div class="lab-card-title">🚚 S-ISN5 총 출고</div>
+        <div class="lab-card-val" id="dayShTotal" style="color:#2563eb;">0 건</div>
+      </div>
+      <div class="lab-summary-card">
+        <div class="lab-card-title">🚚 도착 물량 (오도착 차감)</div>
+        <div class="lab-card-val" id="dayArrivedTotal" style="color:#16a34a;">0 건</div>
+      </div>
+      <div class="lab-summary-card">
+        <div class="lab-card-title">⚠️ 타캠프 오도착 건수</div>
+        <div class="lab-card-val" id="dayMisplaceTotal" style="color:#dc2626;">0 건</div>
+      </div>
+      <div class="lab-summary-card" style="background:#f0fdf4; border-color:#86efac;">
+        <div class="lab-card-title" style="color:#166534;">🎯 최종 소분완료율 (완진율)</div>
+        <div class="lab-card-val" id="dayCompletionRate" style="color:#15803d;">0.0 %</div>
+      </div>
+    </div>
+
+    <div style="font-size:13px; color:#64748b; margin-bottom:15px;">
+      R열 PDD 기준 전체 출고 물량 및 M/N열 도착 필드값, 타캠프 오도착을 반영한 요일별 평균 완진율 추이입니다.
+    </div>
+
+    <div class="invoice-table-wrap">
+      <table class="invoice-table" id="labDayPatternTable">
+        <thead>
+          <tr>
+            <th>요일</th>
+            <th>양주3 전체출고</th>
+            <th>일산5 전체출고</th>
+            <th>S-ISN5 총 출고</th>
+            <th>평균 도착 물량</th>
+            <th>평균 오도착 건수</th>
+            <th>평균 최종 미도착</th>
+            <th style="background:#ecfdf5; color:#15803d;">🎯 평균 완진율 (%)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td colspan="8">누적 데이터 수집 중입니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<div id="invoiceSHPage" class="hidden">
+  <div class="invoice-container">
+    <div class="invoice-left-panel">
+      <div class="invoice-panel-title">
+        <span>📄 SH_ISN5 미도착 Invoice 요약</span>
+        <span style="font-size:14px;color:#2563eb;" id="shInvoiceCount">총 0건</span>
+      </div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="shInvoiceTable">
+          <thead>
+            <tr>
+              <th>Hub (출고센터)</th>
+              <th>미도착 총 수량</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="invoice-right-panel">
+      <div class="invoice-panel-title" id="shRoutePanelTitle">📊 SH_ISN5 라우트별 수량</div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="shRouteTable">
+          <thead>
+            <tr>
+              <th>라우트 (Group)</th>
+              <th>수량</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="invoiceISNPage" class="hidden">
+  <div class="invoice-container">
+    <div class="invoice-left-panel">
+      <div class="invoice-panel-title">
+        <span>📄 ISN_5 미도착 Invoice 요약</span>
+        <span style="font-size:14px;color:#2563eb;" id="isnInvoiceCount">총 0건</span>
+      </div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="isnInvoiceTable">
+          <thead>
+            <tr>
+              <th>Hub (출고센터)</th>
+              <th>미도착 총 수량</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="invoice-right-panel">
+      <div class="invoice-panel-title" id="isnRoutePanelTitle">📊 ISN_5 라우트별 수량</div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="isnRouteTable">
+          <thead>
+            <tr>
+              <th>라우트 (Group)</th>
+              <th>수량</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div id="invoiceYAJPage" class="hidden">
+  <div class="invoice-container">
+    <div class="invoice-left-panel">
+      <div class="invoice-panel-title">
+        <span>📄 YAJ_3 미도착 Invoice 요약</span>
+        <span style="font-size:14px;color:#2563eb;" id="yajInvoiceCount">총 0건</span>
+      </div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="yajInvoiceTable">
+          <thead>
+            <tr>
+              <th>Hub (출고센터)</th>
+              <th>미도착 총 수량</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
+        </table>
+      </div>
+    </div>
+    <div class="invoice-right-panel">
+      <div class="invoice-panel-title" id="yajRoutePanelTitle">📊 YAJ_3 라우트별 수량</div>
+      <div class="invoice-table-wrap">
+        <table class="invoice-table" id="yajRouteTable">
+          <thead>
+            <tr>
+              <th>라우트 (Group)</th>
+              <th>수량</th>
+            </tr>
+          </thead>
+          <tbody><tr><td colspan="2">데이터가 없습니다.</td></tr></tbody>
+        </table>
       </div>
     </div>
   </div>
@@ -1752,22 +2064,62 @@ gap:6px;
 
 <div id="callLogPage" class="hidden">
   <div class="result-panel">
-    <div class="result-panel-title">
-      <span>📜 음성/팝업 호출 발송 로그 이력</span>
+    <div class="result-panel-title" style="display:flex;justify-content:space-between;align-items:center;">
+      <span>📜 PC 관리자 호출 기록 (Log)</span>
+      <button class="reset-btn" onclick="clearCallLogs()" style="margin:0;">🗑️ 로그 전체 삭제</button>
     </div>
-    
-    <div class="invoice-table-wrap">
+    <div style="font-size:13px;color:#64748b;margin-bottom:12px;">현장 및 PC에서 전송된 실시간 음성/팝업 호출 이력입니다.</div>
+    <div class="invoice-table-wrap" style="max-height:700px;">
       <table class="invoice-table" id="callLogTable">
         <thead>
           <tr>
-            <th style="width:150px;">발송 일시</th>
-            <th>호출 발송 메시지</th>
-            <th style="width:120px;">발송 계정</th>
-            <th style="width:100px;">상태</th>
+            <th style="width:180px;">호출 일시</th>
+            <th style="width:160px;">호출자 (계정 ID)</th>
+            <th>호출 메시지 내용</th>
           </tr>
         </thead>
         <tbody>
-          <tr><td colspan="4">발송된 호출 내역이 없습니다.</td></tr>
+          <tr><td colspan="3">기록된 호출 로그가 없습니다.</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ⚙️ PC / 모바일 분리형 권한 관리 (Access Control) 탭 -->
+<div id="accessControlPage" class="hidden">
+  <div class="result-panel">
+    <div class="result-panel-title" style="display:flex; justify-content:space-between; align-items:center;">
+      <span>⚙️ PC / 모바일 디바이스별 권한 실시간 설정 (Owner 전용)</span>
+      <button class="trend-btn" onclick="savePermissionMatrix()">💾 권한 설정 저장</button>
+    </div>
+
+    <div style="font-size:13px; color:#64748b; margin-bottom:15px; line-height:1.5;">
+      • 계정별로 <b>[PC]</b> 접속 시와 <b>[모바일]</b> 접속 시 보일 탭 메뉴 및 개별 클릭 버튼을 따로따로 관리할 수 있습니다.<br>
+      • 체크 해제된 항목은 접속 기기 환경에 따라 실시간으로 화면에서 완전히 숨겨집니다. (Owner는 항상 모든 메뉴 및 버튼 접근 가능)
+    </div>
+
+    <div class="invoice-table-wrap" style="max-height:750px;">
+      <table class="invoice-table" id="permMatrixTable">
+        <thead>
+          <tr>
+            <th style="text-align:left; padding-left:15px; min-width:220px;" rowspan="2">제어 메뉴 / 기능 버튼 명칭</th>
+            <th rowspan="2">Owner (최고관리자)</th>
+            <th colspan="2" class="perm-table-header-role" style="color:#1d4ed8;">Camp Leader (CL)</th>
+            <th colspan="2" class="perm-table-header-role" style="color:#059669;">Helper Leader (HL)</th>
+            <th colspan="2" class="perm-table-header-role" style="color:#d97706;">CPF</th>
+          </tr>
+          <tr>
+            <th style="background:#eff6ff; font-size:12px;">💻 PC</th>
+            <th style="background:#eff6ff; font-size:12px;">📱 모바일</th>
+            <th style="background:#ecfdf5; font-size:12px;">💻 PC</th>
+            <th style="background:#ecfdf5; font-size:12px;">📱 모바일</th>
+            <th style="background:#fffbeb; font-size:12px;">💻 PC</th>
+            <th style="background:#fffbeb; font-size:12px;">📱 모바일</th>
+          </tr>
+        </thead>
+        <tbody id="permMatrixTbody">
+          <!-- 스크립트 동적 생성 -->
         </tbody>
       </table>
     </div>
@@ -1776,39 +2128,1819 @@ gap:6px;
 
 </div>
 </div>
+</div>
 
+<div id="saveModal" class="modal-overlay hidden">
+  <div class="modal-card">
+    <div class="modal-title">👥 누적 시점 헬퍼 인원 입력</div>
+    
+    <div class="modal-section-title">1. 현재 시점 투입 인원</div>
+    <div class="modal-field">
+      <label>총 투입 인원 (명)</label>
+      <input type="number" id="modalTotalWorkers" placeholder="예: 42" oninput="autoCalcWorkers()">
+    </div>
+    <div style="display:flex; gap:10px;">
+      <div class="modal-field" style="flex:1;">
+        <label>고정 헬퍼 (명)</label>
+        <input type="number" id="modalFixedWorkers" placeholder="예: 41" oninput="autoCalcWorkers()">
+      </div>
+      <div class="modal-field" style="flex:1;">
+        <label>신규 헬퍼 (명)</label>
+        <input type="number" id="modalNewWorkers" placeholder="예: 1">
+      </div>
+    </div>
+
+    <div class="modal-section-title">2. 01:30 이후 F3 투입 예정 TO (01:30 저장시에만 수락)</div>
+    <div style="display:flex; gap:10px;">
+      <div class="modal-field" style="flex:1;">
+        <label>F3 예정 고정 (명)</label>
+        <input type="number" id="modalPlanFixedWorkers" placeholder="예: 27">
+      </div>
+      <div class="modal-field" style="flex:1;">
+        <label>F3 예정 신규 (명)</label>
+        <input type="number" id="modalPlanNewWorkers" placeholder="예: 13">
+      </div>
+    </div>
+
+    <div class="modal-btn-group">
+      <button class="modal-btn cancel" onclick="closeSaveModal()">취소</button>
+      <button class="modal-btn confirm" onclick="confirmSaveAccumulatedData()">📥 저장 및 누적</button>
+    </div>
+  </div>
 </div>
 
 <script>
-// 📱 스크립트 로직 및 메뉴 제어
-function toggleMobileSidebar() {
-  document.getElementById('mainSidebar').classList.toggle('mobile-open');
-  document.getElementById('sidebarOverlay').style.display = 
-    document.getElementById('mainSidebar').classList.contains('mobile-open') ? 'block' : 'none';
+
+const firebaseConfig = {
+  apiKey: "AIzaSyA9r5um2weaQiyc3Hq4foMZLdDRAfnLgJM",
+  authDomain: "isn5-1wave.firebaseapp.com",
+  databaseURL: "https://isn5-1wave-default-rtdb.firebaseio.com",
+  projectId: "isn5-1wave",
+  storageBucket: "isn5-1wave.firebasestorage.app",
+  messagingSenderId: "1050837403107",
+  appId: "1:1050837403107:web:94419d02a7351d95a3ccd6",
+  measurementId: "G-H0YTZ68F9P"
+};
+
+if (!firebase.apps.length) {
+  firebase.initializeApp(firebaseConfig);
+}
+const db = firebase.database();
+
+const defaultSelectedHubs = ["BUC2", "INC11", "INC15", "INC48"];
+let selectedHubs = [...defaultSelectedHubs];
+
+const defaultDawnHubs = ["DON1", "GOY1", "GOY1CFC", "INC14", "INC28", "INC32", "SFISN5", "INC4"];
+let selectedDawnHubs = [...defaultDawnHubs];
+
+let excludedIds = ["xisn5_au_sorter", "xisn5_scan1", "xisn5_scan2", "xisn5_scan3", "xisn5_scan4", "wopark140", "leeusk92", "savor1206", "jasong51", "mipark156","helee189","jikang96","gkgmlrud"];
+
+let remoteData = null;
+let selectedMisplaceId = "";
+let currentSelectedWaybills = [];
+
+let lastSpokenTime = 0; 
+let recentHistoryData = {};
+let latestBackupKey = null;
+
+let globalLogEntries = [];
+let trendChartInstance = null;
+
+const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+let availableVoices = [];
+function loadVoices() {
+  if ('speechSynthesis' in window) {
+    availableVoices = window.speechSynthesis.getVoices();
+  }
+}
+if ('speechSynthesis' in window) {
+  loadVoices();
+  window.speechSynthesis.onvoiceschanged = loadVoices;
 }
 
-function closeMobileSidebar() {
-  document.getElementById('mainSidebar').classList.remove('mobile-open');
-  document.getElementById('sidebarOverlay').style.display = 'none';
+function playBeepSound() {
+  try {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    const ctx = new AudioCtx();
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(880, ctx.currentTime);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+
+    osc.connect(gain);
+    gain.connect(ctx.destination);
+
+    osc.start();
+    osc.stop(ctx.currentTime + 0.15);
+  } catch (e) {
+    console.log("AudioContext error:", e);
+  }
 }
 
-function showTab(tabName) {
-  const tabs = ['upload', 'result', 'predict', 'trend', 'labCenter', 'labRoute', 'labDayPattern', 'callLog', 'accessControl'];
-  tabs.forEach(t => {
-    const el = document.getElementById(t + 'Page');
-    if (el) el.classList.add('hidden');
-  });
+function speakText(text) {
+  if (isMobile) return;
+
+  playBeepSound();
+
+  setTimeout(() => {
+    if ('speechSynthesis' in window) {
+      window.speechSynthesis.cancel();
+      if (window.speechSynthesis.paused) {
+        window.speechSynthesis.resume();
+      }
+
+      loadVoices();
+
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'ko-KR';
+      utterance.rate = 1.0;
+      utterance.volume = 1.0;
+
+      const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
+      if (korVoice) utterance.voice = korVoice;
+
+      window.speechSynthesis.speak(utterance);
+    }
+  }, 300);
+}
+
+function enableAudio() {
+  if (isMobile) return;
+
+  playBeepSound();
+
+  if ('speechSynthesis' in window) {
+    window.speechSynthesis.cancel();
+    if (window.speechSynthesis.paused) {
+      window.speechSynthesis.resume();
+    }
+
+    loadVoices();
+
+    setTimeout(() => {
+      const dummy = new SpeechSynthesisUtterance("음성 알림이 연결되었습니다.");
+      dummy.lang = 'ko-KR';
+      dummy.rate = 1.0;
+      dummy.volume = 1.0;
+
+      const korVoice = availableVoices.find(v => v.lang.includes('ko') || v.lang.includes('KO'));
+      if (korVoice) dummy.voice = korVoice;
+
+      window.speechSynthesis.speak(dummy);
+    }, 300);
+
+    const btn = document.getElementById("audioEnableBtn");
+    if(btn) {
+      btn.innerText = "🟢 음성 알림 작동중";
+      btn.style.background = "#16a34a";
+    }
+  }
+}
+
+function requestNotificationPermission() {
+  if (!isMobile && "Notification" in window && Notification.permission !== "granted") {
+    Notification.permission !== "granted" && Notification.requestPermission();
+  }
+}
+
+function showDesktopNotification(msg) {
+  if (!isMobile && "Notification" in window && Notification.permission === "granted") {
+    const notification = new Notification("📢 [ISN_5 대시보드] 호출 알림", {
+      body: msg,
+      icon: "https://cdn-icons-png.flaticon.com/512/3602/3602145.png"
+    });
+
+    notification.onclick = function() {
+      window.focus();
+    };
+  }
+}
+
+function toggleMobileSidebar(){
+  const sidebar = document.getElementById("mainSidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  const btn = document.getElementById("mobileMenuToggleBtn");
+
+  const isOpen = sidebar.classList.contains("mobile-open");
+
+  if(isOpen){
+    closeMobileSidebar();
+  } else {
+    sidebar.classList.add("mobile-open");
+    if(overlay) overlay.style.display = "block";
+    if(btn) {
+      btn.innerText = "✕ 닫기";
+      btn.style.background = "#ef4444";
+    }
+  }
+}
+
+function closeMobileSidebar(){
+  const sidebar = document.getElementById("mainSidebar");
+  const overlay = document.getElementById("sidebarOverlay");
+  const btn = document.getElementById("mobileMenuToggleBtn");
+
+  if(sidebar) sidebar.classList.remove("mobile-open");
+  if(overlay) overlay.style.display = "none";
+  if(btn) {
+    btn.innerText = "☰ 메뉴";
+    btn.style.background = "#0f172a";
+  }
+}
+
+function toggleExcludeList(){
+  if(window.innerWidth <= 768){
+    const list = document.getElementById("excludeList");
+    const icon = document.getElementById("excludeToggleIcon");
+    list.classList.toggle("mobile-show");
+    icon.innerText = list.classList.contains("mobile-show") ? "▲" : "▼";
+  }
+}
+
+function toggleMobileCard(prefix) {
+  if (window.innerWidth <= 768) {
+    const table = document.getElementById(`${prefix}Table`);
+    const arrow = document.getElementById(`${prefix}CardArrow`);
+    
+    if (table) {
+      table.classList.toggle("mobile-collapsed");
+      const isCollapsed = table.classList.contains("mobile-collapsed");
+      if (arrow) arrow.innerText = isCollapsed ? "▼" : "▲";
+    }
+  }
+}
+
+function toggleRestoreTable(){
+  const wrap = document.getElementById("restoreTableWrap");
+  const arrow = document.getElementById("restoreToggleArrow");
+  if(!wrap) return;
   
-  const target = document.getElementById(tabName + 'Page');
-  if (target) target.classList.remove('hidden');
+  wrap.classList.toggle("hidden");
+  if(wrap.classList.contains("hidden")){
+    arrow.innerText = "▼ 펼치기 (원클릭 복구)";
+  } else {
+    arrow.innerText = "▲ 접기";
+  }
+}
+
+function showTab(page){
+  document.getElementById("uploadPage").classList.toggle("hidden", page !== "upload");
+  document.getElementById("resultPage").classList.toggle("hidden", page !== "result");
+  document.getElementById("predictPage").classList.toggle("hidden", page !== "predict");
+  document.getElementById("trendPage").classList.toggle("hidden", page !== "trend");
+  document.getElementById("invoiceSHPage").classList.toggle("hidden", page !== "invoiceSH");
+  document.getElementById("invoiceISNPage").classList.toggle("hidden", page !== "invoiceISN");
+  document.getElementById("invoiceYAJPage").classList.toggle("hidden", page !== "invoiceYAJ");
+  document.getElementById("callLogPage").classList.toggle("hidden", page !== "callLog");
+
+  document.getElementById("labCenterPage").classList.toggle("hidden", page !== "labCenter");
+  document.getElementById("labRoutePage").classList.toggle("hidden", page !== "labRoute");
+  document.getElementById("labDayPatternPage").classList.toggle("hidden", page !== "labDayPattern");
+
+  const accessPage = document.getElementById("accessControlPage");
+  if (accessPage) accessPage.classList.toggle("hidden", page !== "accessControl");
+
+  document.getElementById("menuUpload").classList.toggle("active", page === "upload");
   
+  const menuResDash = document.getElementById("menuResultDashboard");
+  if (menuResDash) menuResDash.classList.toggle("active", page === "result");
+
+  const menuPred = document.getElementById("menuPredict");
+  if (menuPred) menuPred.classList.toggle("active", page === "predict");
+  document.getElementById("menuTrend").classList.toggle("active", page === "trend");
+  document.getElementById("menuInvoiceSH").classList.toggle("active", page === "invoiceSH");
+  document.getElementById("menuInvoiceISN").classList.toggle("active", page === "invoiceISN");
+  document.getElementById("menuInvoiceYAJ").classList.toggle("active", page === "invoiceYAJ");
+  document.getElementById("callLogPage").classList.toggle("active", page === "callLog");
+
+  document.getElementById("menuLabCenter").classList.toggle("active", page === "labCenter");
+  document.getElementById("menuLabRoute").classList.toggle("active", page === "labRoute");
+  document.getElementById("menuLabDayPattern").classList.toggle("active", page === "labDayPattern");
+
+  const menuAccess = document.getElementById("menuAccessControl");
+  if (menuAccess) menuAccess.classList.toggle("active", page === "accessControl");
+
   closeMobileSidebar();
 }
 
-function toggleExcludeList() {
-  const list = document.getElementById('excludeList');
-  if (list) list.classList.toggle('mobile-show');
+function toggleMenu(menuId){
+  const menu = document.getElementById(menuId);
+  if(!menu) return;
+
+  menu.classList.toggle("hidden");
+
+  let arrowId = "rootMenuArrow";
+  if(menuId === "rootMenuGroup") arrowId = "rootMenuArrow";
+  if(menuId === "resultSubMenu") arrowId = "resultSubArrow";
+  if(menuId === "trendMenuGroup") arrowId = "trendMenuArrow";
+  if(menuId === "labMenuGroup") arrowId = "labMenuArrow";
+  
+  const arrow = document.getElementById(arrowId);
+  if(arrow){
+    arrow.innerText = menu.classList.contains("hidden") ? "▼" : "▲";
+  }
 }
+
+function openSaveModal() {
+  if (!remoteData) {
+    alert("현재 누적할 서버 데이터가 없습니다. 먼저 엑셀 Raw 업로드를 진행해 주세요.");
+    return;
+  }
+  document.getElementById("saveModal").classList.remove("hidden");
+}
+
+function closeSaveModal() {
+  document.getElementById("saveModal").classList.add("hidden");
+}
+
+function autoCalcWorkers() {
+  const total = parseInt(document.getElementById("modalTotalWorkers").value) || 0;
+  const fixed = parseInt(document.getElementById("modalFixedWorkers").value) || 0;
+  if (total >= fixed) {
+    document.getElementById("modalNewWorkers").value = total - fixed;
+  }
+}
+
+function confirmSaveAccumulatedData() {
+  const freshVal = document.getElementById("freshTotal").innerText;
+  const dawnVal = document.getElementById("dawnTotal").innerText;
+  const shVal = document.getElementById("shTotal").innerText;
+
+  const totalW = document.getElementById("modalTotalWorkers").value || 0;
+  const fixedW = document.getElementById("modalFixedWorkers").value || 0;
+  const newW = document.getElementById("modalNewWorkers").value || 0;
+
+  const planFixedW = document.getElementById("modalPlanFixedWorkers").value || 0;
+  const planNewW = document.getElementById("modalPlanNewWorkers").value || 0;
+
+  const now = new Date();
+  const timeStr = formatTimeString(now);
+  const timestamp = now.getTime();
+  const lastUpdateInfo = remoteData.lastUpdate || "정보 없음";
+
+  const payload = {
+    saveTime: timeStr,
+    timestamp: timestamp,
+    lastUpdateInfo: lastUpdateInfo,
+    freshQty: freshVal,
+    dawnQty: dawnVal,
+    shQty: shVal,
+    shCounts: remoteData.shCounts || {},
+    category: "",
+    customTime: "",
+    totalWorkers: parseInt(totalW),
+    fixedWorkers: parseInt(fixedW),
+    newWorkers: parseInt(newW),
+    planFixedWorkers: parseInt(planFixedW),
+    planNewWorkers: parseInt(planNewW),
+    totalYajShipment: remoteData.totalYajShipment || 0,
+    totalIsnShipment: remoteData.totalIsnShipment || 0,
+    totalShShipment: remoteData.totalShShipment || 0,
+    arrivedTotal: remoteData.arrivedTotal || 0,
+    misplaceTotal: remoteData.misplaceTotal || 0
+  };
+
+  db.ref("accumulatedLogs").push(payload).then(() => {
+    closeSaveModal();
+    alert(`[${timeStr}] 현재 데이터가 누적 저장되었습니다!\n\n👥 총 투입: ${totalW}명\n📦 SH_ISN5 미도착 수량: ${shVal}`);
+  }).catch((err) => {
+    alert("누적 저장 중 오류 발생: " + err.message);
+  });
+}
+
+function updateTrendCategory(key, val) {
+  db.ref("accumulatedLogs/" + key).update({ category: val });
+}
+
+function updateTrendCustomTime(key, val) {
+  db.ref("accumulatedLogs/" + key).update({ customTime: val });
+}
+
+db.ref("accumulatedLogs").on("value", (snapshot) => {
+  const tbody = document.getElementById("trendTable").querySelector("tbody");
+  const mobileCardList = document.getElementById("mobileTrendCardList");
+
+  if (snapshot.exists() && snapshot.val() !== null) {
+    const logsObj = snapshot.val();
+    const entries = Object.entries(logsObj);
+    entries.sort((a, b) => b[1].timestamp - a[1].timestamp);
+
+    globalLogEntries = entries.map(e => e[1]);
+
+    let html = "";
+    let mobileHtml = "";
+    let lastDateStr = "";
+
+    entries.forEach(([key, item]) => {
+      const selectedCat = item.category || "- 선택안됨 -";
+      const customTimeVal = item.customTime || "";
+      const disabledAttr = isMobile ? "disabled" : "";
+
+      const totalW = item.totalWorkers || 0;
+      const fixedW = item.fixedWorkers || 0;
+      const newW = item.newWorkers || 0;
+      const workerDisplay = totalW > 0 ? `<b>${totalW}명</b> <span style="font-size:11px;color:#64748b;">(고정:${fixedW}/신규:${newW})</span>` : '-';
+
+      const planFixed = item.planFixedWorkers || 0;
+      const planNew = item.planNewWorkers || 0;
+      const planDisplay = (planFixed > 0 || planNew > 0) ? `<b style="color:#d97706;">${planFixed + planNew}명</b> <span style="font-size:11px;color:#b45309;">(${planFixed}/${planNew})</span>` : '-';
+
+      let pddDate = "기타 날짜";
+      if (item.lastUpdateInfo && item.lastUpdateInfo.includes('(')) {
+        const match = item.lastUpdateInfo.match(/\((\d{4}-\d{2}-\d{2})\s*\//);
+        if (match) pddDate = match[1];
+      } else if (item.saveTime) {
+        pddDate = item.saveTime.split(' ')[0];
+      }
+
+      if (lastDateStr !== "" && lastDateStr !== pddDate) {
+        html += `
+          <tr class="day-divider-row">
+            <td colspan="9">📅 PDD 일자 구분 : <b>${lastDateStr}</b> ➔ <b>${pddDate}</b></td>
+          </tr>
+        `;
+      }
+      lastDateStr = pddDate;
+
+      html += `
+        <tr>
+          <td>
+            <div style="display:inline-flex;align-items:center;justify-content:center;gap:4px;">
+              <select class="trend-select" ${disabledAttr} onchange="updateTrendCategory('${key}', this.value)">
+                <option value="" ${item.category === "" ? "selected" : ""}>- 선택 -</option>
+                <option value="D2 소분 종료" ${item.category === "D2 소분 종료" ? "selected" : ""}>D2 소분 종료</option>
+                <option value="01:30" ${item.category === "01:30" ? "selected" : ""}>01:30</option>
+                <option value="F3 소분 종료" ${item.category === "F3 소분 종료" ? "selected" : ""}>F3 소분 종료</option>
+              </select>
+              ${item.category === "F3 소분 종료" ? `
+                <input type="text" class="trend-custom-time-input" ${disabledAttr} placeholder="02:40" value="${customTimeVal}" onchange="updateTrendCustomTime('${key}', this.value)">
+              ` : ''}
+            </div>
+          </td>
+          <td style="color:#1d4ed8; font-weight:bold;">${item.saveTime}</td>
+          <td style="color:#64748b; font-size:12px;">${item.lastUpdateInfo}</td>
+          <td style="background:#f0f9ff; color:#0369a1;">${workerDisplay}</td>
+          <td style="background:#fffbeb;">${planDisplay}</td>
+          <td><b style="color:#15803d;">${item.freshQty}</b></td>
+          <td><b style="color:#1d4ed8;">${item.dawnQty}</b></td>
+          <td><b style="color:#2563eb;">${item.shQty}</b></td>
+          <td>
+            <button onclick="deleteTrendLog('${key}')" style="padding:2px 6px; border:none; border-radius:4px; background:#ef4444; color:white; cursor:pointer; font-size:11px;">삭제</button>
+          </td>
+        </tr>
+      `;
+
+      const catDisplay = selectedCat === "F3 소분 종료" && customTimeVal ? `F3 종료 [${customTimeVal}]` : selectedCat;
+      mobileHtml += `
+        <div class="mobile-trend-card">
+          <div class="mobile-card-header">
+            <span class="mobile-card-cat">${catDisplay}</span>
+            <span class="mobile-card-time">🕒 ${item.saveTime.split(' ')[1] || item.saveTime}</span>
+          </div>
+          <div style="font-size:11px; color:#64748b; margin-bottom:8px;">👥 투입인원: <b>${totalW}명</b> (고정 ${fixedW} / 신규 ${newW})</div>
+          <div class="mobile-card-body">
+            <div class="mobile-card-stat">
+              <div class="mobile-card-stat-label">🥬 신선</div>
+              <div class="mobile-card-stat-val" style="color:#15803d;">${item.freshQty}</div>
+            </div>
+            <div class="mobile-card-stat">
+              <div class="mobile-card-stat-label">🌙 던</div>
+              <div class="mobile-card-stat-val" style="color:#1d4ed8;">${item.dawnQty}</div>
+            </div>
+            <div class="mobile-card-stat">
+              <div class="mobile-card-stat-label">📦 SH Total</div>
+              <div class="mobile-card-stat-val" style="color:#2563eb;">${item.shQty}</div>
+            </div>
+          </div>
+        </div>
+      `;
+    });
+
+    tbody.innerHTML = html;
+    mobileCardList.innerHTML = mobileHtml;
+
+    renderDailyTrendSummary(globalLogEntries);
+    calcAndRenderPrediction();
+    renderLabCenterData(globalLogEntries);
+    renderLabDayPattern(globalLogEntries);
+
+  } else {
+    tbody.innerHTML = '<tr><td colspan="9">누적된 데이터가 없습니다.</td></tr>';
+    mobileCardList.innerHTML = '<div style="text-align:center; padding:20px; color:#94a3b8; font-size:13px;">누적 데이터가 없습니다.</div>';
+    globalLogEntries = [];
+    renderDailyTrendSummary([]);
+    calcAndRenderPrediction();
+    renderLabCenterData([]);
+    renderLabDayPattern([]);
+  }
+});
+
+function calcAndRenderPrediction() {
+  const timeEl = document.getElementById("predF3Time");
+  const statusEl = document.getElementById("predStatusText");
+  const speedEl = document.getElementById("predSpeedVal");
+  const workersEl = document.getElementById("predWorkersVal");
+  const remainEl = document.getElementById("predRemainVal");
+
+  if (!timeEl) return;
+
+  if (!remoteData || !remoteData.shCounts) {
+    timeEl.innerText = "분석 데이터 대기 중";
+    statusEl.innerText = "상단 dropZone에 Raw 엑셀 파일 2개를 업로드하세요.";
+    return;
+  }
+
+  const currentSH = parseInt(document.getElementById("shTotal").innerText.replace(/,/g,'')) || 0;
+
+  const todayStr = formatTimeString(new Date()).split(' ')[0];
+  const todayF3Entry = globalLogEntries.find(x => x.category === "F3 소분 종료" && (x.saveTime || "").includes(todayStr));
+
+  const f3Items = globalLogEntries.filter(x => x.category === "F3 소분 종료");
+  let avgF3Residual = 190;
+  if (f3Items.length > 0) {
+    const sumResidual = f3Items.reduce((acc, curr) => acc + (parseInt(String(curr.shQty).replace(/,/g,'')) || 0), 0);
+    avgF3Residual = Math.round(sumResidual / f3Items.length);
+  }
+
+  const netRemainingToProcess = Math.max(0, currentSH - avgF3Residual);
+
+  if (todayF3Entry || netRemainingToProcess === 0) {
+    const finishTime = todayF3Entry && todayF3Entry.customTime ? todayF3Entry.customTime : (todayF3Entry ? todayF3Entry.saveTime.split(' ')[1] : "완료");
+    timeEl.innerText = `🎉 금일 F3 소분 종료 완료 (${finishTime})`;
+    statusEl.innerText = `현재 미스캔 잔여 수량(${currentSH}건)은 센터 미도착분 수준(${avgF3Residual}건)으로, 금일 소분 작업이 최종 완료되었습니다.`;
+    speedEl.innerText = "0 건/분";
+    
+    const latestItem = globalLogEntries[0] || {};
+    const fixed = latestItem.fixedWorkers || 0;
+    const newW = latestItem.newWorkers || 0;
+    workersEl.innerText = `${((fixed*1.0) + (newW*0.6)).toFixed(1)} 명`;
+    remainEl.innerText = `0 건 (잔여 미도착: ${currentSH}건)`;
+    return;
+  }
+
+  remainEl.innerText = `${netRemainingToProcess.toLocaleString()} 건 (전체: ${currentSH}건)`;
+
+  const t130Item = globalLogEntries.find(x => x.category === "01:30");
+
+  let planWorkersIndex = 30;
+  if (t130Item) {
+    const pFixed = t130Item.planFixedWorkers || t130Item.fixedWorkers || 27;
+    const pNew = t130Item.planNewWorkers || t130Item.newWorkers || 13;
+    planWorkersIndex = (pFixed * 1.0) + (pNew * 0.6);
+  }
+
+  let avgWorkerCPM = 3.8;
+  if (d2And130PairsExist()) {
+    avgWorkerCPM = calculateHistoricalWorkerCPM();
+  }
+
+  let cpm = planWorkersIndex * avgWorkerCPM;
+
+  if (f3Items.length > 0 && t130Item) {
+    const historicalAvgMinutes = getSimilarPatternMinutes(netRemainingToProcess, planWorkersIndex);
+    if (historicalAvgMinutes > 0) {
+      cpm = netRemainingToProcess / historicalAvgMinutes;
+    }
+  }
+
+  workersEl.innerText = `${planWorkersIndex.toFixed(1)} 명 (예정TO)`;
+  speedEl.innerText = `${Math.round(cpm)} 건/분`;
+
+  const remainingMinutes = Math.ceil(netRemainingToProcess / cpm);
+  const now = new Date();
+  const predDate = new Date(now.getTime() + remainingMinutes * 60 * 1000);
+
+  const hours = String(predDate.getHours()).padStart(2, '0');
+  const mins = String(predDate.getMinutes()).padStart(2, '0');
+
+  timeEl.innerText = `⏱️ ${hours}:${mins} 소분 완료 예상`;
+  statusEl.innerText = `누적 데이터(01:30 예정TO ${planWorkersIndex.toFixed(1)}명 및 유사 패턴) 분석 결과, 약 ${remainingMinutes}분 후 완료 예상됩니다.`;
+}
+
+function d2And130PairsExist() {
+  return globalLogEntries.some(x => x.category === "D2 소분 종료") && globalLogEntries.some(x => x.category === "01:30");
+}
+
+function calculateHistoricalWorkerCPM() {
+  const d2Items = globalLogEntries.filter(x => x.category === "D2 소분 종료");
+  const t130Items = globalLogEntries.filter(x => x.category === "01:30");
+
+  let totalCpmSum = 0;
+  let count = 0;
+
+  t130Items.forEach(t130 => {
+    const fixed = t130.fixedWorkers || 0;
+    const newW = t130.newWorkers || 0;
+    const effectiveWorkers = (fixed * 1.0) + (newW * 0.6);
+
+    if (effectiveWorkers > 0) {
+      const matchedD2 = d2Items.find(d2 => Math.abs(d2.timestamp - t130.timestamp) < 24 * 3600 * 1000);
+      if (matchedD2) {
+        const d2Qty = parseInt(String(matchedD2.shQty).replace(/,/g, '')) || 0;
+        const t130Qty = parseInt(String(t130.shQty).replace(/,/g, '')) || 0;
+        const processed = d2Qty - t130Qty;
+
+        let diffMinutes = (t130.timestamp - matchedD2.timestamp) / (1000 * 60);
+        if (diffMinutes <= 0) diffMinutes = 45;
+
+        if (processed > 0) {
+          const totalCPM = processed / diffMinutes;
+          const perWorkerCPM = totalCPM / effectiveWorkers;
+          totalCpmSum += perWorkerCPM;
+          count++;
+        }
+      }
+    }
+  });
+
+  return count > 0 ? (totalCpmSum / count) : 3.8;
+}
+
+function getSimilarPatternMinutes(currentNetQty, currentPlanWorkers) {
+  const f3Logs = globalLogEntries.filter(x => x.category === "F3 소분 종료");
+  const t130Logs = globalLogEntries.filter(x => x.category === "01:30");
+
+  let matchedMinutesSum = 0;
+  let matchCount = 0;
+
+  f3Logs.forEach(f3 => {
+    const matched130 = t130Logs.find(t => Math.abs(f3.timestamp - t.timestamp) < 24 * 3600 * 1000);
+    if (matched130) {
+      let diffMinutes = (f3.timestamp - matched130.timestamp) / (1000 * 60);
+      if (diffMinutes > 10 && diffMinutes < 300) {
+        matchedMinutesSum += diffMinutes;
+        matchCount++;
+      }
+    }
+  });
+
+  return matchCount > 0 ? (matchedMinutesSum / matchCount) : 0;
+}
+
+function renderDailyTrendSummary(logList) {
+  const summaryTbody = document.getElementById("dailyTrendSummaryTable").querySelector("tbody");
+  if (!logList || logList.length === 0) {
+    summaryTbody.innerHTML = '<tr><td colspan="4">분석할 트렌드 데이터가 없습니다.</td></tr>';
+    if(trendChartInstance) trendChartInstance.destroy();
+    return;
+  }
+
+  const dailyMap = {};
+
+  logList.forEach(item => {
+    let pddDate = "기타 날짜";
+    if (item.lastUpdateInfo && item.lastUpdateInfo.includes('(')) {
+      const match = item.lastUpdateInfo.match(/\((\d{4}-\d{2}-\d{2})\s*\//);
+      if (match) pddDate = match[1];
+    } else if (item.saveTime) {
+      pddDate = item.saveTime.split(' ')[0];
+    }
+
+    if (!dailyMap[pddDate]) {
+      dailyMap[pddDate] = { d2Qty: null, t130Qty: null, f3Qty: null, f3Time: "" };
+    }
+
+    const cat = item.category || "";
+    const shVal = parseInt(String(item.shQty).replace(/,/g, '')) || 0;
+
+    if (cat === "D2 소분 종료") dailyMap[pddDate].d2Qty = shVal;
+    else if (cat === "01:30") dailyMap[pddDate].t130Qty = shVal;
+    else if (cat === "F3 소분 종료") {
+      dailyMap[pddDate].f3Qty = shVal;
+      dailyMap[pddDate].f3Time = item.customTime || "";
+    }
+  });
+
+  const sortedDates = Object.keys(dailyMap).sort((a, b) => b.localeCompare(a));
+
+  let summaryHtml = "";
+  const chartLabels = [];
+  const chartD2Data = [];
+  const chartT130Data = [];
+  const chartF3Data = [];
+
+  sortedDates.forEach(dateStr => {
+    const data = dailyMap[dateStr];
+    const d2Str = data.d2Qty !== null ? `${data.d2Qty.toLocaleString()} 건` : '-';
+    const t130Str = data.t130Qty !== null ? `${data.t130Qty.toLocaleString()} 건` : '-';
+    
+    let f3Str = '-';
+    if (data.f3Qty !== null) {
+      const timeDisplay = data.f3Time ? `[${data.f3Time}] ` : '';
+      f3Str = `<b>${timeDisplay}${data.f3Qty.toLocaleString()} 건</b>`;
+    }
+
+    summaryHtml += `
+      <tr>
+        <td style="font-weight:bold; color:#1d4ed8;">${dateStr}</td>
+        <td>${d2Str}</td>
+        <td>${t130Str}</td>
+        <td style="color:#15803d;">${f3Str}</td>
+      </tr>
+    `;
+
+    chartLabels.unshift(dateStr);
+    chartD2Data.unshift(data.d2Qty);
+    chartT130Data.unshift(data.t130Qty);
+    chartF3Data.unshift(data.f3Qty);
+  });
+
+  summaryTbody.innerHTML = summaryHtml || '<tr><td colspan="4">분석할 데이터가 없습니다.</td></tr>';
+
+  renderTrendLineChart(chartLabels, chartD2Data, chartT130Data, chartF3Data);
+}
+
+function renderTrendLineChart(labels, d2Data, t130Data, f3Data) {
+  const ctx = document.getElementById('trendLineChart');
+  if (!ctx) return;
+
+  if (trendChartInstance) {
+    trendChartInstance.destroy();
+  }
+
+  trendChartInstance = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels: labels,
+      datasets: [
+        { label: 'D2 소분 종료 (건)', data: d2Data, borderColor: '#ef4444', backgroundColor: '#ef4444', tension: 0.2, spanGaps: true },
+        { label: '01:30 시점 (건)', data: t130Data, borderColor: '#f59e0b', backgroundColor: '#f59e0b', tension: 0.2, spanGaps: true },
+        { label: 'F3 소분 종료 (건)', data: f3Data, borderColor: '#10b981', backgroundColor: '#10b981', tension: 0.2, spanGaps: true }
+      ]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'top', labels: { font: { size: 11, weight: 'bold' } } },
+        title: { display: true, text: '📈 소분 단계별 잔여 수량 트렌드 변화', font: { size: 14, weight: 'bold' }, color: '#1e293b' }
+      },
+      scales: {
+        y: { beginAtZero: true, ticks: { font: { size: 10 } } },
+        x: { ticks: { font: { size: 10, weight: 'bold' } } }
+      }
+    }
+  });
+}
+
+function renderLabCenterData(logList) {
+  const tbody = document.getElementById("labCenterTable").querySelector("tbody");
+  if (!logList || logList.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5">누적된 F3 소분 종료 데이터가 없습니다.</td></tr>';
+    return;
+  }
+
+  const f3Logs = logList.filter(x => x.category === "F3 소분 종료");
+  if (f3Logs.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5">누적 데이터 중 \'F3 소분 종료\' 구분 기록이 없습니다.</td></tr>';
+    return;
+  }
+
+  const hubTotMap = {};
+  f3Logs.forEach(item => {
+    if (item.shCounts) {
+      Object.entries(item.shCounts).forEach(([hub, qty]) => {
+        hubTotMap[hub] = (hubTotMap[hub] || 0) + qty;
+      });
+    }
+  });
+
+  const entries = Object.entries(hubTotMap).sort((a, b) => b[1] - a[1]);
+  if (entries.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="5">집계할 미도착 허브 데이터가 없습니다.</td></tr>';
+    return;
+  }
+
+  let html = "";
+  entries.forEach(([hub, totQty], index) => {
+    const avgQty = Math.round(totQty / f3Logs.length);
+    let badgeHtml = `<span style="background:#fffbeb; color:#92400e; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:11px;">🟡 일반 지연</span>`;
+    
+    if (index === 0 || avgQty >= 30) {
+      badgeHtml = `<span style="background:#fef2f2; color:#991b1b; padding:3px 8px; border-radius:12px; font-weight:bold; font-size:11px;">🔴 상습 최상위 지연</span>`;
+    }
+
+    html += `
+      <tr>
+        <td style="font-weight:bold; color:#64748b;">${index + 1}위</td>
+        <td style="font-weight:bold; color:#1d4ed8;">📦 ${hub}</td>
+        <td><b style="color:#2563eb;">${avgQty.toLocaleString()}</b> 건 / 일</td>
+        <td><b>${totQty.toLocaleString()}</b> 건</td>
+        <td>${badgeHtml}</td>
+      </tr>
+    `;
+  });
+
+  tbody.innerHTML = html;
+}
+
+function renderLabRouteData() {
+  const grid = document.getElementById("labRouteGrid");
+  if (!remoteData || !remoteData.routeGroupMap) {
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;">원천 엑셀 파일이 업로드되지 않았습니다.</div>';
+    return;
+  }
+
+  const entries = Object.entries(remoteData.routeGroupMap).sort((a, b) => b[1] - a[1]);
+  if (entries.length === 0) {
+    grid.innerHTML = '<div style="grid-column: 1/-1; text-align:center; padding:30px; color:#94a3b8;">선택한 PDD 시간에 대한 라우트 물동량이 없습니다.</div>';
+    return;
+  }
+
+  const maxQty = entries[0][1];
+  let html = "";
+
+  entries.forEach(([route, count]) => {
+    let heatClass = "low";
+    if (count >= maxQty * 0.6) heatClass = "high";
+    else if (count >= maxQty * 0.3) heatClass = "med";
+
+    html += `
+      <div class="route-heat-card ${heatClass}">
+        <div style="font-size:11px; color:#64748b; font-weight:bold;">라우트 (전체물량)</div>
+        <div style="font-size:18px; font-weight:900; color:#1e293b; margin:4px 0;">${route}</div>
+        <div style="font-size:14px; font-weight:bold; color:#2563eb;">${count.toLocaleString()} 건</div>
+      </div>
+    `;
+  });
+
+  grid.innerHTML = html;
+}
+
+function renderLabDayPattern(logList) {
+  const tbody = document.getElementById("labDayPatternTable").querySelector("tbody");
+
+  const dayYajEl = document.getElementById("dayYajTotal");
+  const dayIsnEl = document.getElementById("dayIsnTotal");
+  const dayShEl = document.getElementById("dayShTotal");
+  const dayArrEl = document.getElementById("dayArrivedTotal");
+  const dayMispEl = document.getElementById("dayMisplaceTotal");
+  const dayCompEl = document.getElementById("dayCompletionRate");
+
+  if (remoteData) {
+    const totalYaj = remoteData.totalYajShipment || 0;
+    const totalIsn = remoteData.totalIsnShipment || 0;
+    const totalSh = remoteData.totalShShipment || 0;
+    const arrivedTot = remoteData.arrivedTotal || 0;
+    const misplaceTot = remoteData.misplaceTotal || 0;
+
+    const compRate = totalSh > 0 ? ((arrivedTot / totalSh) * 100).toFixed(1) : "0.0";
+
+    if (dayYajEl) dayYajEl.innerText = `${totalYaj.toLocaleString()} 건`;
+    if (dayIsnEl) dayIsnEl.innerText = `${totalIsn.toLocaleString()} 건`;
+    if (dayShEl) dayShEl.innerText = `${totalSh.toLocaleString()} 건`;
+    if (dayArrEl) dayArrEl.innerText = `${arrivedTot.toLocaleString()} 건`;
+    if (dayMispEl) dayMispEl.innerText = `${misplaceTot.toLocaleString()} 건`;
+    if (dayCompEl) dayCompEl.innerText = `${compRate} %`;
+  }
+
+  if (!logList || logList.length === 0) {
+    tbody.innerHTML = '<tr><td colspan="8">누적된 트렌드 데이터가 없습니다.</td></tr>';
+    return;
+  }
+
+  const daysKR = ['일요일', '월요일', '화요일', '수요일', '목요일', '금요일', '토요일'];
+  const dayStats = {};
+
+  daysKR.forEach(d => { dayStats[d] = { yajTot: 0, isnTot: 0, shTot: 0, arrTot: 0, mispTot: 0, resTot: 0, count: 0 }; });
+
+  logList.forEach(item => {
+    if (item.timestamp && item.category === "F3 소분 종료") {
+      const dateObj = new Date(item.timestamp);
+      const dayName = daysKR[dateObj.getDay()];
+      const shVal = parseInt(String(item.shQty).replace(/,/g, '')) || 0;
+
+      dayStats[dayName].yajTot += (item.totalYajShipment || 0);
+      dayStats[dayName].isnTot += (item.totalIsnShipment || 0);
+      dayStats[dayName].shTot += (item.totalShShipment || 0);
+      dayStats[dayName].arrTot += (item.arrivedTotal || 0);
+      dayStats[dayName].mispTot += (item.misplaceTotal || 0);
+      dayStats[dayName].resTot += shVal;
+      dayStats[dayName].count += 1;
+    }
+  });
+
+  let html = "";
+  daysKR.forEach(day => {
+    const stat = dayStats[day];
+    if (stat.count > 0) {
+      const avgYaj = Math.round(stat.yajTot / stat.count);
+      const avgIsn = Math.round(stat.isnTot / stat.count);
+      const avgSh = Math.round(stat.shTot / stat.count);
+      const avgArr = Math.round(stat.arrTot / stat.count);
+      const avgMisp = Math.round(stat.mispTot / stat.count);
+      const avgRes = Math.round(stat.resTot / stat.count);
+      const avgRate = avgSh > 0 ? ((avgArr / avgSh) * 100).toFixed(1) : "0.0";
+
+      html += `
+        <tr>
+          <td style="font-weight:bold; color:#1e40af;">${day}</td>
+          <td>${avgYaj.toLocaleString()} 건</td>
+          <td>${avgIsn.toLocaleString()} 건</td>
+          <td style="font-weight:bold; color:#2563eb;">${avgSh.toLocaleString()} 건</td>
+          <td style="color:#16a34a; font-weight:bold;">${avgArr.toLocaleString()} 건</td>
+          <td style="color:#dc2626; font-weight:bold;">${avgMisp.toLocaleString()} 건</td>
+          <td style="color:#64748b;">${avgRes.toLocaleString()} 건</td>
+          <td style="background:#ecfdf5; color:#166534; font-weight:900;">${avgRate} %</td>
+        </tr>
+      `;
+    } else {
+      html += `
+        <tr>
+          <td style="font-weight:bold; color:#1e40af;">${day}</td>
+          <td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td><td>-</td>
+        </tr>
+      `;
+    }
+  });
+
+  tbody.innerHTML = html;
+}
+
+function deleteTrendLog(key) {
+  if (confirm("이 누적 기록을 삭제하시겠습니까?")) {
+    db.ref("accumulatedLogs/" + key).remove();
+  }
+}
+
+function clearTrendLogs() {
+  if (confirm("모든 누적 데이터를 삭제하시겠습니까? (복구할 수 없습니다)")) {
+    db.ref("accumulatedLogs").remove().then(() => {
+      alert("누적 데이터가 전체 삭제되었습니다.");
+    });
+  }
+}
+
+function clearCallLogs() {
+  if (confirm("모든 호출 로그 기록을 삭제하시겠습니까?")) {
+    db.ref("callLogs").remove().then(() => {
+      alert("호출 기록 로그가 전체 삭제되었습니다.");
+    }).catch(err => {
+      alert("삭제 실패: " + err.message);
+    });
+  }
+}
+
+const fileInput = document.getElementById("fileInput");
+const dropZone = document.getElementById("dropZone");
+
+dropZone.onclick = () => fileInput.click();
+dropZone.ondragover = (e) => e.preventDefault();
+dropZone.ondrop = (e) => { e.preventDefault(); processFiles(e.dataTransfer.files); };
+fileInput.onchange = (e) => processFiles(e.target.files);
+
+async function processFiles(files){
+  try{
+    if(files.length < 2){
+      alert("엑셀 파일 2개를 업로드하세요.");
+      return;
+    }
+    document.getElementById("badge").innerHTML = "🟡 분석 및 서버 전송 중";
+
+    const selectedPddTime = document.querySelector('input[name="pddTimeOption"]:checked')?.value || "07";
+
+    const data1 = await readExcel(files[0]);
+    const data2 = await readExcel(files[1]);
+
+    document.getElementById("fileList").innerHTML = `✅ ${files[0].name}<br>✅ ${files[1].name}`;
+
+    const rows = [...data1, ...data2.slice(1)];
+    const now = new Date();
+    
+    const pddAllRows = rows.filter(r => {
+      const rawR = String(r[17] || "").trim();
+      const rawCamp = String(r[6] || "").trim().toUpperCase();
+
+      const isTimeMatch = rawR.includes(selectedPddTime) || rawR.includes(selectedPddTime + ":00");
+      const isCampMatch = rawCamp.includes("YAJ") || rawCamp.includes("양주") || rawCamp.includes("ISN") || rawCamp.includes("일산");
+
+      return isTimeMatch && isCampMatch;
+    });
+
+    const targetDateStr = pddAllRows.length > 0 ? String(pddAllRows[0][17]).split(' ')[0] : formatTimeString(now).split(' ')[0];
+
+    const routeGroupMap = {};
+    pddAllRows.forEach(r => {
+      const rawRoute = String(r[1]||"").trim();
+      if (!rawRoute) return;
+      const match = rawRoute.match(/^([A-Za-z0-9]+?)\d{1,2}$/i);
+      const groupKey = match ? match[1] : rawRoute;
+      routeGroupMap[groupKey] = (routeGroupMap[groupKey] || 0) + 1;
+    });
+
+    const totalYajShipment = pddAllRows.filter(r => {
+      const c = String(r[6]||"").trim().toUpperCase();
+      return c.includes("YAJ") || c.includes("양주");
+    }).length;
+
+    const totalIsnShipment = pddAllRows.filter(r => {
+      const c = String(r[6]||"").trim().toUpperCase();
+      return c.includes("ISN") || c.includes("일산");
+    }).length;
+
+    const totalShShipment = pddAllRows.length;
+
+    const rawArrivedRows = pddAllRows.filter(r => {
+      const m = String(r[12]||"").trim();
+      const n = String(r[13]||"").trim();
+      return (m !== "" || n !== "");
+    });
+
+    let misplaceTotal = 0;
+    pddAllRows.forEach(r => {
+      const id = String(r[12]||"").trim();
+      if (id !== "" && !excludedIds.includes(id)) {
+        misplaceTotal++;
+      }
+    });
+
+    const arrivedTotal = Math.max(0, rawArrivedRows.length - misplaceTotal);
+
+    const filteredUnarrived = pddAllRows.filter(r => {
+      const m = String(r[12]||"").trim();
+      const n = String(r[13]||"").trim();
+      const q = String(r[16]||"").trim();
+      return (m === "" && n === "" && q === "N");
+    });
+
+    const shCounts = {}, isnCounts = {}, yajCounts = {};
+    const shRouteCounts = {}, isnRouteCounts = {}, yajRouteCounts = {};
+
+    filteredUnarrived.forEach(r => {
+      const hub = String(r[3]||"").trim();
+      const camp = String(r[6]||"").trim().toUpperCase();
+      const rawRoute = String(r[1]||"").trim();
+      const match = rawRoute.match(/^([A-Za-z0-9]+?)\d{1,2}$/i);
+      const routeGroup = match ? match[1] : rawRoute;
+
+      if(!hub) return;
+
+      shCounts[hub] = (shCounts[hub] || 0) + 1;
+      if (routeGroup) shRouteCounts[routeGroup] = (shRouteCounts[routeGroup] || 0) + 1;
+
+      if(camp.includes("ISN") || camp.includes("일산")) {
+        isnCounts[hub] = (isnCounts[hub] || 0) + 1;
+        if (routeGroup) isnRouteCounts[routeGroup] = (isnRouteCounts[routeGroup] || 0) + 1;
+      }
+
+      if(camp.includes("YAJ") || camp.includes("양주")) {
+        yajCounts[hub] = (yajCounts[hub] || 0) + 1;
+        if (routeGroup) yajRouteCounts[routeGroup] = (yajRouteCounts[routeGroup] || 0) + 1;
+      }
+    });
+
+    const allHubs = [...new Set(rows.map(r=>String(r[3]||"").trim()).filter(x=>x!==""))].sort();
+
+    const misplaceMap = {};
+    rows.forEach(r => {
+      const id = String(r[12]||"").trim();
+      if(id !== ""){
+        if(!misplaceMap[id]) misplaceMap[id] = [];
+        if(misplaceMap[id].length < 15){
+          misplaceMap[id].push({
+            wb: String(r[8]||""),
+            camp: String(r[6]||""),
+            arr: String(r[11]||""),
+            deliv: String(r[16]||"")
+          });
+        }
+      }
+    });
+
+    const fullInfoStr = formatTimeString(now) + ` (${targetDateStr} / PDD ${selectedPddTime}시)`;
+
+    const payload = {
+      lastUpdate: fullInfoStr,
+      uploadTimeOnly: formatTimeString(now),
+      pddInfoFull: `${targetDateStr} / PDD ${selectedPddTime}시`,
+      shCounts, isnCounts, yajCounts,
+      shRouteCounts, isnRouteCounts, yajRouteCounts,
+      unassignedTotal: filteredUnarrived.length,
+      allHubs,
+      misplaceMap,
+      pddTime: selectedPddTime,
+      timestamp: now.getTime(),
+      routeGroupMap,
+      totalYajShipment,
+      totalIsnShipment,
+      totalShShipment,
+      arrivedTotal,
+      misplaceTotal
+    };
+
+    await db.ref("dashboardSummary").set(payload);
+
+    const historyPayload = {
+      lastUpdate: fullInfoStr,
+      uploadTimeOnly: formatTimeString(now),
+      pddInfoFull: `${targetDateStr} / PDD ${selectedPddTime}시`,
+      shCounts, isnCounts, yajCounts,
+      shRouteCounts, isnRouteCounts, yajRouteCounts,
+      unassignedTotal: filteredUnarrived.length,
+      allHubs,
+      pddTime: selectedPddTime,
+      timestamp: now.getTime(),
+      totalYajShipment,
+      totalIsnShipment,
+      totalShShipment,
+      arrivedTotal,
+      misplaceTotal
+    };
+
+    await db.ref("uploadHistory").push(historyPayload);
+
+    document.getElementById("badge").innerHTML = `🟢 서버 업데이트 완료 (${targetDateStr} ${selectedPddTime}시)`;
+    showTab('result');
+
+  } catch(error){
+    console.error(error);
+    alert("오류 발생\n\n" + error.message);
+    document.getElementById("badge").innerHTML = "🔴 오류 발생";
+  }
+}
+
+function readExcel(file){
+  return new Promise((resolve)=>{
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const workbook = XLSX.read(e.target.result, { type: "binary" });
+      const sheet = workbook.Sheets[workbook.SheetNames[0]];
+      resolve(XLSX.utils.sheet_to_json(sheet, { header: 1, defval: "" }));
+    };
+    reader.readAsBinaryString(file);
+  });
+}
+
+function resetData(){
+  if(confirm("정말로 모든 실시간 데이터를 초기화하시겠습니까?\n초기화 시 연결된 모바일 화면의 데이터도 비워집니다.")){
+    db.ref("dashboardSummary").remove().then(()=>{
+      alert("데이터가 성공적으로 초기화되었습니다.");
+    }).catch(err=>{
+      alert("초기화 실패: " + err.message);
+    });
+  }
+}
+
+function formatTimeString(d) {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  const hours = String(d.getHours()).padStart(2, '0');
+  const minutes = String(d.getMinutes()).padStart(2, '0');
+  const seconds = String(d.getSeconds()).padStart(2, '0');
+  return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+}
+
+db.ref("uploadHistory").on("value", (snapshot) => {
+  const tbody = document.getElementById("restoreHistoryTable").querySelector("tbody");
+  if (snapshot.exists() && snapshot.val() !== null) {
+    const historyObj = snapshot.val();
+    recentHistoryData = historyObj;
+    const entries = Object.entries(historyObj);
+
+    entries.sort((a, b) => (b[1].timestamp || 0) - (a[1].timestamp || 0));
+
+    const recentFive = entries.slice(0, 5);
+    latestBackupKey = recentFive.length > 0 ? recentFive[0][0] : null;
+
+    let html = "";
+    recentFive.forEach(([key, item], index) => {
+      const totalCount = item.unassignedTotal || 0;
+      
+      let displayTime = item.uploadTimeOnly;
+      if (!displayTime || displayTime.length <= 8) {
+        if (item.timestamp) {
+          displayTime = formatTimeString(new Date(item.timestamp));
+        } else if (item.lastUpdate) {
+          displayTime = item.lastUpdate.split(' (')[0];
+        } else {
+          displayTime = "정보 없음";
+        }
+      }
+
+      let displayPdd = item.pddInfoFull;
+      if (!displayPdd || displayPdd.indexOf('/') === -1) {
+        let pddDateStr = "2026-10-28";
+        if (item.timestamp) {
+          const tDate = new Date(item.timestamp);
+          pddDateStr = `${tDate.getFullYear()}-${String(tDate.getMonth()+1).padStart(2,'0')}-${String(tDate.getDate()).padStart(2,'0')}`;
+        }
+        displayPdd = `${pddDateStr} / PDD ${item.pddTime || '07'}시`;
+      }
+
+      html += `
+        <tr>
+          <td><input type="radio" name="restoreSelectRadio" value="${key}" ${index === 0 ? "checked" : ""}></td>
+          <td style="font-weight:bold;color:#1d4ed8;">${displayTime}</td>
+          <td style="font-weight:bold;color:#b45309;background:#fffbeb;">${displayPdd}</td>
+          <td><b style="color:#2563eb;">${totalCount.toLocaleString()} 건</b></td>
+          <td>
+            <button class="restore-btn-action" onclick="restoreSelectedHistory('${key}')">🔄 이 데이터로 복구</button>
+          </td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+  } else {
+    tbody.innerHTML = '<tr><td colspan="5">저장된 최근 백업 이력이 없습니다.</td></tr>';
+  }
+});
+
+function restoreSelectedHistory(key) {
+  const targetKey = key || document.querySelector('input[name="restoreSelectRadio"]:checked')?.value;
+
+  if (!targetKey || !recentHistoryData[targetKey]) {
+    alert("복구할 내역이 없습니다.");
+    return;
+  }
+
+  const payload = recentHistoryData[targetKey];
+
+  if (confirm(`[${payload.pddInfoFull || payload.lastUpdate}] 시점의 데이터로 복구하시겠습니까?`)) {
+    db.ref("dashboardSummary").set(payload).then(() => {
+      alert("성공적으로 복구되었습니다!");
+      showTab('result');
+    }).catch(err => {
+      alert("복구 실패: " + err.message);
+    });
+  }
+}
+
+function restoreLatestBackup() {
+  if (!latestBackupKey || !recentHistoryData[latestBackupKey]) {
+    alert("복구 가능한 최근 백업 데이터가 없습니다.");
+    return;
+  }
+  restoreSelectedHistory(latestBackupKey);
+}
+
+function sendCallSignal(){
+  const input = document.getElementById("callMsgInput");
+  const rawMsg = input.value.trim() || "호출이 들어왔습니다.";
+  const now = new Date();
+  const timeStr = formatTimeString(now);
+  const timestamp = now.getTime();
+
+  const callerName = currentUser ? currentUser.name : "익명";
+  const callerId = currentUser ? currentUser.label : "미인증";
+
+  db.ref("callSignal").set({
+    message: rawMsg,
+    callerName: callerName,
+    callerId: callerId,
+    timeStr: timeStr,
+    timestamp: timestamp
+  });
+
+  db.ref("callLogs").push({
+    timeStr: timeStr,
+    message: rawMsg,
+    callerName: callerName,
+    callerId: callerId,
+    timestamp: timestamp
+  }).then(()=>{
+    alert(`[${callerName}] 이름으로 PC 호출 알림이 전송되었습니다.`);
+    input.value = "";
+  }).catch(err=>{
+    alert("호출 전송 실패: " + err.message);
+  });
+}
+
+db.ref("callLogs").on("value", (snapshot) => {
+  const tbody = document.getElementById("callLogTable").querySelector("tbody");
+  if (snapshot.exists() && snapshot.val() !== null) {
+    const logsObj = snapshot.val();
+    const logList = Object.values(logsObj);
+    logList.sort((a,b) => b.timestamp - a.timestamp);
+
+    let html = "";
+    logList.forEach(log => {
+      const timeDisplay = log.timeStr || (log.timestamp ? formatTimeString(new Date(log.timestamp)) : '-');
+      const senderDisplay = log.callerName ? `${log.callerName} (${log.callerId || ''})` : '알수없음';
+
+      html += `
+        <tr>
+          <td style="color:#64748b;font-weight:bold;">${timeDisplay}</td>
+          <td style="color:#1d4ed8;font-weight:bold;">👤 ${senderDisplay}</td>
+          <td style="text-align:left;padding-left:15px;font-weight:600;color:#1e293b;">${log.message}</td>
+        </tr>
+      `;
+    });
+    tbody.innerHTML = html;
+  } else {
+    tbody.innerHTML = '<tr><td colspan="3">기록된 호출 로그가 없습니다.</td></tr>';
+  }
+});
+
+db.ref("callSignal").on("value", (snapshot) => {
+  const data = snapshot.val();
+  if (data) {
+    const displayTime = data.timeStr || (data.timestamp ? formatTimeString(new Date(data.timestamp)) : '');
+    const senderDisplay = data.callerName ? `[${data.callerName}]` : '';
+    const lastCallInfoEl = document.getElementById("lastCallInfo");
+
+    if (lastCallInfoEl) {
+      lastCallInfoEl.innerHTML = `🔔 최근 호출: <span style="color:#1d4ed8;font-weight:bold;">[${displayTime}] ${senderDisplay}</span> <span style="color:#1e293b;font-weight:bold;">${data.message}</span>`;
+    }
+
+    if (data.timestamp > lastSpokenTime) {
+      lastSpokenTime = data.timestamp;
+      
+      if (!isMobile) {
+        const speakMsg = `${senderDisplay} ${data.message}`;
+        speakText(speakMsg);
+        showDesktopNotification(speakMsg);
+      }
+    }
+  }
+});
+
+db.ref("dashboardSummary").on("value", (snapshot) => {
+  if (snapshot.exists() && snapshot.val() !== null) {
+    const data = snapshot.val();
+    remoteData = data;
+    document.getElementById("lastUpdate").innerText = "마지막 업데이트 : " + data.lastUpdate;
+    renderData();
+    calcAndRenderPrediction();
+    renderLabCenterData(globalLogEntries);
+    renderLabRouteData();
+    renderLabDayPattern(globalLogEntries);
+    document.getElementById("badge").innerHTML = "🟢 실시간 동기화 완료";
+  } else {
+    if (snapshot.key === "dashboardSummary" && !snapshot.exists()) {
+      remoteData = null;
+      document.getElementById("lastUpdate").innerText = "업데이트된 데이터가 없습니다";
+      document.getElementById("freshTotal").innerText = "0";
+      document.getElementById("dawnTotal").innerText = "0";
+      document.getElementById("shTotal").innerText = "0";
+      document.getElementById("isnTotal").innerText = "0";
+      document.getElementById("yajTotal").innerText = "0";
+      document.getElementById("badge").innerHTML = "⚪ 데이터 없음";
+      resetInvoiceTables();
+      calcAndRenderPrediction();
+      renderLabCenterData([]);
+      renderLabRouteData();
+      renderLabDayPattern([]);
+    }
+  }
+});
+
+function resetInvoiceTables(){
+  ["sh", "isn", "yaj"].forEach(prefix => {
+    document.getElementById(`${prefix}InvoiceTable`).querySelector("tbody").innerHTML = '<tr><td colspan="2">데이터가 없습니다.</td></tr>';
+    document.getElementById(`${prefix}RouteTable`).querySelector("tbody").innerHTML = '<tr><td colspan="2">데이터가 없습니다.</td></tr>';
+    document.getElementById(`${prefix}InvoiceCount`).innerText = "총 0건";
+  });
+}
+
+function renderData(){
+  if(!remoteData) return;
+
+  const { shCounts={}, isnCounts={}, yajCounts={}, allHubs=[], misplaceMap={}, shRouteCounts={}, isnRouteCounts={}, yajRouteCounts={} } = remoteData;
+
+  let freshTot = 0, dawnTot = 0;
+
+  Object.entries(shCounts).forEach(([hub, qty]) => {
+    if(selectedHubs.includes(hub)) freshTot += qty;
+    else dawnTot += qty;
+  });
+
+  document.getElementById("freshTotal").innerText = freshTot.toLocaleString();
+  document.getElementById("dawnTotal").innerText = dawnTot.toLocaleString();
+
+  renderTable("shTable", "shTotal", shCounts);
+  renderTable("isnTable", "isnTotal", isnCounts);
+  renderTable("yajTable", "yajTotal", yajCounts);
+
+  renderHubMaster(allHubs);
+  renderMisplace(misplaceMap);
+
+  renderInvoiceSummarySection("sh", shCounts, shRouteCounts, "SH_ISN5");
+  renderInvoiceSummarySection("isn", isnCounts, isnRouteCounts, "ISN_5");
+  renderInvoiceSummarySection("yaj", yajCounts, yajRouteCounts, "YAJ_3");
+}
+
+function renderTable(tableId, totalId, countMap){
+  let sum = 0;
+  Object.values(countMap).forEach(v => sum += v);
+  document.getElementById(totalId).innerText = sum.toLocaleString();
+
+  const table = document.getElementById(tableId);
+  const isCollapsed = table.classList.contains("mobile-collapsed");
+  
+  table.innerHTML = "<tr><th>허브</th><th>수량</th></tr>";
+
+  if (isCollapsed) {
+    table.classList.add("mobile-collapsed");
+  }
+
+  Object.entries(countMap).sort((a,b)=>b[1]-a[1]).forEach(([hub,qty])=>{
+    let rowStyle = (tableId === "shTable" && selectedDawnHubs.includes(hub)) ? "background:#dbeafe;color:#1e40af;font-weight:bold;border-left:4px solid #3b82f6;" : "";
+    table.innerHTML += `<tr><td style="${rowStyle}">${hub}</td><td style="${rowStyle}">${qty.toLocaleString()}</td></tr>`;
+  });
+}
+
+function renderInvoiceSummarySection(prefix, hubCountMap={}, routeCountMap={}, titleName=""){
+  const countBadge = document.getElementById(`${prefix}InvoiceCount`);
+  const invoiceTbody = document.getElementById(`${prefix}InvoiceTable`).querySelector("tbody");
+
+  let totalQty = 0;
+  Object.values(hubCountMap).forEach(v => totalQty += v);
+
+  if (totalQty === 0) {
+    countBadge.innerText = "총 0건";
+    invoiceTbody.innerHTML = '<tr><td colspan="2">데이터가 없습니다.</td></tr>';
+    renderRouteTableFromMap(prefix, {}, titleName);
+    return;
+  }
+
+  countBadge.innerText = `총 ${totalQty.toLocaleString()}건`;
+
+  let invoiceHtml = "";
+  Object.entries(hubCountMap).sort((a, b) => b[1] - a[1]).forEach(([hub, count]) => {
+    invoiceHtml += `
+      <tr>
+        <td style="font-weight:bold; color:#1e40af;">📦 ${hub}</td>
+        <td><b style="color:#2563eb;">${count.toLocaleString()}</b> 건</td>
+      </tr>
+    `;
+  });
+
+  invoiceTbody.innerHTML = invoiceHtml;
+  renderRouteTableFromMap(prefix, routeCountMap, titleName);
+}
+
+function renderRouteTableFromMap(prefix, routeCountMap={}, titleName=""){
+  const routeTbody = document.getElementById(`${prefix}RouteTable`).querySelector("tbody");
+  const routeTitleEl = document.getElementById(`${prefix}RoutePanelTitle`);
+
+  if (routeTitleEl) {
+    routeTitleEl.innerText = `📊 ${titleName} 라우트별 수량`;
+  }
+
+  let routeHtml = "";
+  Object.entries(routeCountMap)
+    .sort((a, b) => a[0].localeCompare(b[0], undefined, { numeric: true, sensitivity: 'base' }))
+    .forEach(([routeGroup, count]) => {
+      routeHtml += `
+        <tr>
+          <td><b>${routeGroup}</b></td>
+          <td><span style="color:#2563eb;font-weight:bold;">${count.toLocaleString()}</span> 개</td>
+        </tr>
+      `;
+    });
+
+  routeTbody.innerHTML = routeHtml || '<tr><td colspan="2">라우트 정보가 없습니다.</td></tr>';
+}
+
+function renderHubMaster(hubs){
+  const table = document.getElementById("hubMasterTable");
+  const dawnTable = document.getElementById("dawnHubTable");
+  const freshInfo = document.getElementById("freshSelectedInfo");
+  const dawnInfo = document.getElementById("dawnSelectedInfo");
+
+  table.innerHTML = `<tr><th style="background:#e2e8f0;color:#334155;padding:8px;border:1px solid #cbd5e1;">허브명</th></tr>`;
+  dawnTable.innerHTML = `<tr><th style="background:#e2e8f0;color:#334155;padding:8px;border:1px solid #cbd5e1;">허브명</th></tr>`;
+
+  freshInfo.innerHTML = `<div class="selected-info"><div class="selected-count">선택됨 (${selectedHubs.length})</div>${selectedHubs.join(" · ")}</div>`;
+  dawnInfo.innerHTML = `<div class="selected-info"><div class="selected-count">선택됨 (${selectedDawnHubs.length})</div>${selectedDawnHubs.join(" · ")}</div>`;
+
+  hubs.forEach(hub => {
+    const selected = selectedHubs.includes(hub);
+    const disabledInFresh = selectedDawnHubs.includes(hub);
+
+    table.innerHTML += `<tr><td ${disabledInFresh ? '' : `onclick="toggleHub('${hub}')"`} style="cursor:${disabledInFresh ? 'not-allowed' : 'pointer'};padding:8px;border:1px solid #edf2f7;background:${disabledInFresh ? '#f1f5f9' : selected ? '#bbf7d0' : '#ffffff'};color:${disabledInFresh ? '#94a3b8' : '#1e293b'};font-weight:${selected ? 'bold' : 'normal'};">${disabledInFresh ? '🚫' : selected ? '✅' : '⬜'} ${hub}</td></tr>`;
+
+    const dawnSelected = selectedDawnHubs.includes(hub);
+    const disabledInDawn = selectedHubs.includes(hub);
+
+    dawnTable.innerHTML += `<tr><td ${disabledInDawn ? '' : `onclick="toggleDawnHub('${hub}')"`} style="cursor:${disabledInDawn ? 'not-allowed' : 'pointer'};padding:8px;border:1px solid #edf2f7;background:${disabledInDawn ? '#f1f5f9' : dawnSelected ? '#bfdbfe' : '#ffffff'};color:${disabledInDawn ? '#94a3b8' : '#1e293b'};font-weight:${dawnSelected ? 'bold' : 'normal'};">${disabledInDawn ? '🚫' : dawnSelected ? '🔳' : '⬜'} ${hub}</td></tr>`;
+  });
+}
+
+function toggleHub(hub){
+  if(selectedDawnHubs.includes(hub)) return;
+  selectedHubs = selectedHubs.includes(hub) ? selectedHubs.filter(x=>x!==hub) : [...selectedHubs, hub];
+  renderData();
+}
+
+function toggleDawnHub(hub){
+  if(selectedHubs.includes(hub)) return;
+  selectedDawnHubs = selectedDawnHubs.includes(hub) ? selectedDawnHubs.filter(x=>x!==hub) : [...selectedDawnHubs, hub];
+  renderData();
+}
+
+function buildExcludeList(){
+  const excludeList = document.getElementById("excludeList");
+  excludeList.innerHTML = "";
+  excludedIds.forEach(id => {
+    excludeList.innerHTML += `<div class="exclude-row"><span>${id}</span><span class="exclude-delete" onclick="removeExcludeId('${id}')">❌</span></div>`;
+  });
+}
+
+function renderMisplace(misplaceMap){
+  const table = document.getElementById("uniqueTable");
+  const countBox = document.getElementById("uniqueCount");
+  if(!table) return;
+
+  const validEntries = Object.entries(misplaceMap).filter(([id]) => !excludedIds.includes(id));
+  validEntries.sort((a,b) => b[1].length - a[1].length);
+
+  countBox.innerText = validEntries.length.toLocaleString();
+
+  table.innerHTML = `<tr><th>오도착 캠프</th><th>개수</th><th>제외</th></tr>`;
+
+  validEntries.forEach(([id, list]) => {
+    const selectedStyle = selectedMisplaceId === id ? "background:#dbeafe;font-weight:bold;color:#1d4ed8;" : "";
+    table.innerHTML += `<tr><td class="camp-click" style="${selectedStyle}" onclick="showCampDetail('${id}')">${id}</td><td style="${selectedStyle}">${list.length.toLocaleString()}</td><td><button onclick="quickExclude('${id}')" style="padding:2px 6px;border:none;border-radius:4px;background:#ef4444;color:white;cursor:pointer;">➕</button></td></tr>`;
+  });
+
+  if(selectedMisplaceId && misplaceMap[selectedMisplaceId]){
+    showCampDetail(selectedMisplaceId);
+  }
+}
+
+function quickExclude(id){
+  if(excludedIds.includes(id)) return;
+  excludedIds.push(id);
+  buildExcludeList();
+  renderData();
+}
+
+function removeExcludeId(id){
+  excludedIds = excludedIds.filter(x=>x!==id);
+  buildExcludeList();
+  renderData();
+}
+
+function showCampDetail(targetId){
+  selectedMisplaceId = targetId;
+  if(!remoteData || !remoteData.misplaceMap || !remoteData.misplaceMap[targetId]) return;
+
+  const list = remoteData.misplaceMap[targetId];
+  currentSelectedWaybills = list.map(item => item.wb);
+
+  document.getElementById("selectedCamp").innerText = `${targetId} (${list.length.toLocaleString()}건)`;
+
+  const table = document.getElementById("detailTable");
+  table.innerHTML = `<tr><th>운송장번호</th><th>캠프</th><th>도착시간</th><th>배송완료여부</th></tr>`;
+
+  list.forEach(item => {
+    table.innerHTML += `<tr><td>${item.wb}</td><td>${item.camp}</td><td>${item.arr}</td><td>${item.deliv}</td></tr>`;
+  });
+}
+
+function copyWaybills(){
+  if(currentSelectedWaybills.length === 0){
+    alert("먼저 오도착 캠프를 선택하세요.");
+    return;
+  }
+  navigator.clipboard.writeText(currentSelectedWaybills.join("\n"));
+  alert(`${currentSelectedWaybills.length.toLocaleString()}건 복사 완료`);
+}
+
+// =========================================================
+// 🔐 계정별 / 기기별(PC·모바일) 권한 제어 통합 시스템
+// =========================================================
+
+const USER_ACCOUNTS = {
+  "owner": { pw: "gkgmlrud", name: "Owner", role: "owner", label: "Owner" },
+  "isn5cl": { pw: "dlftks5zoavm1!!", name: "Camp Leader", role: "cl", label: "ISN5CL" },
+  "isn5hl": { pw: "dlftks5!!", name: "Helper Leader", role: "hl", label: "ISN5HL" },
+  "isn5cpf": { pw: "dlftks5zoavm@@", name: "CPF", role: "cpf", label: "ISN5CPF" }
+};
+
+// ⚙️ 탭 메뉴 및 개별 버튼 컨트롤 전체 항목 목록 (하위 탭 추가 반영)
+const ALL_TAB_ITEMS = [
+  // --- 📌 대제목 및 서브 탭 메뉴 ---
+  { id: "rootMenuTitle", type: "menu", name: "📦 HUB 미스캔 확인 [대제목]" },
+  { id: "menuUpload", type: "menu", name: "  └ 📁 Raw & Setting ⚙️" },
+  { id: "menuTitleResult", type: "menu", name: "  └ 📊 결과 (실시간) [대제목]" },
+  { id: "menuResultDashboard", type: "menu", name: "      └ 📊 실시간 현황 (대시보드)" },
+  { id: "menuInvoiceSH", type: "menu", name: "      └ 📋 SH_ISN5 Invoice" },
+  { id: "menuInvoiceISN", type: "menu", name: "      └ 📋 ISN_5 Invoice" },
+  { id: "menuInvoiceYAJ", type: "menu", name: "      └ 📋 YAJ_3 Invoice" },
+  { id: "menuTitleTrend", type: "menu", name: "  └ 📈 누적 및 소분종료 예상 [대제목]" },
+  { id: "menuTrend", type: "menu", name: "      └ 📈 누적 데이터 (트렌드)" },
+  { id: "menuPredict", type: "menu", name: "      └ ⏱️ F3 소분종료 예측" },
+  { id: "menuTitleLab", type: "menu", name: "  └ 🧪 고급 분석 (Lab) [대제목]" },
+  { id: "menuLabCenter", type: "menu", name: "      └ 🚚 F3종료 상습 지연 Hub" },
+  { id: "menuLabRoute", type: "menu", name: "      └ 🎯 라우트 쏠림/히트맵" },
+  { id: "menuLabDayPattern", type: "menu", name: "      └ 📊 요일별 출고 & 완진율" },
+  { id: "menuCallLog", type: "menu", name: "📜 호출 기록 (Log)" },
+  { id: "menuAccessControl", type: "menu", name: "⚙️ 권한 관리 (Access)" },
+
+  // --- 🔘 주요 클릭 버튼 항목 ---
+  { id: "btnQuickRestore", type: "btn", name: "🔘 [버튼] ⚡ 최근 데이터로 복구" },
+  { id: "btnAccumulateData", type: "btn", name: "🔘 [버튼] 📥 데이터 누적하기" },
+  { id: "audioEnableBtn", type: "btn", name: "🔘 [버튼] 🔊 Mac/PC 음성 활성화" },
+  { id: "btnResetData", type: "btn", name: "🔘 [버튼] 🗑️ 데이터 초기화" }
+];
+
+// 기본 PC / 모바일 권한 구조
+let currentPermissions = {
+  "owner": {
+    pc: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": true, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true },
+    mobile: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": true, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true }
+  },
+  "cl": {
+    pc: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true },
+    mobile: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": true, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false }
+  },
+  "hl": {
+    pc: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": false, "menuTrend": false, "menuPredict": false, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": false, "menuAccessControl": false, "btnQuickRestore": false, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false },
+    mobile: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": false, "menuTrend": false, "menuPredict": false, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": false, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false }
+  },
+  "cpf": {
+    pc: {}, mobile: {}
+  }
+};
+
+let currentUser = null;
+const EIGHT_HOURS_MS = 8 * 60 * 60 * 1000;
+
+db.ref("rolePermissions").on("value", (snapshot) => {
+  if (snapshot.exists() && snapshot.val() !== null) {
+    currentPermissions = snapshot.val();
+  }
+  if (currentUser) {
+    applyRolePermissions();
+  }
+});
+
+function onRoleSelectChange() {
+  const selectedRole = document.getElementById("loginRoleSelect").value;
+  if (selectedRole) {
+    document.getElementById("loginIdInput").value = selectedRole;
+    document.getElementById("loginPwInput").focus();
+  }
+}
+
+function handleLogin() {
+  const idInput = document.getElementById("loginIdInput").value.trim().toLowerCase();
+  const pwInput = document.getElementById("loginPwInput").value.trim();
+
+  if (!idInput) {
+    alert("아이디를 입력하거나 계정을 선택하세요.");
+    return;
+  }
+
+  const account = USER_ACCOUNTS[idInput];
+
+  if (!account) {
+    alert("존재하지 않는 계정 아이디입니다.");
+    return;
+  }
+
+  if (account.pw !== pwInput) {
+    alert("비밀번호가 일치하지 않습니다.");
+    return;
+  }
+
+  currentUser = account;
+  
+  const sessionData = {
+    user: currentUser,
+    expireTime: Date.now() + EIGHT_HOURS_MS
+  };
+  localStorage.setItem("isn5_session", JSON.stringify(sessionData));
+
+  document.getElementById("loginModal").classList.add("hidden");
+  applyRolePermissions();
+}
+
+function handleLogout() {
+  localStorage.removeItem("isn5_session");
+  location.reload();
+}
+
+function applyRolePermissions() {
+  if (!currentUser) return;
+
+  const nameEl = document.getElementById("displayUserName");
+  const roleEl = document.getElementById("displayUserRole");
+  const topNameEl = document.getElementById("topUserName");
+  const topRoleEl = document.getElementById("topUserRole");
+
+  if (nameEl) nameEl.innerText = currentUser.name;
+  if (roleEl) roleEl.innerText = currentUser.label;
+  if (topNameEl) topNameEl.innerText = currentUser.name;
+  if (topRoleEl) topRoleEl.innerText = currentUser.label;
+
+  const role = currentUser.role;
+  const devType = isMobile ? "mobile" : "pc";
+
+  const roleConfig = currentPermissions[role] || { pc: {}, mobile: {} };
+  const devicePerms = roleConfig[devType] || {};
+
+  ALL_TAB_ITEMS.forEach(item => {
+    const el = document.getElementById(item.id);
+    if (el) {
+      const isAllowed = (role === "owner") || (devicePerms[item.id] === true);
+      
+      if (item.type === "btn") {
+        el.style.display = isAllowed ? "inline-flex" : "none";
+      } else {
+        el.style.display = isAllowed ? "flex" : "none";
+      }
+    }
+  });
+
+  if (role === "owner") {
+    renderPermissionMatrix();
+  }
+  
+  showTab('result');
+}
+
+function renderPermissionMatrix() {
+  const tbody = document.getElementById("permMatrixTbody");
+  if (!tbody) return;
+
+  let html = "";
+  ALL_TAB_ITEMS.forEach(item => {
+    const isBtn = item.type === "btn";
+    const titleStyle = isBtn ? "color:#0284c7; font-weight:bold;" : "color:#1e293b; font-weight:bold;";
+
+    html += `
+      <tr>
+        <td style="text-align:left; padding-left:15px; ${titleStyle}">${item.name}</td>
+        <td><input type="checkbox" checked disabled> (항시 허용)</td>
+        
+        <!-- Camp Leader (CL) -->
+        <td style="background:#f8fafc;"><input type="checkbox" class="perm-chk" data-role="cl" data-dev="pc" data-id="${item.id}" ${currentPermissions["cl"]?.pc?.[item.id] !== false ? "checked" : ""}></td>
+        <td style="background:#f8fafc;"><input type="checkbox" class="perm-chk" data-role="cl" data-dev="mobile" data-id="${item.id}" ${currentPermissions["cl"]?.mobile?.[item.id] !== false ? "checked" : ""}></td>
+        
+        <!-- Helper Leader (HL) -->
+        <td><input type="checkbox" class="perm-chk" data-role="hl" data-dev="pc" data-id="${item.id}" ${currentPermissions["hl"]?.pc?.[item.id] ? "checked" : ""}></td>
+        <td><input type="checkbox" class="perm-chk" data-role="hl" data-dev="mobile" data-id="${item.id}" ${currentPermissions["hl"]?.mobile?.[item.id] ? "checked" : ""}></td>
+
+        <!-- CPF -->
+        <td style="background:#f8fafc;"><input type="checkbox" class="perm-chk" data-role="cpf" data-dev="pc" data-id="${item.id}" ${currentPermissions["cpf"]?.pc?.[item.id] ? "checked" : ""}></td>
+        <td style="background:#f8fafc;"><input type="checkbox" class="perm-chk" data-role="cpf" data-dev="mobile" data-id="${item.id}" ${currentPermissions["cpf"]?.mobile?.[item.id] ? "checked" : ""}></td>
+      </tr>
+    `;
+  });
+  tbody.innerHTML = html;
+}
+
+function savePermissionMatrix() {
+  const chks = document.querySelectorAll(".perm-chk");
+  const newPerms = {
+    "owner": currentPermissions.owner || {},
+    "cl": { pc: {}, mobile: {} },
+    "hl": { pc: {}, mobile: {} },
+    "cpf": { pc: {}, mobile: {} }
+  };
+
+  chks.forEach(chk => {
+    const role = chk.dataset.role;
+    const dev = chk.dataset.dev;
+    const itemId = chk.dataset.id;
+    newPerms[role][dev][itemId] = chk.checked;
+  });
+
+  db.ref("rolePermissions").set(newPerms).then(() => {
+    alert("⚙️ PC 및 모바일 디바이스별 권한 설정이 서버에 성공적으로 저장되었습니다!");
+  }).catch(err => {
+    alert("권한 저장 실패: " + err.message);
+  });
+}
+
+window.addEventListener("load", ()=>{
+  buildExcludeList();
+  requestNotificationPermission();
+  loadVoices();
+
+  const savedSession = localStorage.getItem("isn5_session");
+  if (savedSession) {
+    try {
+      const session = JSON.parse(savedSession);
+      const now = Date.now();
+
+      if (session.expireTime && now < session.expireTime) {
+        currentUser = session.user;
+        document.getElementById("loginModal").classList.add("hidden");
+        applyRolePermissions();
+      } else {
+        localStorage.removeItem("isn5_session");
+        currentUser = null;
+        document.getElementById("loginModal").classList.remove("hidden");
+        alert("⏰ 로그인 세션(8시간)이 만료되었습니다. 다시 로그인해 주세요.");
+      }
+    } catch(e) {
+      localStorage.removeItem("isn5_session");
+    }
+  }
+});
+
 </script>
 
 </body>
