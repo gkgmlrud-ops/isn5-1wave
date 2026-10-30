@@ -2218,6 +2218,9 @@ function playBeepSound() {
     const AudioCtx = window.AudioContext || window.webkitAudioContext;
     if (!AudioCtx) return;
     const ctx = new AudioCtx();
+    if (ctx.state === 'suspended') {
+      ctx.resume();
+    }
     const osc = ctx.createOscillator();
     const gain = ctx.createGain();
 
@@ -3849,10 +3852,10 @@ function applyRolePermissions() {
 
   if (role === "owner") {
     renderPermissionMatrix();
-    showTab('accessControl');
-  } else {
-    showTab(isMobile ? 'result' : 'upload');
   }
+  
+  // 💡 음성 알림 수신을 위해 로그인 후 기본 탭은 '결과 (실시간)' 대시보드로 이동
+  showTab(isMobile ? 'result' : 'result');
 }
 
 // ⚙️ PC / 모바일 분리형 권한 관리 매트릭스 표 동적 생성
