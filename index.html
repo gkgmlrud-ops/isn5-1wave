@@ -2536,7 +2536,7 @@ function toggleMenu(menuId){
   }
 }
 
-/* 🚚 구글 시트 CSV 연동 및 D열 필터링 데이터 불러오기 함수 */
+/* 🚚 구글 시트 CSV 연동 및 D열 필터링 데이터 불러오기 함수 (CORS 우회 적용) */
 async function fetchGoogleSheetData() {
   const headEl = document.getElementById("sheetTableHead");
   const bodyEl = document.getElementById("sheetTableBody");
@@ -2550,8 +2550,10 @@ async function fetchGoogleSheetData() {
   try {
     bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center;">🔄 실시간 시트 데이터를 불러오는 중...</td></tr>';
     
-    // 타임스탬프 파라미터를 붙여 캐시 없이 실시간 데이터 수신
-    const res = await fetch(`${GOOGLE_SHEET_CSV_URL}&t=${Date.now()}`);
+    // corsproxy.io 서비스를 통해 회사 구글 계정의 CORS 차단을 우회합니다.
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(GOOGLE_SHEET_CSV_URL)}&t=${Date.now()}`;
+    const res = await fetch(proxyUrl);
+    
     if (!res.ok) throw new Error("시트 웹 게시 URL 접근 불가");
 
     const csvText = await res.text();
