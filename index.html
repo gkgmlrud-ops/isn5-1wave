@@ -2550,7 +2550,12 @@ async function fetchGoogleSheetData() {
   try {
     bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center;">🔄 실시간 시트 데이터를 불러오는 중...</td></tr>';
     
-    const res = await fetch(GOOGLE_SHEET_WEBAPP_URL);
+    // redirect: 'follow' 옵션을 추가하여 CORS 리다이렉트를 차단 없이 추적하도록 설정
+    const res = await fetch(GOOGLE_SHEET_WEBAPP_URL, {
+      method: 'GET',
+      redirect: 'follow'
+    });
+    
     const data = await res.json();
 
     if (!data || data.length === 0) {
@@ -2565,12 +2570,11 @@ async function fetchGoogleSheetData() {
     });
     headEl.innerHTML = headHtml;
 
-    // 데이터 행 표시 (D열 필터링은 Apps Script 단에서 완료되어 넘어옴)
+    // 데이터 행 표시
     let bodyHtml = "";
     for (let i = 1; i < data.length; i++) {
       bodyHtml += "<tr>";
-      data[i].forEach((cell, cellIdx) => {
-        // 날짜/시간 포맷 깔끔하게 표시
+      data[i].forEach((cell) => {
         let cellVal = cell;
         if (cellVal && typeof cellVal === 'string' && cellVal.includes('T') && cellVal.includes('Z')) {
           const d = new Date(cellVal);
