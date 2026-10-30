@@ -1455,12 +1455,17 @@ gap:6px;
           <span>📁 Raw & Setting ⚙️</span>
         </div>
 
-        <div class="nav-sub-title" id="menuTitleResult" onclick="clickResultMenu(event)">
+        <!-- 💡 상위 토글로 변경된 결과 (실시간) 메뉴 -->
+        <div class="nav-sub-title" id="menuTitleResult" onclick="toggleMenu('resultSubMenu')">
           <span>📊 결과 (실시간)</span>
           <span class="arrow" id="resultSubArrow">▲</span>
         </div>
 
+        <!-- 💡 실시간 현황이 하위 탭으로 이동 완료 -->
         <div class="nav-sub-group-level2" id="resultSubMenu">
+          <div class="nav-item" id="menuResultDashboard" onclick="showTab('result')">
+            <span>📊 실시간 현황 (대시보드)</span>
+          </div>
           <div class="nav-item" id="menuInvoiceSH" onclick="showTab('invoiceSH')">
             <span>📋 SH_ISN5 Invoice</span>
           </div>
@@ -2194,7 +2199,6 @@ let remoteData = null;
 let selectedMisplaceId = "";
 let currentSelectedWaybills = [];
 
-// 💡 [수정 1] 타임스탬프 비교 버그 해결: 초기값을 0으로 설정하여 수신 시 무조건 통과하도록 변경
 let lastSpokenTime = 0; 
 let recentHistoryData = {};
 let latestBackupKey = null;
@@ -2240,7 +2244,6 @@ function playBeepSound() {
   }
 }
 
-// 💡 [수정 2] TTS 엔진 잠김 방지 및 즉각 음성 출력을 보장하는 함수
 function speakText(text) {
   if (isMobile) return;
 
@@ -2405,6 +2408,10 @@ function showTab(page){
   if (accessPage) accessPage.classList.toggle("hidden", page !== "accessControl");
 
   document.getElementById("menuUpload").classList.toggle("active", page === "upload");
+  
+  const menuResDash = document.getElementById("menuResultDashboard");
+  if (menuResDash) menuResDash.classList.toggle("active", page === "result");
+
   const menuPred = document.getElementById("menuPredict");
   if (menuPred) menuPred.classList.toggle("active", page === "predict");
   document.getElementById("menuTrend").classList.toggle("active", page === "trend");
@@ -2439,11 +2446,6 @@ function toggleMenu(menuId){
   if(arrow){
     arrow.innerText = menu.classList.contains("hidden") ? "▼" : "▲";
   }
-}
-
-function clickResultMenu(e){
-  showTab('result');
-  toggleMenu("resultSubMenu");
 }
 
 function openSaveModal() {
@@ -3437,7 +3439,6 @@ db.ref("callLogs").on("value", (snapshot) => {
   }
 });
 
-// 💡 [수정 3] 타인이 보낸 실시간 음성/팝업 호출 수신 핵심 로직
 db.ref("callSignal").on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -3449,7 +3450,6 @@ db.ref("callSignal").on("value", (snapshot) => {
       lastCallInfoEl.innerHTML = `🔔 최근 호출: <span style="color:#1d4ed8;font-weight:bold;">[${displayTime}] ${senderDisplay}</span> <span style="color:#1e293b;font-weight:bold;">${data.message}</span>`;
     }
 
-    // 새 신호 들어왔을 때 무조건 음성 출력 및 팝업 알림 실행
     if (data.timestamp > lastSpokenTime) {
       lastSpokenTime = data.timestamp;
       
@@ -3717,12 +3717,13 @@ const USER_ACCOUNTS = {
   "isn5cpf": { pw: "dlftks5zoavm@@", name: "CPF", role: "cpf", label: "ISN5CPF" }
 };
 
-// ⚙️ 탭 메뉴 및 개별 버튼 컨트롤 전체 항목 목록
+// ⚙️ 탭 메뉴 및 개별 버튼 컨트롤 전체 항목 목록 (하위 탭 추가 반영)
 const ALL_TAB_ITEMS = [
   // --- 📌 대제목 및 서브 탭 메뉴 ---
   { id: "rootMenuTitle", type: "menu", name: "📦 HUB 미스캔 확인 [대제목]" },
   { id: "menuUpload", type: "menu", name: "  └ 📁 Raw & Setting ⚙️" },
   { id: "menuTitleResult", type: "menu", name: "  └ 📊 결과 (실시간) [대제목]" },
+  { id: "menuResultDashboard", type: "menu", name: "      └ 📊 실시간 현황 (대시보드)" },
   { id: "menuInvoiceSH", type: "menu", name: "      └ 📋 SH_ISN5 Invoice" },
   { id: "menuInvoiceISN", type: "menu", name: "      └ 📋 ISN_5 Invoice" },
   { id: "menuInvoiceYAJ", type: "menu", name: "      └ 📋 YAJ_3 Invoice" },
@@ -3746,16 +3747,16 @@ const ALL_TAB_ITEMS = [
 // 기본 PC / 모바일 권한 구조
 let currentPermissions = {
   "owner": {
-    pc: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": true, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true },
-    mobile: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": true, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true }
+    pc: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": true, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true },
+    mobile: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": true, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true }
   },
   "cl": {
-    pc: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true },
-    mobile: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": true, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false }
+    pc: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true },
+    mobile: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": true, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false }
   },
   "hl": {
-    pc: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": false, "menuTrend": false, "menuPredict": false, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": false, "menuAccessControl": false, "btnQuickRestore": false, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false },
-    mobile: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": false, "menuTrend": false, "menuPredict": false, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": false, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false }
+    pc: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": false, "menuTrend": false, "menuPredict": false, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": false, "menuAccessControl": false, "btnQuickRestore": false, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false },
+    mobile: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": false, "menuTrend": false, "menuPredict": false, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": false, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false }
   },
   "cpf": {
     pc: {}, mobile: {}
@@ -3820,7 +3821,6 @@ function handleLogout() {
   location.reload();
 }
 
-// 🔐 PC vs 모바일 자동 감지 적용 권한 제어
 function applyRolePermissions() {
   if (!currentUser) return;
 
@@ -3860,7 +3860,6 @@ function applyRolePermissions() {
   showTab('result');
 }
 
-// ⚙️ PC / 모바일 분리형 권한 관리 매트릭스 표 동적 생성
 function renderPermissionMatrix() {
   const tbody = document.getElementById("permMatrixTbody");
   if (!tbody) return;
@@ -3876,8 +3875,8 @@ function renderPermissionMatrix() {
         <td><input type="checkbox" checked disabled> (항시 허용)</td>
         
         <!-- Camp Leader (CL) -->
-        <td style="background:#f8fafc;"><input type="checkbox" class="perm-chk" data-role="cl" data-dev="pc" data-id="${item.id}" ${currentPermissions["cl"]?.pc?.[item.id] ? "checked" : ""}></td>
-        <td style="background:#f8fafc;"><input type="checkbox" class="perm-chk" data-role="cl" data-dev="mobile" data-id="${item.id}" ${currentPermissions["cl"]?.mobile?.[item.id] ? "checked" : ""}></td>
+        <td style="background:#f8fafc;"><input type="checkbox" class="perm-chk" data-role="cl" data-dev="pc" data-id="${item.id}" ${currentPermissions["cl"]?.pc?.[item.id] !== false ? "checked" : ""}></td>
+        <td style="background:#f8fafc;"><input type="checkbox" class="perm-chk" data-role="cl" data-dev="mobile" data-id="${item.id}" ${currentPermissions["cl"]?.mobile?.[item.id] !== false ? "checked" : ""}></td>
         
         <!-- Helper Leader (HL) -->
         <td><input type="checkbox" class="perm-chk" data-role="hl" data-dev="pc" data-id="${item.id}" ${currentPermissions["hl"]?.pc?.[item.id] ? "checked" : ""}></td>
@@ -3892,7 +3891,6 @@ function renderPermissionMatrix() {
   tbody.innerHTML = html;
 }
 
-// 💾 PC / 모바일 권한 저장
 function savePermissionMatrix() {
   const chks = document.querySelectorAll(".perm-chk");
   const newPerms = {
