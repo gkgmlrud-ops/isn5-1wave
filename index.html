@@ -2193,7 +2193,9 @@ let excludedIds = ["xisn5_au_sorter", "xisn5_scan1", "xisn5_scan2", "xisn5_scan3
 let remoteData = null;
 let selectedMisplaceId = "";
 let currentSelectedWaybills = [];
-let lastSpokenTime = Date.now();
+
+// 💡 [수정 1] 타임스탬프 비교 버그 해결: 초기값을 0으로 설정하여 수신 시 무조건 통과하도록 변경
+let lastSpokenTime = 0; 
 let recentHistoryData = {};
 let latestBackupKey = null;
 
@@ -2238,6 +2240,7 @@ function playBeepSound() {
   }
 }
 
+// 💡 [수정 2] TTS 엔진 잠김 방지 및 즉각 음성 출력을 보장하는 함수
 function speakText(text) {
   if (isMobile) return;
 
@@ -2262,7 +2265,7 @@ function speakText(text) {
 
       window.speechSynthesis.speak(utterance);
     }
-  }, 400);
+  }, 300);
 }
 
 function enableAudio() {
@@ -3434,6 +3437,7 @@ db.ref("callLogs").on("value", (snapshot) => {
   }
 });
 
+// 💡 [수정 3] 타인이 보낸 실시간 음성/팝업 호출 수신 핵심 로직
 db.ref("callSignal").on("value", (snapshot) => {
   const data = snapshot.val();
   if (data) {
@@ -3445,15 +3449,14 @@ db.ref("callSignal").on("value", (snapshot) => {
       lastCallInfoEl.innerHTML = `🔔 최근 호출: <span style="color:#1d4ed8;font-weight:bold;">[${displayTime}] ${senderDisplay}</span> <span style="color:#1e293b;font-weight:bold;">${data.message}</span>`;
     }
 
+    // 새 신호 들어왔을 때 무조건 음성 출력 및 팝업 알림 실행
     if (data.timestamp > lastSpokenTime) {
       lastSpokenTime = data.timestamp;
       
-      if (Date.now() - data.timestamp < 10000) {
-        if (!isMobile) {
-          const speakMsg = `${senderDisplay} ${data.message}`;
-          speakText(speakMsg);
-          showDesktopNotification(speakMsg);
-        }
+      if (!isMobile) {
+        const speakMsg = `${senderDisplay} ${data.message}`;
+        speakText(speakMsg);
+        showDesktopNotification(speakMsg);
       }
     }
   }
@@ -3854,8 +3857,7 @@ function applyRolePermissions() {
     renderPermissionMatrix();
   }
   
-  // 💡 음성 알림 수신을 위해 로그인 후 기본 탭은 '결과 (실시간)' 대시보드로 이동
-  showTab(isMobile ? 'result' : 'result');
+  showTab('result');
 }
 
 // ⚙️ PC / 모바일 분리형 권한 관리 매트릭스 표 동적 생성
