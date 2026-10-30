@@ -2245,8 +2245,8 @@ gap:6px;
 
 <script>
 
-// 🔗 구글 Apps Script 배포 URL (2단계에서 받은 URL을 아래 큰따옴표 안에 붙여넣으세요)
-const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/a/macros/coupangls.com/s/AKfycbzmI0OeTZOZ4Y-WkuOdehaKW1QsH_YckRNaPB4Hxi1SUCyjSOAhTLFX0P2n95SZqcCmoQ/exec";
+// 🔗 1단계에서 복사한 구글 시트 CSV 게시 URL을 여기에 넣으세요!
+const GOOGLE_SHEET_CSV_URL = "https://docs.google.com/spreadsheets/d/e/2PACX-1vR_yxcmuU5KwohwlA0pV2OBMxjNRbt5HywUUaGk2VZ8I3lE8UtvqYgGG4wyCPDLe55lSv7PztGtWBFl/pub?gid=0&single=true&output=csv";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA9r5um2weaQiyc3Hq4foMZLdDRAfnLgJM",
@@ -2536,51 +2536,54 @@ function toggleMenu(menuId){
   }
 }
 
-/* 🚚 구글 시트 연동 데이터 불러오기 함수 */
+/* 🚚 구글 시트 CSV 연동 및 D열 필터링 데이터 불러오기 함수 */
 async function fetchGoogleSheetData() {
   const headEl = document.getElementById("sheetTableHead");
   const bodyEl = document.getElementById("sheetTableBody");
 
-  if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes("여기에_APPS_SCRIPT")) {
+  if (!GOOGLE_SHEET_CSV_URL || GOOGLE_SHEET_CSV_URL.includes("여기에_구글시트")) {
     headEl.innerHTML = '<th>안내</th>';
-    bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center; color:#dc2626;"><b>[설정 필요]</b> 스크립트 상단의 GOOGLE_SHEET_WEBAPP_URL에 배포한 Apps Script URL을 입력해 주세요.</td></tr>';
+    bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center; color:#dc2626;"><b>[설정 필요]</b> GOOGLE_SHEET_CSV_URL에 구글 시트 웹 게시(CSV) URL을 입력해 주세요.</td></tr>';
     return;
   }
 
   try {
     bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center;">🔄 실시간 시트 데이터를 불러오는 중...</td></tr>';
     
-    // redirect: 'follow' 옵션을 추가하여 CORS 리다이렉트를 차단 없이 추적하도록 설정
-    const res = await fetch(GOOGLE_SHEET_WEBAPP_URL, {
-      method: 'GET',
-      redirect: 'follow'
-    });
-    
-    const data = await res.json();
+    // 타임스탬프 파라미터를 붙여 캐시 없이 실시간 데이터 수신
+    const res = await fetch(`${GOOGLE_SHEET_CSV_URL}&t=${Date.now()}`);
+    if (!res.ok) throw new Error("시트 웹 게시 URL 접근 불가");
 
-    if (!data || data.length === 0) {
+    const csvText = await res.text();
+    
+    // CSV 파싱 처리
+    const rows = parseCSV(csvText);
+
+    if (!rows || rows.length === 0) {
       bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center;">표시할 데이터가 없습니다.</td></tr>';
       return;
     }
 
+    // D열(인덱스 3)에 값이 있는 행만 필터링 (1행 헤더는 포함)
+    const filteredRows = rows.filter((row, index) => {
+      if (index === 0) return true; // 헤더
+      const colD = row[3]; // D열 (0:A, 1:B, 2:C, 3:D)
+      return colD !== undefined && colD !== null && String(colD).trim() !== "";
+    });
+
     // 헤더(1행) 표시
     let headHtml = "";
-    data[0].forEach(col => {
+    filteredRows[0].forEach(col => {
       headHtml += `<th>${col || ''}</th>`;
     });
     headEl.innerHTML = headHtml;
 
     // 데이터 행 표시
     let bodyHtml = "";
-    for (let i = 1; i < data.length; i++) {
+    for (let i = 1; i < filteredRows.length; i++) {
       bodyHtml += "<tr>";
-      data[i].forEach((cell) => {
-        let cellVal = cell;
-        if (cellVal && typeof cellVal === 'string' && cellVal.includes('T') && cellVal.includes('Z')) {
-          const d = new Date(cellVal);
-          cellVal = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
-        }
-        bodyHtml += `<td><b>${cellVal}</b></td>`;
+      filteredRows[i].forEach(cell => {
+        bodyHtml += `<td><b>${cell || ''}</b></td>`;
       });
       bodyHtml += "</tr>";
     }
@@ -2588,8 +2591,31 @@ async function fetchGoogleSheetData() {
 
   } catch (err) {
     console.error(err);
-    bodyEl.innerHTML = `<tr><td style="padding:20px; text-align:center; color:#dc2626;">데이터 로딩 실패: ${err.message}</td></tr>`;
+    bodyEl.innerHTML = `<tr><td style="padding:20px; text-align:center; color:#dc2626;">데이터 로딩 실패: ${err.message}<br><small>구글 시트의 [파일] ➔ [공유] ➔ [웹에 게시] 설정에서 CSV 형식 게시가 완료되었는지 확인해 주세요.</small></td></tr>`;
   }
+}
+
+// Simple CSV Parser
+function parseCSV(text) {
+  const lines = text.split(/\r\n|\n/);
+  return lines.map(line => {
+    const row = [];
+    let insideQuote = false;
+    let entry = '';
+    for (let i = 0; i < line.length; i++) {
+      const char = line[i];
+      if (char === '"') {
+        insideQuote = !insideQuote;
+      } else if (char === ',' && !insideQuote) {
+        row.push(entry.trim());
+        entry = '';
+      } else {
+        entry += char;
+      }
+    }
+    row.push(entry.trim());
+    return row;
+  }).filter(row => row.some(cell => cell !== ""));
 }
 
 function openSaveModal() {
