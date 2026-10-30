@@ -1457,7 +1457,7 @@ gap:6px;
 
     <div class="menu-section">
       
-      <!-- HUB 미스캔 확인 [대제목] -->
+      <!-- HUB 미스캔 확인 [대제목 - 기존 보존] -->
       <div class="main-root-title" id="rootMenuTitle" onclick="toggleMenu('rootMenuGroup')">
         <span>📦 HUB 미스캔 확인</span>
         <span class="arrow" id="rootMenuArrow">▲</span>
@@ -1528,6 +1528,18 @@ gap:6px;
           <span style="color:#38bdf8;">⚙️ 권한 관리 (Access)</span>
         </div>
 
+      </div>
+
+      <!-- 🚚 Truck Check [신규 추가된 큰 탭 한덩어리] -->
+      <div class="main-root-title" id="truckRootMenuTitle" onclick="toggleMenu('truckMenuGroup')" style="margin-top:16px; background:#1e293b; color:#f59e0b; border-left: 3px solid #f59e0b;">
+        <span>🚚 Truck Check</span>
+        <span class="arrow" id="truckMenuArrow">▲</span>
+      </div>
+
+      <div class="nav-sub-group-level1" id="truckMenuGroup">
+        <div class="nav-item" id="menuSheetDashboard" onclick="showTab('sheetDashboard')">
+          <span>📊 시트 연동 대시보드</span>
+        </div>
       </div>
 
     </div>
@@ -2106,7 +2118,7 @@ gap:6px;
       <button class="trend-btn" onclick="savePermissionMatrix()">💾 권한 설정 저장</button>
     </div>
 
-    <!-- 🔐 등록 계정 ID / PW 확인 카드 영역 (Owner 전용 카드 추가) -->
+    <!-- 🔐 등록 계정 ID / PW 확인 카드 영역 -->
     <div class="account-cards-grid">
       <div class="account-card owner">
         <div class="account-role-title">👑 Owner (최고 관리자)</div>
@@ -2162,6 +2174,32 @@ gap:6px;
   </div>
 </div>
 
+<!-- 🚚 Truck Check: 구글 시트 연동 대시보드 신규 페이지 -->
+<div id="sheetDashboardPage" class="hidden">
+  <div class="result-panel">
+    <div class="result-panel-title">
+      <span>🚚 Truck Check (실시간 구글 시트 연동 대시보드)</span>
+      <button class="trend-btn" onclick="fetchGoogleSheetData()">🔄 시트 데이터 새로고침</button>
+    </div>
+    <div style="font-size:13px; color:#64748b; margin-bottom:12px;">
+      * 구글 스프레드시트 <b>D열(출차시간)</b>에 글자가 존재하는 항목만 필터링하여 실시간 표시합니다.
+    </div>
+
+    <div class="invoice-table-wrap" style="max-height: 750px;">
+      <table class="invoice-table" id="sheetDataTable">
+        <thead>
+          <tr id="sheetTableHead">
+            <th>로딩 중...</th>
+          </tr>
+        </thead>
+        <tbody id="sheetTableBody">
+          <tr><td style="text-align:center; padding: 20px;">구글 시트 데이터를 로딩하고 있습니다...</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
 </div>
 </div>
 </div>
@@ -2206,6 +2244,9 @@ gap:6px;
 </div>
 
 <script>
+
+// 🔗 구글 Apps Script 배포 URL (2단계에서 받은 URL을 아래 큰따옴표 안에 붙여넣으세요)
+const GOOGLE_SHEET_WEBAPP_URL = "https://script.google.com/a/macros/coupangls.com/s/AKfycbyf64zNBWhVfZa4dYPUkoYRbED1lXSnS48aZXxBof5Un_rQqc-W60GsidJiRVRJnAFe3Q/exec";
 
 const firebaseConfig = {
   apiKey: "AIzaSyA9r5um2weaQiyc3Hq4foMZLdDRAfnLgJM",
@@ -2443,6 +2484,9 @@ function showTab(page){
   const accessPage = document.getElementById("accessControlPage");
   if (accessPage) accessPage.classList.toggle("hidden", page !== "accessControl");
 
+  const sheetPage = document.getElementById("sheetDashboardPage");
+  if (sheetPage) sheetPage.classList.toggle("hidden", page !== "sheetDashboard");
+
   document.getElementById("menuUpload").classList.toggle("active", page === "upload");
   
   const menuResDash = document.getElementById("menuResultDashboard");
@@ -2463,6 +2507,13 @@ function showTab(page){
   const menuAccess = document.getElementById("menuAccessControl");
   if (menuAccess) menuAccess.classList.toggle("active", page === "accessControl");
 
+  const menuSheet = document.getElementById("menuSheetDashboard");
+  if (menuSheet) menuSheet.classList.toggle("active", page === "sheetDashboard");
+
+  if (page === "sheetDashboard") {
+    fetchGoogleSheetData();
+  }
+
   closeMobileSidebar();
 }
 
@@ -2477,10 +2528,63 @@ function toggleMenu(menuId){
   if(menuId === "resultSubMenu") arrowId = "resultSubArrow";
   if(menuId === "trendMenuGroup") arrowId = "trendMenuArrow";
   if(menuId === "labMenuGroup") arrowId = "labMenuArrow";
+  if(menuId === "truckMenuGroup") arrowId = "truckMenuArrow";
   
   const arrow = document.getElementById(arrowId);
   if(arrow){
     arrow.innerText = menu.classList.contains("hidden") ? "▼" : "▲";
+  }
+}
+
+/* 🚚 구글 시트 연동 데이터 불러오기 함수 */
+async function fetchGoogleSheetData() {
+  const headEl = document.getElementById("sheetTableHead");
+  const bodyEl = document.getElementById("sheetTableBody");
+
+  if (!GOOGLE_SHEET_WEBAPP_URL || GOOGLE_SHEET_WEBAPP_URL.includes("여기에_APPS_SCRIPT")) {
+    headEl.innerHTML = '<th>안내</th>';
+    bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center; color:#dc2626;"><b>[설정 필요]</b> 스크립트 상단의 GOOGLE_SHEET_WEBAPP_URL에 배포한 Apps Script URL을 입력해 주세요.</td></tr>';
+    return;
+  }
+
+  try {
+    bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center;">🔄 실시간 시트 데이터를 불러오는 중...</td></tr>';
+    
+    const res = await fetch(GOOGLE_SHEET_WEBAPP_URL);
+    const data = await res.json();
+
+    if (!data || data.length === 0) {
+      bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center;">표시할 데이터가 없습니다.</td></tr>';
+      return;
+    }
+
+    // 헤더(1행) 표시
+    let headHtml = "";
+    data[0].forEach(col => {
+      headHtml += `<th>${col || ''}</th>`;
+    });
+    headEl.innerHTML = headHtml;
+
+    // 데이터 행 표시 (D열 필터링은 Apps Script 단에서 완료되어 넘어옴)
+    let bodyHtml = "";
+    for (let i = 1; i < data.length; i++) {
+      bodyHtml += "<tr>";
+      data[i].forEach((cell, cellIdx) => {
+        // 날짜/시간 포맷 깔끔하게 표시
+        let cellVal = cell;
+        if (cellVal && typeof cellVal === 'string' && cellVal.includes('T') && cellVal.includes('Z')) {
+          const d = new Date(cellVal);
+          cellVal = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        }
+        bodyHtml += `<td><b>${cellVal}</b></td>`;
+      });
+      bodyHtml += "</tr>";
+    }
+    bodyEl.innerHTML = bodyHtml;
+
+  } catch (err) {
+    console.error(err);
+    bodyEl.innerHTML = `<tr><td style="padding:20px; text-align:center; color:#dc2626;">데이터 로딩 실패: ${err.message}</td></tr>`;
   }
 }
 
@@ -3771,6 +3875,9 @@ const ALL_TAB_ITEMS = [
   { id: "menuCallLog", type: "menu", name: "📜 호출 기록 (Log)" },
   { id: "menuAccessControl", type: "menu", name: "⚙️ 권한 관리 (Access)" },
 
+  { id: "truckRootMenuTitle", type: "menu", name: "🚚 Truck Check [대제목]" },
+  { id: "menuSheetDashboard", type: "menu", name: "  └ 📊 시트 연동 대시보드" },
+
   { id: "btnQuickRestore", type: "btn", name: "🔘 [버튼] ⚡ 최근 데이터로 복구" },
   { id: "btnAccumulateData", type: "btn", name: "🔘 [버튼] 📥 데이터 누적하기" },
   { id: "audioEnableBtn", type: "btn", name: "🔘 [버튼] 🔊 Mac/PC 음성 활성화" },
@@ -3779,16 +3886,16 @@ const ALL_TAB_ITEMS = [
 
 let currentPermissions = {
   "owner": {
-    pc: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": true, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true },
-    mobile: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": true, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true }
+    pc: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": true, "truckRootMenuTitle": true, "menuSheetDashboard": true, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true },
+    mobile: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": true, "truckRootMenuTitle": true, "menuSheetDashboard": true, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true }
   },
   "cl": {
-    pc: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true },
-    mobile: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": true, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false }
+    pc: { "rootMenuTitle": true, "menuUpload": true, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": true, "menuLabCenter": true, "menuLabRoute": true, "menuLabDayPattern": true, "menuCallLog": true, "menuAccessControl": false, "truckRootMenuTitle": true, "menuSheetDashboard": true, "btnQuickRestore": true, "btnAccumulateData": true, "audioEnableBtn": true, "btnResetData": true },
+    mobile: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": true, "menuTrend": true, "menuPredict": true, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": true, "menuAccessControl": false, "truckRootMenuTitle": true, "menuSheetDashboard": true, "btnQuickRestore": true, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false }
   },
   "hl": {
-    pc: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": false, "menuTrend": false, "menuPredict": false, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": false, "menuAccessControl": false, "btnQuickRestore": false, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false },
-    mobile: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": false, "menuTrend": false, "menuPredict": false, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": false, "menuAccessControl": false, "btnQuickRestore": true, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false }
+    pc: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": false, "menuTrend": false, "menuPredict": false, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": false, "menuAccessControl": false, "truckRootMenuTitle": true, "menuSheetDashboard": true, "btnQuickRestore": false, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false },
+    mobile: { "rootMenuTitle": true, "menuUpload": false, "menuTitleResult": true, "menuResultDashboard": true, "menuInvoiceSH": true, "menuInvoiceISN": true, "menuInvoiceYAJ": true, "menuTitleTrend": false, "menuTrend": false, "menuPredict": false, "menuTitleLab": false, "menuLabCenter": false, "menuLabRoute": false, "menuLabDayPattern": false, "menuCallLog": false, "menuAccessControl": false, "truckRootMenuTitle": true, "menuSheetDashboard": true, "btnQuickRestore": true, "btnAccumulateData": false, "audioEnableBtn": false, "btnResetData": false }
   },
   "cpf": {
     pc: {}, mobile: {}
