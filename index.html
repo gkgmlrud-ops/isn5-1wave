@@ -2536,65 +2536,54 @@ function toggleMenu(menuId){
   }
 }
 
-/* 🚚 구글 시트 CSV 연동 및 D열 필터링 데이터 불러오기 함수 (CORS 우회 적용) */
-async function fetchGoogleSheetData() {
+/* 🚚 Truck Check: Firebase에서 실시간 데이터 수신 및 D열 자동 반영 */
+db.ref("truckCheckData").on("value", (snapshot) => {
   const headEl = document.getElementById("sheetTableHead");
   const bodyEl = document.getElementById("sheetTableBody");
 
-  if (!GOOGLE_SHEET_CSV_URL || GOOGLE_SHEET_CSV_URL.includes("여기에_구글시트")) {
-    headEl.innerHTML = '<th>안내</th>';
-    bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center; color:#dc2626;"><b>[설정 필요]</b> GOOGLE_SHEET_CSV_URL에 구글 시트 웹 게시(CSV) URL을 입력해 주세요.</td></tr>';
-    return;
-  }
+  if (!headEl || !bodyEl) return;
 
-  try {
-    bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center;">🔄 실시간 시트 데이터를 불러오는 중...</td></tr>';
-    
-    // corsproxy.io 서비스를 통해 회사 구글 계정의 CORS 차단을 우회합니다.
-    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(GOOGLE_SHEET_CSV_URL)}&t=${Date.now()}`;
-    const res = await fetch(proxyUrl);
-    
-    if (!res.ok) throw new Error("시트 웹 게시 URL 접근 불가");
+  if (snapshot.exists() && snapshot.val() !== null) {
+    const data = snapshot.val();
 
-    const csvText = await res.text();
-    
-    // CSV 파싱 처리
-    const rows = parseCSV(csvText);
-
-    if (!rows || rows.length === 0) {
+    if (!data || data.length === 0) {
       bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center;">표시할 데이터가 없습니다.</td></tr>';
       return;
     }
 
-    // D열(인덱스 3)에 값이 있는 행만 필터링 (1행 헤더는 포함)
-    const filteredRows = rows.filter((row, index) => {
-      if (index === 0) return true; // 헤더
-      const colD = row[3]; // D열 (0:A, 1:B, 2:C, 3:D)
-      return colD !== undefined && colD !== null && String(colD).trim() !== "";
-    });
-
     // 헤더(1행) 표시
     let headHtml = "";
-    filteredRows[0].forEach(col => {
+    data[0].forEach(col => {
       headHtml += `<th>${col || ''}</th>`;
     });
     headEl.innerHTML = headHtml;
 
-    // 데이터 행 표시
+    // 데이터 행 표시 (구글 시트에서 D열 필터링 완료된 데이터)
     let bodyHtml = "";
-    for (let i = 1; i < filteredRows.length; i++) {
+    for (let i = 1; i < data.length; i++) {
       bodyHtml += "<tr>";
-      filteredRows[i].forEach(cell => {
-        bodyHtml += `<td><b>${cell || ''}</b></td>`;
+      data[i].forEach(cell => {
+        let cellVal = cell || '';
+        // 시트 날짜 포맷 정리
+        if (typeof cellVal === 'string' && cellVal.includes('T') && cellVal.includes('Z')) {
+          const d = new Date(cellVal);
+          cellVal = `${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+        }
+        bodyHtml += `<td><b>${cellVal}</b></td>`;
       });
       bodyHtml += "</tr>";
     }
     bodyEl.innerHTML = bodyHtml;
 
-  } catch (err) {
-    console.error(err);
-    bodyEl.innerHTML = `<tr><td style="padding:20px; text-align:center; color:#dc2626;">데이터 로딩 실패: ${err.message}<br><small>구글 시트의 [파일] ➔ [공유] ➔ [웹에 게시] 설정에서 CSV 형식 게시가 완료되었는지 확인해 주세요.</small></td></tr>`;
+  } else {
+    bodyEl.innerHTML = '<tr><td style="padding:20px; text-align:center; color:#64748b;">구글 시트에서 동기화된 데이터가 아직 없습니다.<br>Apps Script에서 syncToFirebase() 함수를 실행해 주세요.</td></tr>';
   }
+});
+
+// 버튼 클릭 시 수동 새로고침 처리 (Firebase이므로 화면 자동 갱신됨)
+function fetchGoogleSheetData() {
+  // Firebase 실시간 이벤트를 사용하므로 시트 수정 시 자동으로 화면이 업데이트됩니다.
+  console.log("Firebase 수신 중...");
 }
 
 // Simple CSV Parser
